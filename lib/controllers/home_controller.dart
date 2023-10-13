@@ -35,17 +35,17 @@ class HomeController extends GetxController {
     }
   }
 
-  String getSamplePdfSource() {
-    return ''; //sample/$songSKU.pdf
-  }
+  // String getSamplePdfSource() {
+  //   return 'https://www.ktswebhub.com/ppbl/resources/sample/$songSKU.pdf';
+  // }
 
-  String getOriginalPdfSource() {
-    return ''; //resources/$songSKU.pdf
-  }
+  // String getOriginalPdfSource() {
+  //   return 'https://www.ktswebhub.com/ppbl/resources/$songSKU.pdf';
+  // }
 
-  String getMp3Source() {
-    return ''; //mp3/$songSKU.mp3
-  }
+  // String getMp3Source() {
+  //   return 'https://www.ktswebhub.com/ppbl/resources/mp3s/$songSKU.mp3';
+  // }
 
   static List<Songs> filterSongs(
     List<Songs> songs, {
