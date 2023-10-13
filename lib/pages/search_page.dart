@@ -50,7 +50,7 @@ class SearchPage extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  BookWidget(list: bookList[0]),
+                  BookWidget(/*index: 1,*/ list: bookList[0]),
                   RecentReleasedWidget(
                     list: albumList[1],
                   )

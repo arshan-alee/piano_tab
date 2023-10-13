@@ -12,7 +12,7 @@ class MyColors {
   static Color whiteColor = const Color(0xffffffff);
   static Color grey = const Color(0xffd9d9d9);
   static Color darkGrey = const Color(0xff808080);
-  static Color textGrey = Color.fromARGB(255, 184, 182, 182);
+  static Color textGrey = const Color.fromARGB(255, 184, 182, 182);
   static Color blueColor = Colors.blue;
   static Color greyColor = const Color(0xffC0BBBB);
   static Color blackColor = const Color(0xff000000);

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:paino_tab/controllers/home_controller.dart';
 import 'package:paino_tab/utils/model.dart';
 
+import '../models/songs_model.dart';
 import '../utils/colors.dart';
 import '../utils/widget.dart';
 
@@ -19,6 +21,9 @@ class _BookPageState extends State<BookPage> {
   bool bookScreen = false;
   @override
   Widget build(BuildContext context) {
+    List<Songs> sng =
+        HomeController.filterSongs(HomeController.to.songs!, type: 'book');
+    List<BookModel> books = HomeController.to.bookModelList(songs: sng);
     Size size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () async {
@@ -43,7 +48,7 @@ class _BookPageState extends State<BookPage> {
                       height: size.height * 0.03,
                     ),
                     TextWidget(
-                      text: '108 books to choose from',
+                      text: '108 books to choo se from',
                       color: MyColors.blackColor,
                       fontSize: 20,
                     ),
@@ -59,65 +64,36 @@ class _BookPageState extends State<BookPage> {
                     SizedBox(
                       height: size.height * 0.02,
                     ),
-                    // Row(
-                    //     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    //     children: [
-                    //       BookWidget(list: bookList[0]),
-                    //       BookWidget(list: bookList[1]),
-                    //     ]),
-                    // SizedBox(
-                    //   height: size.height * 0.02,
-                    // ),
-                    // Row(
-                    //     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    //     children: [
-                    //       BookWidget(list: bookList[2]),
-                    //       BookWidget(list: bookList[3]),
-                    //     ]),
-                    // SizedBox(
-                    //   height: size.height * 0.02,
-                    // ),
-                    // Row(
-                    //     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    //     children: [
-                    //       BookWidget(list: bookList[4]),
-                    //       BookWidget(list: bookList[5]),
-                    //     ]),
-                    // SizedBox(
-                    //   height: size.height * 0.02,
-                    // ),
-                    // Row(
-                    //     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    //     children: [
-                    //       BookWidget(list: bookList[6]),
-                    //       BookWidget(list: bookList[7]),
-                    //     ]),
-
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 15,
-                        crossAxisSpacing: 15.w,
-                        mainAxisExtent: 260.h,
-                        childAspectRatio: 0.55.h,
-                      ),
-                      itemCount: bookList.length,
-                      itemBuilder: (context, index) => InkWell(
-                        onTap: () {
-                          if (index == 0) {
-                            setState(() {
-                              bookScreen = true;
-                            });
-                          }
-                        },
-                        child: BookWidget(
-                          list: bookList[index],
-                        ),
-                      ),
-                    ),
-
+                    FutureBuilder(
+                        future: HomeController.to.emptyFuture(),
+                        builder: (context, snapshot) {
+                          return GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 15,
+                              crossAxisSpacing: 15.w,
+                              mainAxisExtent: 260.h,
+                              childAspectRatio: 0.55.h,
+                            ),
+                            itemCount: books.length,
+                            itemBuilder: (context, index) => InkWell(
+                              onTap: () {
+                                if (index == 0) {
+                                  setState(() {
+                                    bookScreen = true;
+                                  });
+                                }
+                              },
+                              child: BookWidget(
+                                // index: index,
+                                list: books[index],
+                              ),
+                            ),
+                          );
+                        }),
                     SizedBox(
                       height: size.height * 0.12,
                     ),

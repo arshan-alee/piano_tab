@@ -1,11 +1,11 @@
-class AlbumModel {
+class SongModel {
   final String title;
   final String detail;
   final String color;
   final String rating;
   final String pages;
 
-  AlbumModel(
+  SongModel(
     this.title,
     this.detail,
     this.color,
@@ -14,15 +14,15 @@ class AlbumModel {
   );
 }
 
-List<AlbumModel> albumList = [
-  AlbumModel('85mm', 'Ludovico Einaudi', 'red', '100', '35'),
-  AlbumModel('85mm', 'Ludovico Einaudi', 'yellow', '100', '35'),
-  AlbumModel('85mm', 'Ludovico Einaudi', 'red', '100', '35'),
-  AlbumModel('85mm', 'Ludovico Einaudi', 'yellow', '100', '35'),
-  AlbumModel('85mm', 'Ludovico Einaudi', 'red', '100', '35'),
-  AlbumModel('85mm', 'Ludovico Einaudi', 'yellow', '100', '35'),
-  AlbumModel('85mm', 'Ludovico Einaudi', 'red', '100', '35'),
-  AlbumModel('85mm', 'Ludovico Einaudi', 'yellow', '100', '35'),
+List<SongModel> albumList = [
+  SongModel('85mm', 'Ludovico Einaudi', 'red', '100', '35'),
+  SongModel('85mm', 'Ludovico Einaudi', 'yellow', '100', '35'),
+  SongModel('85mm', 'Ludovico Einaudi', 'red', '100', '35'),
+  SongModel('85mm', 'Ludovico Einaudi', 'yellow', '100', '35'),
+  SongModel('85mm', 'Ludovico Einaudi', 'red', '100', '35'),
+  SongModel('85mm', 'Ludovico Einaudi', 'yellow', '100', '35'),
+  SongModel('85mm', 'Ludovico Einaudi', 'red', '100', '35'),
+  SongModel('85mm', 'Ludovico Einaudi', 'yellow', '100', '35'),
 ];
 
 class BookModel {

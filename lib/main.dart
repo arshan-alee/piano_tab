@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:paino_tab/controllers/home_controller.dart';
 import 'package:paino_tab/screens/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
+  MobileAds.instance.initialize();
 }
 
 class MyApp extends StatelessWidget {

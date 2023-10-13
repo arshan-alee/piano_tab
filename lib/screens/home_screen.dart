@@ -74,7 +74,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ]),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 child: CustomContainer(
                     onpressed: () {},
                     height: size.height * 0.09,
@@ -87,13 +88,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: MyColors.whiteColor.withOpacity(0.95),
                           spreadRadius: 5,
                           blurRadius: 7,
-                          offset: Offset(0, 10))
+                          offset: const Offset(0, 10))
                     ],
                     borderWidth: 0,
                     widget: ClipRRect(
                       borderRadius: BorderRadius.circular(40),
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Row(
                           children: [
                             Expanded(

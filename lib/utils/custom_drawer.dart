@@ -119,7 +119,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                 ),
                                                 child: Padding(
                                                   padding: const EdgeInsets
-                                                          .symmetric(
+                                                      .symmetric(
                                                       horizontal: 10),
                                                   child: Row(
                                                     crossAxisAlignment:
@@ -167,7 +167,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                 ),
                                                 child: Padding(
                                                   padding: const EdgeInsets
-                                                          .symmetric(
+                                                      .symmetric(
                                                       horizontal: 10),
                                                   child: Row(
                                                     crossAxisAlignment:
@@ -227,7 +227,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                 ),
                                                 child: Padding(
                                                   padding: const EdgeInsets
-                                                          .symmetric(
+                                                      .symmetric(
                                                       horizontal: 10),
                                                   child: Row(
                                                     crossAxisAlignment:
@@ -276,7 +276,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                 ),
                                                 child: Padding(
                                                   padding: const EdgeInsets
-                                                          .symmetric(
+                                                      .symmetric(
                                                       horizontal: 10),
                                                   child: Row(
                                                     crossAxisAlignment:
@@ -349,7 +349,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                 ),
                                                 child: Padding(
                                                   padding: const EdgeInsets
-                                                          .symmetric(
+                                                      .symmetric(
                                                       horizontal: 10),
                                                   child: Row(
                                                     crossAxisAlignment:
@@ -397,7 +397,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                 ),
                                                 child: Padding(
                                                   padding: const EdgeInsets
-                                                          .symmetric(
+                                                      .symmetric(
                                                       horizontal: 10),
                                                   child: Row(
                                                     crossAxisAlignment:
@@ -455,7 +455,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                 ),
                                                 child: Padding(
                                                   padding: const EdgeInsets
-                                                          .symmetric(
+                                                      .symmetric(
                                                       horizontal: 10),
                                                   child: Row(
                                                     crossAxisAlignment:
@@ -683,7 +683,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                     height: size.height * 0.04,
                   ),
                   AnimatedContainer(
-                    duration: Duration(milliseconds: 300),
+                    duration: const Duration(milliseconds: 300),
                     height:
                         artist == true ? size.height * 0.3 : size.height * 0.05,
                     child: SingleChildScrollView(
@@ -698,7 +698,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                     artist = !artist;
                                   });
                                 },
-                                child: Container(
+                                child: SizedBox(
                                   height: size.height * 0.05,
                                   child: Row(
                                     mainAxisAlignment:
@@ -927,7 +927,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                     ],
                                   ),
                                 )
-                              : SizedBox(),
+                              : const SizedBox(),
                         ],
                       ),
                     ),
@@ -942,7 +942,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                     height: size.height * 0.01,
                   ),
                   AnimatedContainer(
-                    duration: Duration(milliseconds: 300),
+                    duration: const Duration(milliseconds: 300),
                     height:
                         pages == true ? size.height * 0.2 : size.height * 0.05,
                     child: Column(
@@ -954,7 +954,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                               pages = !pages;
                             });
                           },
-                          child: Container(
+                          child: SizedBox(
                             height: size.height * 0.05,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -985,7 +985,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                     height: size.height * 0.01,
                   ),
                   AnimatedContainer(
-                    duration: Duration(milliseconds: 300),
+                    duration: const Duration(milliseconds: 300),
                     height:
                         genre == true ? size.height * 0.2 : size.height * 0.05,
                     child: Column(
@@ -997,7 +997,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                               genre = !genre;
                             });
                           },
-                          child: Container(
+                          child: SizedBox(
                             height: size.height * 0.05,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1029,7 +1029,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                     height: size.height * 0.01,
                   ),
                   AnimatedContainer(
-                    duration: Duration(milliseconds: 300),
+                    duration: const Duration(milliseconds: 300),
                     height: difficulty == true
                         ? size.height * 0.2
                         : size.height * 0.05,
@@ -1042,7 +1042,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                               difficulty = !difficulty;
                             });
                           },
-                          child: Container(
+                          child: SizedBox(
                             height: size.height * 0.05,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -1,10 +1,14 @@
 import 'dart:ui';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:paino_tab/screens/home_screen.dart';
+import 'package:paino_tab/services/auth_service.dart';
+import 'package:path_provider/path_provider.dart';
 import '../controllers/home_controller.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'colors.dart';
 import 'model.dart';
 
@@ -133,7 +137,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
               Container(
                 height: size.height * 0.135,
                 width: size.width * 0.24,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     image: DecorationImage(
                         image: AssetImage('assets/images/reward.png'))),
                 child: Column(
@@ -682,7 +686,15 @@ class OtherSignIn extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             CustomContainer(
-                onpressed: () {},
+                onpressed: () async {
+                  String authToken =
+                      await MyAuthenticationService().authenticateWithGoogle();
+                  if (authToken != null) {
+                    // Authentication successful, you can add your logic here
+                  } else {
+                    // Handle authentication failure
+                  }
+                },
                 height: size.height * 0.05,
                 width: size.width * 0.35,
                 color: MyColors.primaryColor,
@@ -896,7 +908,7 @@ class BottomWidget extends StatelessWidget {
 
 class RecentReleasedWidget extends StatelessWidget {
   const RecentReleasedWidget({super.key, required this.list});
-  final AlbumModel list;
+  final SongModel list;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -1007,7 +1019,7 @@ class RecentReleasedWidget extends StatelessWidget {
 
 class JazzWidget extends StatelessWidget {
   const JazzWidget({super.key, required this.list});
-  final AlbumModel list;
+  final SongModel list;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -1118,8 +1130,9 @@ class JazzWidget extends StatelessWidget {
 }
 
 class BookWidget extends StatelessWidget {
-  const BookWidget({super.key, required this.list});
+  BookWidget({super.key, required this.list});
   final BookModel list;
+  final HomeController ctrl = Get.find();
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -1137,14 +1150,19 @@ class BookWidget extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Image.asset(
-                  list.imageUrl,
-                ),
+                list.imageUrl ==
+                        'https://media.istockphoto.com/id/106533163/photo/plan.jpg?s=612x612&w=0&k=20&c=-XArhVuWKh1hqkBc7YWO-oCy785cuQuS3o2-oOpNBCQ='
+                    ? Image.asset('assets/images/book_3.jpeg')
+                    : Image.network(
+                        list.imageUrl,
+                        fit: BoxFit.cover,
+                      ),
+                // Text('${list.imageUrl}'),
               ],
             ),
             Container(
               height: 85.h,
-              width: 145.w,
+              width: 175.w,
               color: MyColors.darkBlue,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
@@ -1265,9 +1283,22 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   bool hide = true;
   double value = 0.0;
   double maxValue = 180.0;
+  bool isOwned = true;
 
   String formatTime(int seconds) {
     return '${(Duration(seconds: seconds))}'.split('.')[0].padLeft(8);
+  }
+
+  void openPdfViewer(BuildContext context, bool isOwned) {
+    if (isOwned) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => PdfViewScreen(
+              pdfPath:
+                  'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'),
+        ),
+      );
+    }
   }
 
   @override
@@ -1307,21 +1338,18 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               )
                             : const SizedBox(),
                         Center(
-                          child: InkWell(
-                            onTap: () {
-                              setState(() {
-                                hide = !hide;
-                              });
-                            },
-                            child: Icon(
-                              hide == true
-                                  ? CupertinoIcons.eye_fill
-                                  : CupertinoIcons.eye_slash_fill,
-                              size: 40,
-                              color: MyColors.whiteColor,
-                            ),
+                            child: InkWell(
+                          onTap: () {
+                            openPdfViewer(context, isOwned);
+                          },
+                          child: Icon(
+                            isOwned
+                                ? CupertinoIcons.eye_fill
+                                : CupertinoIcons.eye_slash_fill,
+                            size: 40,
+                            color: MyColors.whiteColor,
                           ),
-                        ),
+                        )),
                       ],
                     ),
                   ),
@@ -1662,6 +1690,130 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class PdfViewScreen extends StatefulWidget {
+  final String pdfPath;
+
+  PdfViewScreen({
+    required this.pdfPath,
+  });
+
+  @override
+  _PdfViewScreenState createState() => _PdfViewScreenState();
+}
+
+class _PdfViewScreenState extends State<PdfViewScreen> {
+  late PdfViewerController _pdfViewController;
+
+  @override
+  void initState() {
+    _pdfViewController = PdfViewerController();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('PDF Viewer'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.file_download),
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (context) => DownloadingDialog(
+                        pdfPath: widget.pdfPath,
+                      ));
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.print),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      body: SfPdfViewer.network(
+        widget.pdfPath,
+        controller: _pdfViewController,
+      ),
+    );
+  }
+}
+
+class DownloadingDialog extends StatefulWidget {
+  final String pdfPath;
+
+  DownloadingDialog({
+    required this.pdfPath,
+  });
+
+  @override
+  _DownloadingDialogState createState() => _DownloadingDialogState();
+}
+
+class _DownloadingDialogState extends State<DownloadingDialog> {
+  Dio dio = Dio();
+  double progress = 0.0;
+
+  void startDownloading() async {
+    const String fileName = "PDF";
+
+    String path = await _getFilePath(fileName);
+
+    await dio.download(
+      widget.pdfPath,
+      path,
+      onReceiveProgress: (recivedBytes, totalBytes) {
+        setState(() {
+          progress = recivedBytes / totalBytes;
+        });
+
+        print(progress);
+      },
+      deleteOnError: true,
+    ).then((_) {
+      Navigator.pop(context);
+    });
+  }
+
+  Future<String> _getFilePath(String filename) async {
+    final dir = await getApplicationDocumentsDirectory();
+    return "${dir.path}/$filename";
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    startDownloading();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    String downloadingprogress = (progress * 100).toInt().toString();
+
+    return AlertDialog(
+      backgroundColor: Colors.black,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const CircularProgressIndicator.adaptive(),
+          const SizedBox(
+            height: 20,
+          ),
+          Text(
+            "Downloading: $downloadingprogress%",
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 17,
+            ),
+          ),
+        ],
       ),
     );
   }

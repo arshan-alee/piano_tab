@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:paino_tab/controllers/home_controller.dart';
 import 'package:paino_tab/screens/sign_up.dart';
+import 'package:paino_tab/services/ad_mob_service.dart';
 import 'package:paino_tab/utils/colors.dart';
 import 'package:paino_tab/utils/widget.dart';
 
@@ -18,6 +20,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  RewardedAd? _rewardedAd;
 
   final FocusNode _email = FocusNode();
   final FocusNode _password = FocusNode();
@@ -33,6 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
 
+    createRewardedAd();
     _email.addListener(() {
       setState(() {
         _emailFocused = _email.hasFocus;
@@ -54,10 +58,46 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  void createRewardedAd() {
+    RewardedAd.load(
+      adUnitId: AdMobService.rewardedAdUnitId!,
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (ad) {
+          setState(() {
+            _rewardedAd = ad;
+          });
+        },
+        onAdFailedToLoad: (error) {
+          setState(() {
+            _rewardedAd = null;
+          });
+        },
+      ),
+    );
+  }
+
+  void showRewardedAd() {
+    if (_rewardedAd != null) {
+      _rewardedAd!.fullScreenContentCallback =
+          FullScreenContentCallback(onAdDismissedFullScreenContent: ((ad) {
+        ad.dispose();
+        createRewardedAd();
+      }), onAdFailedToShowFullScreenContent: (((ad, error) {
+        ad.dispose();
+        createRewardedAd();
+      })));
+
+      _rewardedAd!.show(
+          onUserEarnedReward: ((ad, reward) => {print("You earned a reward")}));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: MyColors.whiteColor,
       body: SafeArea(
         child: Container(
@@ -73,11 +113,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: size.height * 0.06,
                 ),
                 TextWidget(
-                  text: 'Welcome Back!',
-                  color: MyColors.blackColor,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                ),
+                    text: 'Welcome Back!',
+                    color: MyColors.blackColor,
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    onTap: () {
+                      showRewardedAd();
+                    }),
                 TextWidget(
                   text: 'Login to your existent account',
                   color: MyColors.greyColor,
