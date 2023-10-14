@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:paino_tab/models/localdbmodels/Boxes.dart';
 import 'package:paino_tab/screens/home_screen.dart';
 import 'package:paino_tab/services/auth_service.dart';
 import 'package:path_provider/path_provider.dart';
@@ -448,9 +449,10 @@ class SkipButton extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         CustomContainer(
-            onpressed: () {
-              HomeController.to.setEmail('');
-              HomeController.to.setUserName('');
+            onpressed: ()async {
+              await Boxes.getUserBox().clear();
+              // HomeController.to.setEmail('');
+              // HomeController.to.setUserName('');
               HomeController.to.index = 0;
 
               Get.offAll(() => const HomeScreen(

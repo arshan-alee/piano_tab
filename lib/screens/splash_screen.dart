@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:paino_tab/controllers/home_controller.dart';
+import 'package:paino_tab/models/localdbmodels/Boxes.dart';
 import 'package:paino_tab/screens/home_screen.dart';
 import 'package:paino_tab/screens/login_screen.dart';
 
@@ -25,17 +26,30 @@ class _SplashScreenState extends State<SplashScreen> {
         HomeController.to.getSongs().then(
           (value) {
             if (HomeController.to.status.value == 0) {
-              HomeController.to.getSpData().then(
-                (value) {
-                  if (value == null || value == false) {
-                    Get.offAll(() => const LoginScreen());
-                  } else {
-                    Get.offAll(() => const HomeScreen(
-                          isLoggedIn: true,
-                        ));
-                  }
-                },
-              );
+
+              var userBox = Boxes.getUserBox();
+
+              if(userBox.values.isEmpty){
+                Get.offAll(() => const LoginScreen());
+
+              }
+              else{
+                Get.offAll(() => const HomeScreen(
+                  isLoggedIn: true,
+                ));
+
+              }
+              // HomeController.to.getSpData().then(
+              //   (value) {
+              //     if (value == null || value == false) {
+              //       Get.offAll(() => const LoginScreen());
+              //     } else {
+              //       Get.offAll(() => const HomeScreen(
+              //             isLoggedIn: true,
+              //           ));
+              //     }
+              //   },
+              // );
             }
           },
         );

@@ -201,15 +201,26 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: size.height * 0.02,
                 ),
                 CustomContainer(
-                    onpressed: () {
+                    onpressed: () async{
+
                       if (_formKey.currentState!.validate()) {
-                        HomeController.to.loginSpData();
-                        HomeController.to.setEmail(emailController.text);
-                        HomeController.to.setUserName('');
-                        HomeController.to.index = 0;
-                        Get.offAll(() => const HomeScreen(
-                              isLoggedIn: true,
-                            ));
+                        // HomeController.to.setEmail(emailController.text);
+                        // HomeController.to.setUserName('');
+                        // HomeController.to.loginSpData();
+
+                        var _ = await HomeController.to.login(emailController.value.text.trim().toLowerCase(), passwordController.value.text);
+                        if(_){
+                          HomeController.to.index = 0;
+                          Get.offAll(() => const HomeScreen(
+                            isLoggedIn: true,
+                          ));
+
+                        }
+                        else{
+                          Get.snackbar("Invalid Credentials", '');
+
+                        }
+
                       }
                     },
                     height: size.height * 0.07,

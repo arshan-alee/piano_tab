@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:paino_tab/models/localdbmodels/Boxes.dart';
 import 'package:paino_tab/utils/widget.dart';
 
 import '../controllers/home_controller.dart';
@@ -16,20 +17,24 @@ class CustomDrawer extends StatefulWidget {
 class _CustomDrawerState extends State<CustomDrawer> {
   @override
   void initState() {
-    HomeController.to.getUserName().then((value) {
-      if (value != null) {
-        setState(() {
-          username = value;
-        });
-      }
-    });
-    HomeController.to.getEmail().then((value) {
-      if (value != null) {
-        setState(() {
-          email = value;
-        });
-      }
-    });
+
+    var userBox = Boxes.getUserBox().values.first;
+    email = userBox.email;
+
+    // HomeController.to.getUserName().then((value) {
+    //   if (value != null) {
+    //     setState(() {
+    //       username = value;
+    //     });
+    //   }
+    // });
+    // HomeController.to.getEmail().then((value) {
+    //   if (value != null) {
+    //     setState(() {
+    //       email = value;
+    //     });
+    //   }
+    // });
     super.initState();
   }
 

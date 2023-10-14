@@ -48,6 +48,8 @@ dependencies:
   path_provider:
   printing:
   dio:
+  hive: ^2.2.3
+  hive_flutter:
 
 
 dev_dependencies:
@@ -60,6 +62,10 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  hive_generator:
+  build_runner:
+
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -261,15 +261,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
               // ),
               CustomContainer(
                   onpressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      HomeController.to.loginSpData();
-                      HomeController.to.setEmail(emailController.text);
-                      HomeController.to.setUserName(userNameController.text);
-                      HomeController.to.index = 0;
-                      Get.offAll(() => const HomeScreen(
-                            isLoggedIn: true,
-                          ));
-                    }
+                    // if (_formKey.currentState!.validate()) {
+                    //   HomeController.to.loginSpData();
+                    //   HomeController.to.setEmail(emailController.text);
+                    //   HomeController.to.setUserName(userNameController.text);
+                    //   HomeController.to.index = 0;
+                    //   Get.offAll(() => const HomeScreen(
+                    //         isLoggedIn: true,
+                    //       ));
+                    // }
                   },
                   height: size.height * 0.07,
                   width: size.width * 0.4,

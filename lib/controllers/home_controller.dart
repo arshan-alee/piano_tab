@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:paino_tab/api/api.dart';
 import 'package:paino_tab/utils/model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -143,23 +144,28 @@ class HomeController extends GetxController {
     return songList;
   }
 
-  Future<bool?> getSpData() async {
+
+  /*Future<bool?> getSpData() async {
     final prefs = await SharedPreferences.getInstance();
     var isLoggedIn = prefs.getBool('isLoggedIn');
     return isLoggedIn;
-  }
+  }*/
 
-  Future<bool?> loginSpData() async {
+
+  /*Future<bool?> loginSpData() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool('isLoggedIn', true);
     return null;
   }
+  */
 
   Future<bool?> logoutSpData() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool('isLoggedIn', false);
     return null;
   }
+
+  /*
 
   Future<String?> getUserName() async {
     final prefs = await SharedPreferences.getInstance();
@@ -172,21 +178,33 @@ class HomeController extends GetxController {
     var email = prefs.getString('Email');
     return email;
   }
+  */
 
-  Future<String?> setUserName(String userName) async {
+  Future<bool> login(String email, String password)async{
+
+    var _ = await ApiService.login(email, password);
+    return _;
+
+  }
+
+  /*Future<String?> setUserName(String userName) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('UserName', userName);
     return null;
   }
+  */
 
-  Future<String?> setEmail(String email) async {
+  /*Future<String?> setEmail(String email) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('Email', email);
     return null;
   }
+  */
+  // String emailAddress = '';
+  // String userName = '';
 
-  String emailAddress = '';
-  String userName = '';
+
+
 
   PageController homePageController = PageController(initialPage: 0);
   int index = 0;
