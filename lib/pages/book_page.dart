@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:paino_tab/controllers/home_controller.dart';
+import 'package:paino_tab/models/songs_model.dart';
+import 'package:paino_tab/utils/colors.dart';
 import 'package:paino_tab/utils/model.dart';
-
-import '../models/songs_model.dart';
-import '../utils/colors.dart';
-import '../utils/widget.dart';
+import 'package:paino_tab/utils/widget.dart';
 
 class BookPage extends StatefulWidget {
-  const BookPage({
-    super.key,
-  });
+  const BookPage({Key? key}) : super(key: key);
 
   @override
   State<BookPage> createState() => _BookPageState();
@@ -19,12 +17,15 @@ class BookPage extends StatefulWidget {
 
 class _BookPageState extends State<BookPage> {
   bool bookScreen = false;
+  int selectedBookIndex = -1; // Track selected book index
+
   @override
   Widget build(BuildContext context) {
     List<Songs> sng =
         HomeController.filterSongs(HomeController.to.songs!, type: 'book');
     List<BookModel> books = HomeController.to.bookModelList(songs: sng);
     Size size = MediaQuery.of(context).size;
+
     return WillPopScope(
       onWillPop: () async {
         if (bookScreen == false) {
@@ -38,7 +39,7 @@ class _BookPageState extends State<BookPage> {
         return false;
       },
       child: bookScreen == true
-          ? const BookDetailScreen()
+          ? BookDetailScreen(book: books[selectedBookIndex])
           : Padding(
               padding: EdgeInsets.symmetric(horizontal: 8.w),
               child: SingleChildScrollView(
@@ -48,7 +49,7 @@ class _BookPageState extends State<BookPage> {
                       height: size.height * 0.03,
                     ),
                     TextWidget(
-                      text: '108 books to choo se from',
+                      text: '108 books to choose from',
                       color: MyColors.blackColor,
                       fontSize: 20,
                     ),
@@ -64,36 +65,29 @@ class _BookPageState extends State<BookPage> {
                     SizedBox(
                       height: size.height * 0.02,
                     ),
-                    FutureBuilder(
-                        future: HomeController.to.emptyFuture(),
-                        builder: (context, snapshot) {
-                          return GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              mainAxisSpacing: 15,
-                              crossAxisSpacing: 15.w,
-                              mainAxisExtent: 260.h,
-                              childAspectRatio: 0.55.h,
-                            ),
-                            itemCount: books.length,
-                            itemBuilder: (context, index) => InkWell(
-                              onTap: () {
-                                if (index == 0) {
-                                  setState(() {
-                                    bookScreen = true;
-                                  });
-                                }
-                              },
-                              child: BookWidget(
-                                // index: index,
-                                list: books[index],
-                              ),
-                            ),
-                          );
-                        }),
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 15,
+                        crossAxisSpacing: 15.w,
+                        mainAxisExtent: 260.h,
+                        childAspectRatio: 0.55.h,
+                      ),
+                      itemCount: books.length,
+                      itemBuilder: (context, index) => InkWell(
+                        onTap: () {
+                          setState(() {
+                            bookScreen = true;
+                            selectedBookIndex = index; // Store selected index
+                          });
+                        },
+                        child: BookWidget(
+                          list: books[index],
+                        ),
+                      ),
+                    ),
                     SizedBox(
                       height: size.height * 0.12,
                     ),

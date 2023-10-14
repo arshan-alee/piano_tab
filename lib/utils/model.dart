@@ -35,6 +35,17 @@ class BookModel {
 
   BookModel(this.imageUrl, this.title, this.detail, this.color, this.rating,
       this.price);
+
+  Map<String, dynamic> toJson() {
+    return {
+      'imageUrl': imageUrl,
+      'title': title,
+      'detail': detail,
+      'color': color,
+      'rating': rating,
+      'price': price,
+    };
+  }
 }
 
 List<BookModel> bookList = [

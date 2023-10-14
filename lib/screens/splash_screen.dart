@@ -26,18 +26,14 @@ class _SplashScreenState extends State<SplashScreen> {
         HomeController.to.getSongs().then(
           (value) {
             if (HomeController.to.status.value == 0) {
+              var userBox = Boxes.userBox!;
 
-              var userBox = Boxes.getUserBox();
-
-              if(userBox.values.isEmpty){
+              if (userBox.values.isEmpty) {
                 Get.offAll(() => const LoginScreen());
-
-              }
-              else{
+              } else {
                 Get.offAll(() => const HomeScreen(
-                  isLoggedIn: true,
-                ));
-
+                      isLoggedIn: true,
+                    ));
               }
               // HomeController.to.getSpData().then(
               //   (value) {

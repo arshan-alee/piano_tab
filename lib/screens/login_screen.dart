@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:paino_tab/controllers/home_controller.dart';
+import 'package:paino_tab/models/localdbmodels/Boxes.dart';
 import 'package:paino_tab/screens/sign_up.dart';
 import 'package:paino_tab/services/ad_mob_service.dart';
 import 'package:paino_tab/utils/colors.dart';
@@ -201,26 +202,25 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: size.height * 0.02,
                 ),
                 CustomContainer(
-                    onpressed: () async{
-
+                    onpressed: () async {
                       if (_formKey.currentState!.validate()) {
                         // HomeController.to.setEmail(emailController.text);
                         // HomeController.to.setUserName('');
                         // HomeController.to.loginSpData();
 
-                        var _ = await HomeController.to.login(emailController.value.text.trim().toLowerCase(), passwordController.value.text);
-                        if(_){
+                        var _ = await HomeController.to.login(
+                            emailController.value.text.trim().toLowerCase(),
+                            passwordController.value.text);
+                        if (_) {
+                          var message = Boxes.userBox!.values.first.message;
+                          Get.snackbar(message, '');
                           HomeController.to.index = 0;
                           Get.offAll(() => const HomeScreen(
-                            isLoggedIn: true,
-                          ));
-
-                        }
-                        else{
+                                isLoggedIn: true,
+                              ));
+                        } else {
                           Get.snackbar("Invalid Credentials", '');
-
                         }
-
                       }
                     },
                     height: size.height * 0.07,

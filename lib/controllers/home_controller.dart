@@ -60,38 +60,20 @@ class HomeController extends GetxController {
   }) {
     return songs.where((song) {
       // Price filter
-      if (maxPrice != null && song.price != null) {
-        if (double.parse(song.price!) > maxPrice) return false;
-      }
-      if (minPrice != null && song.price != null) {
-        if (double.parse(song.price!) < minPrice) return false;
-      }
-
+      if (maxPrice != null && double.parse(song.price!) > maxPrice)
+        return false;
+      if (minPrice != null && double.parse(song.price!) < minPrice)
+        return false;
       // Pages filter
-
-      if (maxPrice != null && song.pages != null) {
-        if (double.parse(song.pages!) > maxPrice) return false;
-      }
-      if (minPrice != null && song.pages != null) {
-        if (double.parse(song.pages!) < minPrice) return false;
-      }
-
+      if (maxPages != null && int.parse(song.pages!) > maxPages) return false;
+      if (minPages != null && int.parse(song.pages!) < minPages) return false;
       // Artist filter
       if (artist != null && song.artist != artist) return false;
-
       // Type filter
-      if (type != null && type == "book" && song.songSku != null) {
-        if (song.songSku!.startsWith('BK')) return false;
-      }
-      if (type != null && type == "song" && song.songSku != null) {
-        if (song.songSku!.startsWith('BK')) return false;
-      }
-
+      if (type == 'book' && song.songSku!.startsWith('BK')) return false;
+      if (type == 'song' && !song.songSku!.startsWith('BK')) return false;
       // Genre filter
-      if (genre != null && song.genre != null) {
-        if (song.genre != genre) return false;
-      }
-
+      if (genre != null && song.genre != genre) return false;
       return true; // If none of the criteria is violated, include the song
     }).toList();
   }
@@ -99,10 +81,10 @@ class HomeController extends GetxController {
   List<BookModel> bookModelList({required List<Songs> songs}) {
     List<BookModel> lst = [];
     songs.forEach((e) {
-      print(
-          'imgs : https://www.ktswebhub.com/ppbl/resources/images2/${e.bkSku}b.jpg');
+      // print(
+      //     'imgs : https://www.ktswebhub.com/ppbl/resources/images2/${e.bkSku}b.jpg');
       BookModel bookModel = BookModel(
-        e.bkSku == null
+        e.image == null
             ? "https://media.istockphoto.com/id/106533163/photo/plan.jpg?s=612x612&w=0&k=20&c=-XArhVuWKh1hqkBc7YWO-oCy785cuQuS3o2-oOpNBCQ="
             : "https://www.ktswebhub.com/ppbl/resources/images2/${e.bkSku}b.jpg",
         // "https: //www.ktswebhub.com/ppbl/resources/images2/BK059178.jpg/",
@@ -178,7 +160,7 @@ class HomeController extends GetxController {
   }
   */
 
-  Future<bool> login(String email, String password) async {
+  Future<dynamic> login(String email, String password) async {
     var _ = await ApiService.login(email, password);
     return _;
   }

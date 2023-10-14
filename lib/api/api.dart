@@ -39,15 +39,11 @@ class ApiService {
       print(response.body);
 
       var _ = loginModelFromJson(response.body);
-
-      var userBox = Boxes.getUserBox();
-
+      var userBox = Boxes.userBox!;
       if (userBox.values.isNotEmpty) {
         await userBox.clear();
       }
-
       await userBox.add(_);
-
       return true;
     } catch (e) {
       print(e);

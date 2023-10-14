@@ -17,8 +17,7 @@ class CustomDrawer extends StatefulWidget {
 class _CustomDrawerState extends State<CustomDrawer> {
   @override
   void initState() {
-
-    var userBox = Boxes.getUserBox().values.first;
+    var userBox = Boxes.userBox!.values.first;
     email = userBox.email;
 
     // HomeController.to.getUserName().then((value) {

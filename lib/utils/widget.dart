@@ -449,8 +449,8 @@ class SkipButton extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         CustomContainer(
-            onpressed: ()async {
-              await Boxes.getUserBox().clear();
+            onpressed: () async {
+              await Boxes.userBox!.clear();
               // HomeController.to.setEmail('');
               // HomeController.to.setUserName('');
               HomeController.to.index = 0;
@@ -1273,7 +1273,8 @@ class BookWidget extends StatelessWidget {
 }
 
 class BookDetailScreen extends StatefulWidget {
-  const BookDetailScreen({super.key});
+  final BookModel book;
+  const BookDetailScreen({super.key, required this.book});
 
   @override
   State<BookDetailScreen> createState() => _BookDetailScreenState();
