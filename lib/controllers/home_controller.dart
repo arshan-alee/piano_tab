@@ -144,13 +144,11 @@ class HomeController extends GetxController {
     return songList;
   }
 
-
   /*Future<bool?> getSpData() async {
     final prefs = await SharedPreferences.getInstance();
     var isLoggedIn = prefs.getBool('isLoggedIn');
     return isLoggedIn;
   }*/
-
 
   /*Future<bool?> loginSpData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -180,11 +178,14 @@ class HomeController extends GetxController {
   }
   */
 
-  Future<bool> login(String email, String password)async{
-
+  Future<bool> login(String email, String password) async {
     var _ = await ApiService.login(email, password);
     return _;
+  }
 
+  Future<Map<String, dynamic>> signup(String email, String password) async {
+    var _ = await ApiService.signUp(email, password);
+    return _;
   }
 
   /*Future<String?> setUserName(String userName) async {
@@ -202,9 +203,6 @@ class HomeController extends GetxController {
   */
   // String emailAddress = '';
   // String userName = '';
-
-
-
 
   PageController homePageController = PageController(initialPage: 0);
   int index = 0;

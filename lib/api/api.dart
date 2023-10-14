@@ -9,27 +9,25 @@ class ApiService {
 
   static Future<Map<String, dynamic>> signUp(
       String email, String password) async {
-    final url = Uri.parse('$baseUrl?signup');
-    final response =
-        await http.post(url, body: {'email': email, 'password': password});
-    return jsonDecode(response.body);
+    var request = http.Request('POST', Uri.parse('${baseUrl}?signup'));
+    request.body = json.encode({"email": email, "password": password});
+    http.Response response =
+        await http.Response.fromStream(await request.send());
+    print(response.body);
+    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+    return jsonResponse;
   }
 
   //login_method can be google/apple/facebook
   static Future<bool> login(String email, String password) async {
     try {
-
-      var headers = {
-        'Content-Type': 'application/json'
-      };
+      var headers = {'Content-Type': 'application/json'};
       var request = http.Request('POST', Uri.parse('${baseUrl}?login'));
-      request.body = json.encode({
-        "email": email,
-        "password": password
-      });
+      request.body = json.encode({"email": email, "password": password});
       request.headers.addAll(headers);
 
-      http.Response response =await  http.Response.fromStream(await request.send());
+      http.Response response =
+          await http.Response.fromStream(await request.send());
       // final url = Uri.parse('$baseUrl?login');
       // final response =
       //     await http.post(url, body: {'email': email, 'password': password},
@@ -49,7 +47,6 @@ class ApiService {
       }
 
       await userBox.add(_);
-
 
       return true;
     } catch (e) {

@@ -77,6 +77,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  Future<void> handleSignUp() async {
+    if (_formKey.currentState!.validate()) {
+      final email = emailController.text.toLowerCase();
+      final password = passwordController.text;
+
+      var signupResponse = await HomeController.to.signup(email, password);
+      Get.snackbar(signupResponse['message'], '');
+      var _ = await HomeController.to.login(email, password);
+      if (_) {
+        HomeController.to.index = 0;
+        Get.offAll(() => const HomeScreen(
+              isLoggedIn: true,
+            ));
+      }
+
+      // Handle successful signup, navigation, or any other logic here
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -270,6 +289,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     //         isLoggedIn: true,
                     //       ));
                     // }
+                    handleSignUp();
                   },
                   height: size.height * 0.07,
                   width: size.width * 0.4,
