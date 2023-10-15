@@ -1294,13 +1294,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 
   void openPdfViewer(BuildContext context, bool isOwned) {
     if (isOwned) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => PdfViewScreen(
-              pdfPath:
-                  'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'),
-        ),
-      );
+      Get.offAll(() => PdfViewScreen(
+            pdfPath: HomeController.to.getOriginalPdfSource(widget.book.detail),
+          ));
     }
   }
 

@@ -36,17 +36,17 @@ class HomeController extends GetxController {
     }
   }
 
-  // String getSamplePdfSource() {
-  //   return 'https://www.ktswebhub.com/ppbl/resources/sample/$songSKU.pdf';
-  // }
+  String getSamplePdfSource(String Sku) {
+    return 'https://www.ktswebhub.com/ppbl/resources/sample/$Sku.pdf';
+  }
 
-  // String getOriginalPdfSource() {
-  //   return 'https://www.ktswebhub.com/ppbl/resources/$songSKU.pdf';
-  // }
+  String getOriginalPdfSource(String Sku) {
+    return 'https://www.ktswebhub.com/ppbl/resources/$Sku.pdf';
+  }
 
-  // String getMp3Source() {
-  //   return 'https://www.ktswebhub.com/ppbl/resources/mp3s/$songSKU.mp3';
-  // }
+  String getMp3Source(String Sku) {
+    return 'https://www.ktswebhub.com/ppbl/resources/mp3s/$Sku.mp3';
+  }
 
   static List<Songs> filterSongs(
     List<Songs> songs, {
@@ -70,8 +70,8 @@ class HomeController extends GetxController {
       // Artist filter
       if (artist != null && song.artist != artist) return false;
       // Type filter
-      if (type == 'book' && song.songSku!.startsWith('BK')) return false;
-      if (type == 'song' && !song.songSku!.startsWith('BK')) return false;
+      if (type == 'book' && !song.songSku!.startsWith('BK')) return false;
+      if (type == 'song' && song.songSku!.startsWith('BK')) return false;
       // Genre filter
       if (genre != null && song.genre != genre) return false;
       return true; // If none of the criteria is violated, include the song
