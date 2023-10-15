@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:paino_tab/models/LoginModel.dart';
-import 'package:paino_tab/models/localdbmodels/Boxes.dart';
+import 'package:paino_tab/models/UserDataModel.dart';
+import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
+import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
 
 class ApiService {
   static const String baseUrl = 'https://www.ktswebhub.com/ppbl/api.php';
@@ -36,10 +38,10 @@ class ApiService {
       //     // }
       //     );
 
-      print(response.body);
+      print("logindata response: ${response.body}");
 
       var _ = loginModelFromJson(response.body);
-      var userBox = Boxes.userBox!;
+      var userBox = LoginBox.userBox!;
       if (userBox.values.isNotEmpty) {
         await userBox.clear();
       }
@@ -58,10 +60,37 @@ class ApiService {
   }
 
   //also if you want to bulk retreive you can add &points&library&catalog
-  static Future<Map<String, dynamic>> getUserData(String auth) async {
-    final url = Uri.parse('$baseUrl?batch&library&points');
-    final response = await http.post(url, body: {'auth': auth});
-    return jsonDecode(response.body);
+  static Future<bool> getUserData(String auth) async {
+    if (auth == null) {
+      // Handle the case where 'auth' is null (e.g., return an error or throw an exception).
+      print('Error: auth is null.');
+      return false;
+    }
+
+    try {
+      var headers = {'Content-Type': 'application/json'};
+      var request =
+          http.Request('POST', Uri.parse('${baseUrl}?batch&library&points'));
+      request.body = json.encode({"auth": auth});
+      request.headers.addAll(headers);
+
+      http.Response response =
+          await http.Response.fromStream(await request.send());
+      print("user data response : ${response.body}");
+      var responseBody = jsonDecode(response.body);
+      var data = responseBody['data'];
+      print("responseBody['data'] ${responseBody['data']}");
+      var _ = UserData.fromJson(data);
+      var userBox = UserDataBox.userBox!;
+      if (userBox.values.isNotEmpty) {
+        await userBox.clear();
+      }
+      await userBox.add(_);
+      return true;
+    } catch (e) {
+      print("Error in storing userdata in userdatabox $e");
+      return false;
+    }
   }
 
   static Future<Map<String, dynamic>> updatePoints(

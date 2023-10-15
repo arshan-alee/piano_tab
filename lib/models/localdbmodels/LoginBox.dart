@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:paino_tab/models/LoginModel.dart';
 
-class Boxes {
+class LoginBox {
   static Box<LoginModel>? _userBox;
 
   // Initialize the Hive box, this should be called once, preferably in your app initialization.

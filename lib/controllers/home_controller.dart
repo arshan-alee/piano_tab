@@ -37,7 +37,7 @@ class HomeController extends GetxController {
   }
 
   String getSamplePdfSource(String Sku) {
-    return 'https://www.ktswebhub.com/ppbl/resources/sample/$Sku.pdf';
+    return 'https://www.ktswebhub.com/ppbl/resources/samples/$Sku.pdf';
   }
 
   String getOriginalPdfSource(String Sku) {
@@ -124,6 +124,10 @@ class HomeController extends GetxController {
                 ? "${int.parse(e.pages!) * 0.5}"
                 : "${int.parse(e.pages!) * 0.25}",
         e.pages == null ? '' : e.pages!,
+        e.artist == null ? '' : e.artist!,
+        e.genre == null ? '' : e.genre!,
+        e.difficulty == null ? '' : e.difficulty!,
+        e.description == null ? '' : e.description!,
       );
       songList.add(songModel);
     });
@@ -171,6 +175,11 @@ class HomeController extends GetxController {
 
   Future<Map<String, dynamic>> signup(String email, String password) async {
     var _ = await ApiService.signUp(email, password);
+    return _;
+  }
+
+  Future<bool> getuserData(String auth) async {
+    var _ = await ApiService.getUserData(auth);
     return _;
   }
 

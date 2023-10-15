@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:paino_tab/controllers/home_controller.dart';
-import 'package:paino_tab/models/localdbmodels/Boxes.dart';
+import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
+import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
 import 'package:paino_tab/screens/sign_up.dart';
 import 'package:paino_tab/services/ad_mob_service.dart';
 import 'package:paino_tab/utils/colors.dart';
@@ -211,8 +212,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         var _ = await HomeController.to.login(
                             emailController.value.text.trim().toLowerCase(),
                             passwordController.value.text);
-                        if (_) {
-                          var message = Boxes.userBox!.values.first.message;
+                        var _data = await HomeController.to.getuserData(
+                            "6a8c7e870581f9c96681c212b53f03ee8a6373836a91b5240ede7b42a721d333");
+                        print(UserDataBox.userBox!.values.first.toJson());
+                        if (_ && _data) {
+                          var message = LoginBox.userBox!.values.first.message;
                           Get.snackbar(message, '');
                           HomeController.to.index = 0;
                           Get.offAll(() => const HomeScreen(

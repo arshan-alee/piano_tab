@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:paino_tab/models/localdbmodels/Boxes.dart';
+import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
 import 'package:paino_tab/screens/home_screen.dart';
 import 'package:paino_tab/services/auth_service.dart';
 import 'package:path_provider/path_provider.dart';
@@ -122,235 +122,243 @@ class _CustomAppBarState extends State<CustomAppBar> {
           decoration: BoxDecoration(
               color: MyColors.whiteColor,
               borderRadius: BorderRadius.circular(14)),
-          child: Column(
-            children: [
-              TextWidget(
-                text: 'Rewards',
-                fontSize: 24,
-                color: MyColors.blackColor,
-                fontWeight: FontWeight.w600,
-              ),
-              const Divider(
-                height: 12,
-                thickness: 1.5,
-              ),
-              SizedBox(
-                height: size.height * 0.01,
-              ),
-              Container(
-                height: size.height * 0.135,
-                width: size.width * 0.24,
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage('assets/images/reward.png'))),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextWidget(
+                  text: 'Rewards',
+                  fontSize: 24,
+                  color: MyColors.blackColor,
+                  fontWeight: FontWeight.w600,
+                ),
+                const Divider(
+                  height: 12,
+                  thickness: 1.5,
+                ),
+                SizedBox(
+                  height: size.height * 0.01,
+                ),
+                Container(
+                  height: size.height * 0.135,
+                  width: size.width * 0.24,
+                  decoration: const BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage('assets/images/reward.png'))),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4),
+                        child: TextWidget(
+                          text: '23',
+                          color: MyColors.blackColor,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12,
+                        ),
+                      ),
+                      SizedBox(
+                        height: size.height * 0.016,
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: size.height * 0.01,
+                ),
+                CustomContainer(
+                    onpressed: () {},
+                    height: size.height * 0.035,
+                    width: size.width * 0.2,
+                    color: MyColors.primaryColor,
+                    borderRadius: 20,
+                    borderColor: MyColors.transparent,
+                    borderWidth: 0,
+                    widget: const Center(
                       child: TextWidget(
-                        text: '23',
-                        color: MyColors.blackColor,
-                        fontWeight: FontWeight.w500,
+                        text: 'Earn more',
                         fontSize: 12,
                       ),
+                    )),
+                SizedBox(
+                  height: size.height * 0.01,
+                ),
+                TextWidget(
+                  text: 'Welcome Missions',
+                  fontSize: 18,
+                  color: MyColors.blackColor,
+                  fontWeight: FontWeight.w400,
+                ),
+                const Divider(
+                  height: 12,
+                  thickness: 1.5,
+                ),
+                SizedBox(
+                  height: size.height * 0.01,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextWidget(
+                      text: 'Follow us on instagram',
+                      fontSize: 14,
+                      color: MyColors.primaryColor,
                     ),
-                    SizedBox(
-                      height: size.height * 0.016,
-                    ),
+                    CustomContainer(
+                        onpressed: () {},
+                        height: size.height * 0.035,
+                        width: size.width * 0.15,
+                        color: MyColors.whiteColor,
+                        borderRadius: 40,
+                        borderColor: MyColors.primaryColor,
+                        borderWidth: 1.2,
+                        widget: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Icon(
+                                    Icons.check_circle,
+                                    size: 18,
+                                    color: MyColors.primaryColor,
+                                  ),
+                                  Container(
+                                    height: size.height * 0.025,
+                                    width: 1,
+                                    color:
+                                        MyColors.primaryColor.withOpacity(0.5),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: TextWidget(
+                                text: '23',
+                                fontSize: 12,
+                                color: MyColors.primaryColor,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            )
+                          ],
+                        ))
                   ],
                 ),
-              ),
-              SizedBox(
-                height: size.height * 0.01,
-              ),
-              CustomContainer(
-                  onpressed: () {},
-                  height: size.height * 0.035,
-                  width: size.width * 0.2,
-                  color: MyColors.primaryColor,
-                  borderRadius: 20,
-                  borderColor: MyColors.transparent,
-                  borderWidth: 0,
-                  widget: const Center(
-                    child: TextWidget(
-                      text: 'Earn more',
-                      fontSize: 12,
+                SizedBox(
+                  height: size.height * 0.015,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextWidget(
+                      text: 'Follow us on Facebook',
+                      fontSize: 14,
+                      color: MyColors.primaryColor,
                     ),
-                  )),
-              SizedBox(
-                height: size.height * 0.01,
-              ),
-              TextWidget(
-                text: 'Welcome Missions',
-                fontSize: 18,
-                color: MyColors.blackColor,
-                fontWeight: FontWeight.w400,
-              ),
-              const Divider(
-                height: 12,
-                thickness: 1.5,
-              ),
-              SizedBox(
-                height: size.height * 0.01,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextWidget(
-                    text: 'Follow us on instagram',
-                    fontSize: 14,
-                    color: MyColors.primaryColor,
-                  ),
-                  CustomContainer(
-                      onpressed: () {},
-                      height: size.height * 0.035,
-                      width: size.width * 0.15,
-                      color: MyColors.whiteColor,
-                      borderRadius: 40,
-                      borderColor: MyColors.primaryColor,
-                      borderWidth: 1.2,
-                      widget: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Icon(
-                                  Icons.check_circle,
-                                  size: 18,
-                                  color: MyColors.primaryColor,
-                                ),
-                                Container(
-                                  height: size.height * 0.025,
-                                  width: 1,
-                                  color: MyColors.primaryColor.withOpacity(0.5),
-                                ),
-                              ],
+                    CustomContainer(
+                        onpressed: () {},
+                        height: size.height * 0.035,
+                        width: size.width * 0.15,
+                        color: MyColors.whiteColor,
+                        borderRadius: 40,
+                        borderColor: MyColors.primaryColor,
+                        borderWidth: 1.2,
+                        widget: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  const CircleAvatar(
+                                    backgroundImage:
+                                        AssetImage('assets/images/logo_2.png'),
+                                    maxRadius: 7.5,
+                                  ),
+                                  Container(
+                                    height: size.height * 0.025,
+                                    width: 1,
+                                    color:
+                                        MyColors.primaryColor.withOpacity(0.5),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: TextWidget(
-                              text: '23',
-                              fontSize: 12,
-                              color: MyColors.primaryColor,
-                              fontWeight: FontWeight.w400,
+                            Expanded(
+                              flex: 2,
+                              child: TextWidget(
+                                text: '23',
+                                fontSize: 12,
+                                color: MyColors.primaryColor,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            )
+                          ],
+                        ))
+                  ],
+                ),
+                SizedBox(
+                  height: size.height * 0.015,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextWidget(
+                      text: 'Follow us on Twitter',
+                      fontSize: 14,
+                      color: MyColors.primaryColor,
+                    ),
+                    CustomContainer(
+                        onpressed: () {},
+                        height: size.height * 0.035,
+                        width: size.width * 0.15,
+                        color: MyColors.whiteColor,
+                        borderRadius: 40,
+                        borderColor: MyColors.primaryColor,
+                        borderWidth: 1.2,
+                        widget: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  const CircleAvatar(
+                                    backgroundImage:
+                                        AssetImage('assets/images/logo_2.png'),
+                                    maxRadius: 7.5,
+                                  ),
+                                  Container(
+                                    height: size.height * 0.025,
+                                    width: 1,
+                                    color:
+                                        MyColors.primaryColor.withOpacity(0.5),
+                                  ),
+                                ],
+                              ),
                             ),
-                          )
-                        ],
-                      ))
-                ],
-              ),
-              SizedBox(
-                height: size.height * 0.015,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextWidget(
-                    text: 'Follow us on Facebook',
-                    fontSize: 14,
-                    color: MyColors.primaryColor,
-                  ),
-                  CustomContainer(
-                      onpressed: () {},
-                      height: size.height * 0.035,
-                      width: size.width * 0.15,
-                      color: MyColors.whiteColor,
-                      borderRadius: 40,
-                      borderColor: MyColors.primaryColor,
-                      borderWidth: 1.2,
-                      widget: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                const CircleAvatar(
-                                  backgroundImage:
-                                      AssetImage('assets/images/logo_2.png'),
-                                  maxRadius: 7.5,
-                                ),
-                                Container(
-                                  height: size.height * 0.025,
-                                  width: 1,
-                                  color: MyColors.primaryColor.withOpacity(0.5),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: TextWidget(
-                              text: '23',
-                              fontSize: 12,
-                              color: MyColors.primaryColor,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          )
-                        ],
-                      ))
-                ],
-              ),
-              SizedBox(
-                height: size.height * 0.015,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextWidget(
-                    text: 'Follow us on Twitter',
-                    fontSize: 14,
-                    color: MyColors.primaryColor,
-                  ),
-                  CustomContainer(
-                      onpressed: () {},
-                      height: size.height * 0.035,
-                      width: size.width * 0.15,
-                      color: MyColors.whiteColor,
-                      borderRadius: 40,
-                      borderColor: MyColors.primaryColor,
-                      borderWidth: 1.2,
-                      widget: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                const CircleAvatar(
-                                  backgroundImage:
-                                      AssetImage('assets/images/logo_2.png'),
-                                  maxRadius: 7.5,
-                                ),
-                                Container(
-                                  height: size.height * 0.025,
-                                  width: 1,
-                                  color: MyColors.primaryColor.withOpacity(0.5),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: TextWidget(
-                              text: '23',
-                              fontSize: 12,
-                              color: MyColors.primaryColor,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          )
-                        ],
-                      ))
-                ],
-              )
-            ],
+                            Expanded(
+                              flex: 2,
+                              child: TextWidget(
+                                text: '23',
+                                fontSize: 12,
+                                color: MyColors.primaryColor,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            )
+                          ],
+                        ))
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -452,7 +460,7 @@ class SkipButton extends StatelessWidget {
       children: [
         CustomContainer(
             onpressed: () async {
-              await Boxes.userBox!.clear();
+              await LoginBox.userBox!.clear();
               // HomeController.to.setEmail('');
               // HomeController.to.setUserName('');
               HomeController.to.index = 0;
@@ -598,18 +606,20 @@ class CustomTextFormFeild extends StatelessWidget {
 }
 
 class TextWidget extends StatelessWidget {
-  const TextWidget(
-      {super.key,
-      this.onTap,
-      required this.text,
-      this.color,
-      this.fontFamily,
-      this.fontSize,
-      this.letterSpacing,
-      this.fontWeight,
-      this.underline,
-      this.overflow,
-      this.maxLines});
+  const TextWidget({
+    super.key,
+    this.onTap,
+    required this.text,
+    this.color,
+    this.fontFamily,
+    this.fontSize,
+    this.letterSpacing,
+    this.fontWeight,
+    this.underline,
+    this.maxLines,
+    this.overflow,
+  });
+
   final String text;
   final VoidCallback? onTap;
   final Color? color;
@@ -620,20 +630,25 @@ class TextWidget extends StatelessWidget {
   final TextDecoration? underline;
   final int? maxLines;
   final TextOverflow? overflow;
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      child: Text(text,
-          style: TextStyle(
-              fontFamily: fontFamily ?? 'Inter',
-              color: color ?? MyColors.whiteColor,
-              fontWeight: fontWeight ?? FontWeight.w400,
-              letterSpacing: letterSpacing ?? 0.1,
-              fontSize: fontSize ?? 16,
-              overflow: overflow,
-              decoration: underline ?? TextDecoration.none),
-          maxLines: maxLines),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontFamily: fontFamily ?? 'Inter',
+          color: color ?? MyColors.whiteColor,
+          fontWeight: fontWeight ?? FontWeight.w400,
+          letterSpacing: letterSpacing ?? 0.1,
+          fontSize: fontSize ?? 16,
+          overflow: overflow,
+          decoration: underline ?? TextDecoration.none,
+        ),
+        maxLines: maxLines,
+        softWrap: true, // Allow text to wrap within the available space
+      ),
     );
   }
 }
@@ -1895,7 +1910,8 @@ class _DownloadingDialogState extends State<DownloadingDialog> {
 }
 
 class SongDetailScreen extends StatefulWidget {
-  const SongDetailScreen({super.key});
+  final SongModel song;
+  const SongDetailScreen({super.key, required this.song});
 
   @override
   State<SongDetailScreen> createState() => _SongDetailScreenState();
@@ -1907,9 +1923,51 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   bool hide = true;
   double value = 0.0;
   double maxValue = 180.0;
+  final player = AudioPlayer();
+  late Timer timer;
 
   String formatTime(int seconds) {
     return '${(Duration(seconds: seconds))}'.split('.')[0].padLeft(8);
+  }
+
+  String _calculateRequiredTokens(int pages) {
+    if (pages == 1) {
+      return 'Watch video and redeem';
+    } else if (pages >= 2 && pages <= 5) {
+      return '${(pages * 3).round()}';
+    } else {
+      return '${(pages * 2).round()}';
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (play) {
+        player.getCurrentPosition().then((position) {
+          setState(() {
+            if (position != null) {
+              value = position.inSeconds.toDouble();
+            }
+          });
+        });
+      }
+    });
+  }
+
+  Future<void> getAudioDuration() async {
+    final duration = await player.getDuration();
+    if (duration != null) {
+      setState(() {
+        maxValue = duration.inSeconds.toDouble();
+      });
+    }
+  }
+
+  Future<void> playAudioFromUrl(String url) async {
+    await player.play(UrlSource(url));
+    getAudioDuration(); // Play audio from the provided URL
   }
 
   @override
@@ -1978,47 +2036,68 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          Wrap(
+                            spacing: 2.0,
+                            alignment: WrapAlignment.spaceBetween,
                             children: [
+                              LayoutBuilder(
+                                builder: (context, constraints) {
+                                  final tokenText = _calculateRequiredTokens(
+                                      int.parse(widget.song.pages));
+                                  double tokenWidth =
+                                      size.width * 0.2; // Default width
+                                  double tokenTextSize =
+                                      14.0; // Default text size
+
+                                  // Check the length of tokenText and adjust width and text size accordingly
+                                  if (tokenText.length > 6) {
+                                    tokenWidth = constraints.maxWidth *
+                                        1; // Adjusted width
+                                    tokenTextSize = 10.0; // Adjusted text size
+                                  }
+
+                                  return CustomContainer(
+                                    onpressed: () {},
+                                    height: size.height * 0.04,
+                                    width: tokenWidth,
+                                    color: MyColors.whiteColor,
+                                    borderRadius: 10,
+                                    borderColor: MyColors.primaryColor,
+                                    borderWidth: 1.5,
+                                    widget: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        const CircleAvatar(
+                                          backgroundImage: AssetImage(
+                                              'assets/images/logo_2.png'),
+                                          maxRadius: 8,
+                                        ),
+                                        TextWidget(
+                                          fontSize: tokenTextSize,
+                                          text: tokenText,
+                                          color: MyColors.blueColor,
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
                               CustomContainer(
                                 onpressed: () {},
                                 height: size.height * 0.04,
                                 width: size.width * 0.2,
-                                color: MyColors.whiteColor,
+                                color: MyColors.primaryColor,
                                 borderRadius: 10,
-                                borderColor: MyColors.primaryColor,
-                                borderWidth: 1.5,
-                                widget: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    const CircleAvatar(
-                                      backgroundImage: AssetImage(
-                                          'assets/images/logo_2.png'),
-                                      maxRadius: 8,
-                                    ),
-                                    TextWidget(
-                                        fontSize: 14,
-                                        text: '100',
-                                        color: MyColors.blueColor),
-                                  ],
+                                borderColor: MyColors.transparent,
+                                borderWidth: 0,
+                                widget: const Center(
+                                  child: TextWidget(
+                                    text: 'Book',
+                                    fontSize: 14,
+                                  ),
                                 ),
                               ),
-                              CustomContainer(
-                                  onpressed: () {},
-                                  height: size.height * 0.04,
-                                  width: size.width * 0.2,
-                                  color: MyColors.primaryColor,
-                                  borderRadius: 10,
-                                  borderColor: MyColors.transparent,
-                                  borderWidth: 0,
-                                  widget: const Center(
-                                    child: TextWidget(
-                                      text: 'Book',
-                                      fontSize: 14,
-                                    ),
-                                  )),
                               InkWell(
                                 onTap: () {
                                   setState(() {
@@ -2031,13 +2110,13 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                       : CupertinoIcons.heart,
                                   color: MyColors.red,
                                 ),
-                              )
+                              ),
                             ],
                           ),
                           Column(
                             children: [
                               SizedBox(
-                                height: size.height * 0.05,
+                                height: size.height * 0.03,
                               ),
                               Row(
                                 children: [
@@ -2049,10 +2128,9 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                     ),
                                   ),
                                   Expanded(
-                                    flex: 2,
                                     child: TextWidget(
-                                      text: 'In Un\'Altra Vita',
-                                      fontSize: 14,
+                                      text: widget.song.artist,
+                                      fontSize: 10,
                                       color: MyColors.blackColor,
                                     ),
                                   )
@@ -2065,17 +2143,20 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                 children: [
                                   Expanded(
                                     child: TextWidget(
-                                      text: 'Genre:',
+                                      text: 'Genre',
                                       fontSize: 14,
                                       color: MyColors.blackColor,
                                     ),
                                   ),
                                   Expanded(
-                                    flex: 2,
                                     child: TextWidget(
-                                      text: 'Contemporary',
-                                      fontSize: 14,
+                                      text: widget.song.genre,
+                                      fontSize: 10,
                                       color: MyColors.blackColor,
+                                      overflow: TextOverflow
+                                          .ellipsis, // Display ellipsis if the text overflows
+                                      maxLines:
+                                          1, // Limit text to a single line
                                     ),
                                   )
                                 ],
@@ -2087,18 +2168,18 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                 children: [
                                   Expanded(
                                     child: TextWidget(
-                                      text: 'Dificulty:',
+                                      text: 'Difficulty:',
                                       fontSize: 14,
                                       color: MyColors.blackColor,
                                     ),
                                   ),
                                   Expanded(
-                                    flex: 2,
                                     child: TextWidget(
-                                      text: 'Intermediate',
+                                      text: widget.song.difficulty,
+                                      fontSize: 10,
+                                      color: MyColors.blackColor,
                                       overflow: TextOverflow.ellipsis,
-                                      fontSize: 14,
-                                      color: MyColors.blackColor,
+                                      maxLines: 1,
                                     ),
                                   )
                                 ],
@@ -2116,11 +2197,12 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                     ),
                                   ),
                                   Expanded(
-                                    flex: 2,
                                     child: TextWidget(
-                                      text: '37',
-                                      fontSize: 14,
+                                      text: widget.song.pages,
+                                      fontSize: 10,
                                       color: MyColors.blackColor,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
                                     ),
                                   )
                                 ],
@@ -2137,58 +2219,68 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                       alignment: Alignment.bottomCenter,
                       children: [
                         Container(
-                          height: size.height * 0.076,
-                          width: size.width * 0.54,
-                          padding: const EdgeInsets.only(
-                            left: 15,
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      play = !play;
-                                    });
-                                  },
-                                  child: Icon(
-                                    play
-                                        ? Icons.pause_circle_outline_outlined
-                                        : Icons.play_circle_outline_outlined,
-                                    size: 28,
-                                    color: MyColors.blueColor,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: size.width * 0.02,
-                              ),
-                              Expanded(
-                                flex: 6,
-                                child: SliderTheme(
-                                  data: const SliderThemeData(
-                                      trackHeight: 3,
-                                      trackShape: RectangularSliderTrackShape(),
-                                      overlayShape: RoundSliderOverlayShape(
-                                          overlayRadius: 8),
-                                      thumbShape: RoundSliderThumbShape(
-                                          enabledThumbRadius: 5)),
-                                  child: Slider(
-                                    min: 0,
-                                    max: maxValue,
-                                    value: value,
-                                    inactiveColor: MyColors.greyColor,
-                                    onChanged: (newValue) {
+                            height: size.height * 0.076,
+                            width: size.width * 0.54,
+                            padding: const EdgeInsets.only(
+                              left: 15,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: () {
                                       setState(() {
-                                        value = newValue;
+                                        play = !play;
+                                        print(HomeController.to
+                                            .getMp3Source(widget.song.detail));
                                       });
+
+                                      // Play or pause audio when the "Play" button is tapped
+                                      if (play) {
+                                        playAudioFromUrl(HomeController.to
+                                            .getMp3Source(widget.song.detail));
+                                      } else {
+                                        player.pause();
+                                      }
                                     },
+                                    child: Icon(
+                                      play
+                                          ? Icons.pause_circle_outline_outlined
+                                          : Icons.play_circle_outline_outlined,
+                                      size: 28,
+                                      color: MyColors.blueColor,
+                                    ),
                                   ),
                                 ),
-                              )
-                            ],
-                          ),
-                        ),
+                                SizedBox(
+                                  width: size.width * 0.02,
+                                ),
+                                Expanded(
+                                  flex: 6,
+                                  child: SliderTheme(
+                                    data: const SliderThemeData(
+                                        trackHeight: 3,
+                                        trackShape:
+                                            RectangularSliderTrackShape(),
+                                        overlayShape: RoundSliderOverlayShape(
+                                            overlayRadius: 8),
+                                        thumbShape: RoundSliderThumbShape(
+                                            enabledThumbRadius: 5)),
+                                    child: Slider(
+                                      min: 0,
+                                      max: maxValue,
+                                      value: value,
+                                      inactiveColor: MyColors.greyColor,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          value = newValue;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                )
+                              ],
+                            )),
                         Row(
                           children: [
                             TextWidget(
@@ -2290,8 +2382,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
             TextWidget(
                 fontSize: 14.sp,
                 color: MyColors.blackColor.withOpacity(0.4),
-                text:
-                    "Learn to play in UriAt1a Vita- Italian pianist Ludovico with Piano lab: a easy interlayoon ot I-vano muss: that requires little This beautiful was released from studio album or the intermediate Piano pia,, of A Vince with 172 music atity il Out getty cuic.xrv. you're a Visual learner, irirn.dated with the coriOhyites o standard wart an tool un In tyy Einaudi, this txx Leam to play n Ungua Vita- Oy Ludovico E-inaucS with Tao: a cavy inter;yetation Ot vianc muss; that loquite hrl. this beautifut was released in 2001 from tr.2 studio album l Gorrin Perfect intermediate tt. key o A Minu with 172 witn very ittle musu figure il out CtettV auicAV. a visual With standard wart to Vita by L Einaudi, this Ice to in unAt1a Ludovico Einaud with lab, a easy inter;yelayon ot musc that lit!le this Ceased Studio album l Gunt."),
+                text: widget.song.description),
             SizedBox(
               height: size.height * 0.02,
             ),

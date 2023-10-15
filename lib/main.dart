@@ -4,9 +4,10 @@ import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:paino_tab/controllers/home_controller.dart';
 import 'package:paino_tab/models/LoginModel.dart';
-import 'package:paino_tab/models/localdbmodels/Boxes.dart';
+import 'package:paino_tab/models/UserDataModel.dart';
+import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
+import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
 import 'package:paino_tab/screens/splash_screen.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
@@ -16,7 +17,9 @@ void main() async {
   Hive.registerAdapter(LoginModelAdapter());
 
   await Hive.openBox<LoginModel>("hiveuser");
-  Boxes.init();
+  await Hive.openBox<UserData>("userdata");
+  LoginBox.init();
+  UserDataBox.init();
   runApp(const MyApp());
   MobileAds.instance.initialize();
 }

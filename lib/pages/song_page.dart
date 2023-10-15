@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:paino_tab/controllers/home_controller.dart';
+import 'package:paino_tab/models/songs_model.dart';
 import 'package:paino_tab/utils/model.dart';
 
 import '../utils/colors.dart';
@@ -15,9 +17,14 @@ class SongPage extends StatefulWidget {
 
 class _SongPageState extends State<SongPage> {
   bool songDetail = false;
+  int selectedSongIndex = -1;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    List<Songs> sng =
+        HomeController.filterSongs(HomeController.to.songs!, type: 'song');
+    List<SongModel> songs = HomeController.to.songModelList(songs: sng);
+
     return WillPopScope(
       onWillPop: () async {
         if (songDetail == false) {
@@ -31,7 +38,7 @@ class _SongPageState extends State<SongPage> {
         return false;
       },
       child: songDetail == true
-          ? const SongDetailScreen()
+          ? SongDetailScreen(song: songs[selectedSongIndex])
           : SingleChildScrollView(
               child: Column(
                 children: [
@@ -68,19 +75,15 @@ class _SongPageState extends State<SongPage> {
                           mainAxisExtent: 250.h,
                           childAspectRatio: 1.h,
                         ),
-                        itemCount: albumList.length,
+                        itemCount: songs.length,
                         itemBuilder: (context, index) => InkWell(
                             onTap: () {
                               setState(() {
-                                if (index == 0) {
-                                  setState(() {
-                                    songDetail = true;
-                                  });
-                                }
+                                songDetail = true;
+                                selectedSongIndex = index;
                               });
                             },
-                            child:
-                                RecentReleasedWidget(list: albumList[index]))),
+                            child: RecentReleasedWidget(list: songs[index]))),
                   ),
                   SizedBox(
                     height: size.height * 0.12,

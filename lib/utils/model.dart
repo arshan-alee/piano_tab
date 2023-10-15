@@ -4,6 +4,10 @@ class SongModel {
   final String color;
   final String rating;
   final String pages;
+  final String artist;
+  final String genre;
+  final String difficulty;
+  final String description;
 
   SongModel(
     this.title,
@@ -11,18 +15,94 @@ class SongModel {
     this.color,
     this.rating,
     this.pages,
+    this.artist,
+    this.genre,
+    this.difficulty,
+    this.description,
   );
 }
 
 List<SongModel> albumList = [
-  SongModel('85mm', 'Ludovico Einaudi', 'red', '100', '35'),
-  SongModel('85mm', 'Ludovico Einaudi', 'yellow', '100', '35'),
-  SongModel('85mm', 'Ludovico Einaudi', 'red', '100', '35'),
-  SongModel('85mm', 'Ludovico Einaudi', 'yellow', '100', '35'),
-  SongModel('85mm', 'Ludovico Einaudi', 'red', '100', '35'),
-  SongModel('85mm', 'Ludovico Einaudi', 'yellow', '100', '35'),
-  SongModel('85mm', 'Ludovico Einaudi', 'red', '100', '35'),
-  SongModel('85mm', 'Ludovico Einaudi', 'yellow', '100', '35'),
+  SongModel(
+      '85mm',
+      'Ludovico Einaudi',
+      'red',
+      '100',
+      '35',
+      'John Legend',
+      'Pop',
+      'Intermediate',
+      'Looking for a fun and easy way to learn how to play some of...'),
+  SongModel(
+      '85mm',
+      'Ludovico Einaudi',
+      'yellow',
+      '100',
+      '35',
+      'John Legend',
+      'Pop',
+      'Intermediate',
+      'Looking for a fun and easy way to learn how to play some of...'),
+  SongModel(
+      '85mm',
+      'Ludovico Einaudi',
+      'red',
+      '100',
+      '35',
+      'John Legend',
+      'Pop',
+      'Intermediate',
+      'Looking for a fun and easy way to learn how to play some of...'),
+  SongModel(
+      '85mm',
+      'Ludovico Einaudi',
+      'yellow',
+      '100',
+      '35',
+      'John Legend',
+      'Pop',
+      'Intermediate',
+      'Looking for a fun and easy way to learn how to play some of...'),
+  SongModel(
+      '85mm',
+      'Ludovico Einaudi',
+      'red',
+      '100',
+      '35',
+      'John Legend',
+      'Pop',
+      'Intermediate',
+      'Looking for a fun and easy way to learn how to play some of...'),
+  SongModel(
+      '85mm',
+      'Ludovico Einaudi',
+      'yellow',
+      '100',
+      '35',
+      'John Legend',
+      'Pop',
+      'Intermediate',
+      'Looking for a fun and easy way to learn how to play some of...'),
+  SongModel(
+      '85mm',
+      'Ludovico Einaudi',
+      'red',
+      '100',
+      '35',
+      'John Legend',
+      'Pop',
+      'Intermediate',
+      'Looking for a fun and easy way to learn how to play some of...'),
+  SongModel(
+      '85mm',
+      'Ludovico Einaudi',
+      'yellow',
+      '100',
+      '35',
+      'John Legend',
+      'Pop',
+      'Intermediate',
+      'Looking for a fun and easy way to learn how to play some of...'),
 ];
 
 class BookModel {
