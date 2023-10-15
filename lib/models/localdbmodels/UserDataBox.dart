@@ -10,7 +10,7 @@ class UserDataBox {
 
   static Box<UserData>? get userBox {
     if (_userBox == null) {
-      throw Exception("User box has not been initialized.");
+      throw Exception("User Data box has not been initialized.");
     }
     return _userBox;
   }

@@ -30,10 +30,24 @@ class UserData extends HiveObject {
 
   // Create a UserData object from a JSON map
   factory UserData.fromJson(Map<String, dynamic> json) {
+    var libraryData = json['data']['library'];
+
+    List<String> library;
+
+    if (libraryData is String) {
+      // If libraryData is a single string, create a list with that string
+      library = [libraryData];
+    } else if (libraryData is List) {
+      // If libraryData is a list, assume it's a list of strings
+      library = List<String>.from(libraryData);
+    } else {
+      // Handle other cases (e.g., empty or null data)
+      library = [];
+    }
+
     return UserData(
-      points: json['points'],
-      userDataLibrary:
-          List<String>.from(json['library'] ?? []), // Handle null 'library'
+      points: json['data']['points'],
+      userDataLibrary: library,
     );
   }
 }

@@ -11,7 +11,7 @@ class LoginBox {
 
   static Box<LoginModel>? get userBox {
     if (_userBox == null) {
-      throw Exception("User box has not been initialized.");
+      throw Exception("Login User box has not been initialized.");
     }
     return _userBox;
   }

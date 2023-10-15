@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
+import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
 import 'package:paino_tab/screens/home_screen.dart';
 import 'package:paino_tab/services/auth_service.dart';
 import 'package:path_provider/path_provider.dart';
@@ -91,7 +92,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                     Expanded(
                       flex: 2,
                       child: TextWidget(
-                        text: '23',
+                        text: UserDataBox.userBox!.values.first.points,
                         fontSize: 12,
                         color: MyColors.primaryColor,
                         fontWeight: FontWeight.w400,

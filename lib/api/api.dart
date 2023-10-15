@@ -73,31 +73,23 @@ class ApiService {
       // var headers = {'Content-Type': 'application/json'};
       var request =
           http.Request('POST', Uri.parse('$baseUrl?batch&library&points'));
-      request.body = json.encode({"auth": auth});
+      request.body = jsonEncode({"auth": auth});
       // request.headers.addAll(headers);
 
       http.Response response =
           await http.Response.fromStream(await request.send());
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      print("user data response: ${jsonResponse['data']}");
+      // Use the UserModelFromJson function to create a UserData object
+      var userData = UserModelFromJson(response.body);
 
-// Check if the response contains the "data" field
-      if (jsonResponse.containsKey("data")) {
-        var data = jsonResponse["data"];
-        print("hellojee");
-        // Use the UserModelFromJson function to create a UserData object
-        var userData = UserModelFromJson(jsonEncode(data));
-
-        var userBox = UserDataBox.userBox!;
-        if (userBox.values.isNotEmpty) {
-          await userBox.clear();
-        }
-        await userBox.add(userData);
-
-        return true;
-      } else {
-        print("Error: 'data' field not found in the response.");
-        return false;
+      var userBox = UserDataBox.userBox!;
+      if (userBox.values.isNotEmpty) {
+        await userBox.clear();
       }
+      await userBox.add(userData);
+
+      return true;
     } catch (e) {
       print("Error in storing userdata in userdatabox $e");
       return false;
