@@ -15,7 +15,7 @@ void main() async {
 
   await Hive.initFlutter();
   Hive.registerAdapter(LoginModelAdapter());
-
+  Hive.registerAdapter(UserDataAdapter());
   await Hive.openBox<LoginModel>("hiveuser");
   await Hive.openBox<UserData>("userdata");
   LoginBox.init();

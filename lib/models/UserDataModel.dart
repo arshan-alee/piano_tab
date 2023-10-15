@@ -1,8 +1,7 @@
 import 'dart:convert';
 
 import 'package:hive/hive.dart';
-
-String loginModelToJson(UserData data) => json.encode(data.toJson());
+part 'UserDataModel.g.dart';
 
 @HiveType(typeId: 1)
 class UserData extends HiveObject {
