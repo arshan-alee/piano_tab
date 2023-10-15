@@ -608,7 +608,8 @@ class TextWidget extends StatelessWidget {
       this.letterSpacing,
       this.fontWeight,
       this.underline,
-      this.overflow});
+      this.overflow,
+      this.maxLines});
   final String text;
   final VoidCallback? onTap;
   final Color? color;
@@ -617,22 +618,22 @@ class TextWidget extends StatelessWidget {
   final double? letterSpacing;
   final FontWeight? fontWeight;
   final TextDecoration? underline;
+  final int? maxLines;
   final TextOverflow? overflow;
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      child: Text(
-        text,
-        style: TextStyle(
-            fontFamily: fontFamily ?? 'Inter',
-            color: color ?? MyColors.whiteColor,
-            fontWeight: fontWeight ?? FontWeight.w400,
-            letterSpacing: letterSpacing ?? 0.1,
-            fontSize: fontSize ?? 16,
-            overflow: overflow,
-            decoration: underline ?? TextDecoration.none),
-      ),
+      child: Text(text,
+          style: TextStyle(
+              fontFamily: fontFamily ?? 'Inter',
+              color: color ?? MyColors.whiteColor,
+              fontWeight: fontWeight ?? FontWeight.w400,
+              letterSpacing: letterSpacing ?? 0.1,
+              fontSize: fontSize ?? 16,
+              overflow: overflow,
+              decoration: underline ?? TextDecoration.none),
+          maxLines: maxLines),
     );
   }
 }
@@ -1326,7 +1327,29 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   }
 
   Future<void> playAudioFromUrl(String url) async {
-    await player.play(UrlSource(url)); // Play audio from the provided URL
+    await player.play(UrlSource(url));
+    getAudioDuration(); // Play audio from the provided URL
+  }
+
+  Future<void> getAudioDuration() async {
+    final duration = await player.getDuration();
+    if (duration != null) {
+      setState(() {
+        maxValue = duration.inSeconds.toDouble();
+      });
+    }
+  }
+
+  int calculateRequiredTokens(int pages) {
+    double requiredTokens = 0;
+    if (pages >= 24 && pages <= 75) {
+      requiredTokens = pages * 0.5;
+    } else if (pages >= 76 && pages <= 100) {
+      requiredTokens = pages * 0.4;
+    } else if (pages >= 101 && pages <= 300) {
+      requiredTokens = pages * 0.025;
+    }
+    return requiredTokens.round(); // Round to the nearest integer
   }
 
   @override
@@ -1356,9 +1379,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                     height: size.height * 0.29,
                     width: size.width * 0.36,
                     decoration: BoxDecoration(
-                        image: const DecorationImage(
+                        image: DecorationImage(
                           fit: BoxFit.cover,
-                          image: AssetImage('assets/images/image1.jpg'),
+                          image: NetworkImage(widget.book.imageUrl),
                         ),
                         borderRadius: BorderRadius.circular(10),
                         color: MyColors.darkBlue),
@@ -1420,7 +1443,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                       maxRadius: 8,
                                     ),
                                     TextWidget(
-                                      text: '\$ 39.5',
+                                      text: widget.book.price,
                                       color: MyColors.whiteColor,
                                       fontSize: 14,
                                     ),
@@ -1446,10 +1469,11 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                       maxRadius: 8,
                                     ),
                                     TextWidget(
-                                      text: '100',
+                                      text:
+                                          '${calculateRequiredTokens(int.parse(widget.book.pages))}', // Convert pages to int
                                       color: MyColors.blueColor,
                                       fontSize: 14,
-                                    ),
+                                    )
                                   ],
                                 ),
                               ),
@@ -1482,8 +1506,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               ),
                               Expanded(
                                 child: TextWidget(
-                                  text: 'Multiple',
-                                  fontSize: 14,
+                                  text: widget.book.artist,
+                                  fontSize: 10,
                                   color: MyColors.blackColor,
                                 ),
                               )
@@ -1496,16 +1520,19 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                             children: [
                               Expanded(
                                 child: TextWidget(
-                                  text: 'Genre:',
+                                  text: 'Genre',
                                   fontSize: 14,
                                   color: MyColors.blackColor,
                                 ),
                               ),
                               Expanded(
                                 child: TextWidget(
-                                  text: 'Pop',
-                                  fontSize: 14,
+                                  text: widget.book.genre,
+                                  fontSize: 10,
                                   color: MyColors.blackColor,
+                                  overflow: TextOverflow
+                                      .ellipsis, // Display ellipsis if the text overflows
+                                  maxLines: 1, // Limit text to a single line
                                 ),
                               )
                             ],
@@ -1524,9 +1551,11 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               ),
                               Expanded(
                                 child: TextWidget(
-                                  text: 'Various',
-                                  fontSize: 14,
+                                  text: widget.book.difficulty,
+                                  fontSize: 10,
                                   color: MyColors.blackColor,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
                                 ),
                               )
                             ],
@@ -1545,9 +1574,11 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               ),
                               Expanded(
                                 child: TextWidget(
-                                  text: '288',
-                                  fontSize: 14,
+                                  text: widget.book.pages,
+                                  fontSize: 10,
                                   color: MyColors.blackColor,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
                                 ),
                               )
                             ],
@@ -1725,8 +1756,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             TextWidget(
                 color: MyColors.blackColor.withOpacity(0.4),
                 fontSize: 16.sp,
-                text:
-                    '    This book contains 5 popular Philip Glass songs in piano tablature; a color coded, easy interpretation of piano music that requires little training. The piano tabs display right and left-hand fingering numbers with red and blue note letters,'),
+                text: widget.book.description),
             SizedBox(
               height: size.height * 0.02,
             ),

@@ -41,7 +41,7 @@ class HomeController extends GetxController {
   }
 
   String getOriginalPdfSource(String Sku) {
-    return 'https://www.ktswebhub.com/ppbl/resources/$Sku.pdf';
+    return 'https://www.ktswebhub.com/ppbl/resources/tablatures/books/$Sku.pdf';
   }
 
   String getMp3Source(String Sku) {
