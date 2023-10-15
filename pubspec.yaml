@@ -50,6 +50,7 @@ dependencies:
   dio:
   hive: ^2.2.3
   hive_flutter:
+  audioplayers: ^5.2.0
 
 
 dev_dependencies:

@@ -1293,11 +1293,17 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   }
 
   void openPdfViewer(BuildContext context, bool isOwned) {
-    if (isOwned) {
-      Get.offAll(() => PdfViewScreen(
-            pdfPath: HomeController.to.getOriginalPdfSource(widget.book.detail),
-          ));
-    }
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return PdfViewScreen(
+            pdfPath: isOwned
+                ? HomeController.to.getOriginalPdfSource(widget.book.detail)
+                : HomeController.to.getOriginalPdfSource(widget.book.detail),
+          );
+        },
+      ),
+    );
   }
 
   @override

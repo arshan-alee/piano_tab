@@ -84,20 +84,24 @@ class HomeController extends GetxController {
       // print(
       //     'imgs : https://www.ktswebhub.com/ppbl/resources/images2/${e.bkSku}b.jpg');
       BookModel bookModel = BookModel(
-        e.image == null
-            ? "https://media.istockphoto.com/id/106533163/photo/plan.jpg?s=612x612&w=0&k=20&c=-XArhVuWKh1hqkBc7YWO-oCy785cuQuS3o2-oOpNBCQ="
-            : "https://www.ktswebhub.com/ppbl/resources/images2/${e.bkSku}b.jpg",
-        // "https: //www.ktswebhub.com/ppbl/resources/images2/BK059178.jpg/",
-        e.bkName == null ? '' : e.bkName!,
-        e.bkSku == null ? '' : e.bkSku!,
-        'yellow',
-        int.parse(e.pages!) <= 5
-            ? "${int.parse(e.pages!) * 1}"
-            : int.parse(e.pages!) > 5 && int.parse(e.pages!) <= 10
-                ? "${int.parse(e.pages!) * 0.5}"
-                : "${int.parse(e.pages!) * 0.25}",
-        e.price == null ? '' : e.price!,
-      );
+          e.image == null
+              ? "https://media.istockphoto.com/id/106533163/photo/plan.jpg?s=612x612&w=0&k=20&c=-XArhVuWKh1hqkBc7YWO-oCy785cuQuS3o2-oOpNBCQ="
+              : "https://www.ktswebhub.com/ppbl/resources/images2/${e.bkSku}b.jpg",
+          // "https: //www.ktswebhub.com/ppbl/resources/images2/BK059178.jpg/",
+          e.bkName == null ? '' : e.bkName!,
+          e.bkSku == null ? '' : e.bkSku!,
+          'yellow',
+          int.parse(e.pages!) <= 5
+              ? "${int.parse(e.pages!) * 1}"
+              : int.parse(e.pages!) > 5 && int.parse(e.pages!) <= 10
+                  ? "${int.parse(e.pages!) * 0.5}"
+                  : "${int.parse(e.pages!) * 0.25}",
+          e.price == null ? '' : e.price!,
+          e.artist == null ? '' : e.artist!,
+          e.genre == null ? '' : e.genre!,
+          e.pages == null ? '' : e.pages!,
+          e.difficulty == null ? '' : e.difficulty!,
+          e.description == null ? '' : e.description!);
       lst.add(bookModel);
     });
     return lst;
