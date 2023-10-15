@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:ui';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -1287,9 +1289,26 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   double value = 0.0;
   double maxValue = 180.0;
   bool isOwned = true;
+  final player = AudioPlayer();
+  late Timer timer;
 
   String formatTime(int seconds) {
     return '${(Duration(seconds: seconds))}'.split('.')[0].padLeft(8);
+  }
+
+  void initState() {
+    super.initState();
+    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (play) {
+        player.getCurrentPosition().then((position) {
+          setState(() {
+            if (position != null) {
+              value = position.inSeconds.toDouble();
+            }
+          });
+        });
+      }
+    });
   }
 
   void openPdfViewer(BuildContext context, bool isOwned) {
@@ -1304,6 +1323,17 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         },
       ),
     );
+  }
+
+  Future<void> playAudioFromUrl(String url) async {
+    await player.play(UrlSource(url)); // Play audio from the provided URL
+  }
+
+  @override
+  void dispose() {
+    player.dispose();
+    timer.cancel();
+    super.dispose();
   }
 
   @override
@@ -1544,7 +1574,17 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                   onTap: () {
                                     setState(() {
                                       play = !play;
+                                      print(HomeController.to
+                                          .getMp3Source(widget.book.detail));
                                     });
+
+                                    // Play or pause audio when the "Play" button is tapped
+                                    if (play) {
+                                      playAudioFromUrl(HomeController.to
+                                          .getMp3Source(widget.book.detail));
+                                    } else {
+                                      player.pause();
+                                    }
                                   },
                                   child: Icon(
                                     play
