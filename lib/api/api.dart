@@ -61,6 +61,7 @@ class ApiService {
 
   //also if you want to bulk retreive you can add &points&library&catalog
   static Future<bool> getUserData(String auth) async {
+    print("auth is: ${auth}");
     if (auth == null) {
       // Handle the case where 'auth' is null (e.g., return an error or throw an exception).
       print('Error: auth is null.');
@@ -68,25 +69,35 @@ class ApiService {
     }
 
     try {
-      var headers = {'Content-Type': 'application/json'};
+      print("$baseUrl?batch&library&points");
+      // var headers = {'Content-Type': 'application/json'};
       var request =
-          http.Request('POST', Uri.parse('${baseUrl}?batch&library&points'));
+          http.Request('POST', Uri.parse('$baseUrl?batch&library&points'));
       request.body = json.encode({"auth": auth});
-      request.headers.addAll(headers);
+      // request.headers.addAll(headers);
 
       http.Response response =
           await http.Response.fromStream(await request.send());
-      print("user data response : ${response.body}");
-      var responseBody = jsonDecode(response.body);
-      var data = responseBody['data'];
-      print("responseBody['data'] ${responseBody['data']}");
-      var _ = UserData.fromJson(data);
-      var userBox = UserDataBox.userBox!;
-      if (userBox.values.isNotEmpty) {
-        await userBox.clear();
+      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+// Check if the response contains the "data" field
+      if (jsonResponse.containsKey("data")) {
+        var data = jsonResponse["data"];
+        print("hellojee");
+        // Use the UserModelFromJson function to create a UserData object
+        var userData = UserModelFromJson(jsonEncode(data));
+
+        var userBox = UserDataBox.userBox!;
+        if (userBox.values.isNotEmpty) {
+          await userBox.clear();
+        }
+        await userBox.add(userData);
+
+        return true;
+      } else {
+        print("Error: 'data' field not found in the response.");
+        return false;
       }
-      await userBox.add(_);
-      return true;
     } catch (e) {
       print("Error in storing userdata in userdatabox $e");
       return false;

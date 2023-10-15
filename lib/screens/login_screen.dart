@@ -213,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             emailController.value.text.trim().toLowerCase(),
                             passwordController.value.text);
                         var _data = await HomeController.to.getuserData(
-                            LoginBox.userBox!.values.first.authToken.trim());
+                            LoginBox.userBox!.values.first.authToken);
                         print(UserDataBox.userBox!.values.first.toJson());
                         if (_ && _data) {
                           var message = LoginBox.userBox!.values.first.message;

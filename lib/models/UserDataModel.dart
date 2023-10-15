@@ -3,6 +3,10 @@ import 'dart:convert';
 import 'package:hive/hive.dart';
 part 'UserDataModel.g.dart';
 
+UserData UserModelFromJson(String str) => UserData.fromJson(json.decode(str));
+
+String UserModelToJson(UserData data) => json.encode(data.toJson());
+
 @HiveType(typeId: 1)
 class UserData extends HiveObject {
   @HiveField(0)
