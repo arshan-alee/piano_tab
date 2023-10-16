@@ -2064,6 +2064,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
       // Show a snackbar saying "Already in the library"
       Get.snackbar("Already in the library", '');
     } else if (tokenText == 'Watch video and redeem') {
+      await OfflineLibraryBox.updateLibrary(widget.song.detail);
       showRewardedAd();
     } else if (requiredTokens <= userPoints) {
       var _ = await OfflineLibraryBox.updateLibrary(widget.song.detail);
@@ -2084,6 +2085,8 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     print(a);
     var submitted = HomeController.to
         .updateLibrary(LoginBox.userBox!.values.first.authToken, a);
+    var userdata = await HomeController.to
+        .getuserData(LoginBox.userBox!.values.first.authToken);
   }
 
   void checkOwnershipStatus() {
