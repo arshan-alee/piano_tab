@@ -33,8 +33,6 @@ class OfflineLibrary {
   }
 
   static String encodeOfflineLibrary(List<String> offlineLibrary) {
-    List<String> sanitizedLibrary =
-        offlineLibrary.map((item) => item.trim()).toList();
-    return jsonEncode(sanitizedLibrary);
+    return json.encode(offlineLibrary);
   }
 }

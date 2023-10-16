@@ -48,6 +48,29 @@ class HomeController extends GetxController {
     return 'https://www.ktswebhub.com/ppbl/resources/mp3s/$Sku.mp3';
   }
 
+  Future<List<Songs>> getLibraryData(List<String> libraryItems) async {
+    try {
+      var response =
+          await http.get(Uri.parse('https://ktswebhub.com/dev/api/'));
+      if (response.statusCode == 200) {
+        List<Songs> allSongs = songsFromJson(response.body);
+
+        // Filter the songs based on libraryItems
+        List<Songs> filteredSongs = allSongs
+            .where((song) =>
+                libraryItems.contains(song.songSku) ||
+                libraryItems.contains(song.bkSku))
+            .toList();
+        print(filteredSongs);
+        return filteredSongs;
+      } else {
+        throw Exception('Failed to load data from the API');
+      }
+    } catch (e) {
+      throw Exception('Exception: $e');
+    }
+  }
+
   static List<Songs> filterSongs(
     List<Songs> songs, {
     double? maxPrice,
