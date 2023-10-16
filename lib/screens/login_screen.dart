@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:paino_tab/controllers/home_controller.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
+import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
 import 'package:paino_tab/screens/sign_up.dart';
 import 'package:paino_tab/services/ad_mob_service.dart';
@@ -183,6 +184,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           Get.offAll(() => const HomeScreen(
                                 isLoggedIn: true,
                               ));
+                          await OfflineLibraryBox.updateIsLoggedIn(true);
+                          print("logged in status ?? ");
+                          print(OfflineLibraryBox
+                              .userBox!.values.first.isLoggedIn);
                         } else {
                           Get.snackbar("Invalid Credentials", '');
                         }

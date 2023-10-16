@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:paino_tab/controllers/home_controller.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
+import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
 import 'package:paino_tab/pages/book_page.dart';
 import 'package:paino_tab/pages/home_page.dart';
@@ -102,7 +103,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             Expanded(
                               child: BottomWidget(
                                   onTap: () {
+                                    print(LoginBox.userBox!.values.first
+                                        .toJson());
                                     print(UserDataBox.userBox!.values.first
+                                        .toJson());
+                                    print(OfflineLibraryBox
+                                        .userBox!.values.first
                                         .toJson());
                                     HomeController.to.homePageController
                                         .animateToPage(0,

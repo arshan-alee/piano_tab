@@ -15,4 +15,18 @@ class LoginBox {
     }
     return _userBox;
   }
+
+  static Future<void> setDefault() async {
+    if (_userBox != null) {
+      final defaultModel = LoginModel(
+        status: '', // Set your default value here
+        message: '', // Set your default value here
+        email: '', // Set your default value here
+        authToken: '', // Set your default value here
+        expirationDate: DateTime(2000), // Set your default value here
+      );
+      await _userBox!.clear();
+      await _userBox!.put("hiveuser", defaultModel);
+    }
+  }
 }

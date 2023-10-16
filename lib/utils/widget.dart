@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
+import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
 import 'package:paino_tab/screens/home_screen.dart';
 import 'package:paino_tab/services/ad_mob_service.dart';
@@ -463,7 +464,9 @@ class SkipButton extends StatelessWidget {
       children: [
         CustomContainer(
             onpressed: () async {
-              await LoginBox.userBox!.clear();
+              await LoginBox.setDefault();
+              await UserDataBox.setDefault();
+              await OfflineLibraryBox.setDefault();
               // HomeController.to.setEmail('');
               // HomeController.to.setUserName('');
               HomeController.to.index = 0;
@@ -1944,6 +1947,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   double maxValue = 180.0;
   final player = AudioPlayer();
   late Timer timer;
+  bool isOwned = false;
   RewardedAd? _rewardedAd;
 
   String formatTime(int seconds) {
@@ -2012,6 +2016,21 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     }
   }
 
+  void openPdfViewer(BuildContext context, bool isOwned) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return PdfViewScreen(
+            pdfPath: isOwned
+                ? HomeController.to.getOriginalPdfSource(widget.song.detail)
+                : HomeController.to.getSamplePdfSource(widget.song.detail),
+          );
+        },
+      ),
+    );
+    checkOwnershipStatus();
+  }
+
   Future<void> getAudioDuration() async {
     final duration = await player.getDuration();
     if (duration != null) {
@@ -2051,6 +2070,21 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     } else {
       // Not enough points, show a generic snackbar
       Get.snackbar("Not enough points", '');
+    }
+  }
+
+  void checkOwnershipStatus() {
+    final userLibrary = UserDataBox.userBox!.values.first.userDataLibrary;
+    final bookDetail = widget.song.detail;
+
+    if (userLibrary.contains(bookDetail)) {
+      setState(() {
+        isOwned = true;
+      });
+    } else {
+      setState(() {
+        isOwned = false;
+      });
     }
   }
 

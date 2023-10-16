@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:paino_tab/controllers/home_controller.dart';
+import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
+import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
+import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
 import 'package:paino_tab/screens/login_screen.dart';
 import 'package:paino_tab/screens/reset_password.dart';
 import 'package:paino_tab/utils/widget.dart';
@@ -60,9 +63,18 @@ class _SettingScreenState extends State<SettingScreen> {
                             Transform.flip(
                               flipX: true,
                               child: InkWell(
-                                onTap: () {
+                                onTap: () async {
                                   HomeController.to.logoutSpData();
                                   Get.offAll(() => const LoginScreen());
+                                  await LoginBox.setDefault();
+                                  await UserDataBox.setDefault();
+                                  await OfflineLibraryBox.setDefault();
+                                  print(
+                                      "UserBox data after signout ${UserDataBox.userBox!.values.first.toJson()}");
+                                  print(
+                                      "Login data after signout ${LoginBox.userBox!.values.first.toJson()}");
+                                  print(
+                                      "Offline Library after signout ${OfflineLibraryBox.userBox!.values.first.toJson()}");
                                 },
                                 child: Icon(
                                   Icons.logout,

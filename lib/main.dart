@@ -4,8 +4,10 @@ import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:paino_tab/controllers/home_controller.dart';
 import 'package:paino_tab/models/LoginModel.dart';
+import 'package:paino_tab/models/OfflineLibrary.dart';
 import 'package:paino_tab/models/UserDataModel.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
+import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
 import 'package:paino_tab/screens/splash_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -16,10 +18,13 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(LoginModelAdapter());
   Hive.registerAdapter(UserDataAdapter());
+  Hive.registerAdapter(OfflineLibraryAdapter());
   await Hive.openBox<LoginModel>("hiveuser");
   await Hive.openBox<UserData>("userdata");
+  await Hive.openBox<OfflineLibrary>("offlineLibraryBox'");
   LoginBox.init();
   UserDataBox.init();
+  OfflineLibraryBox.init();
   runApp(const MyApp());
   MobileAds.instance.initialize();
 }
