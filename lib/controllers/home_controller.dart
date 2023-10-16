@@ -183,6 +183,11 @@ class HomeController extends GetxController {
     return _;
   }
 
+  Future<bool> updateLibrary(String auth, String Sku) async {
+    var _ = await ApiService.updateLibrary(auth, Sku);
+    return _;
+  }
+
   /*Future<String?> setUserName(String userName) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('UserName', userName);

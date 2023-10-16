@@ -6,9 +6,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
 import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
 import 'package:paino_tab/screens/home_screen.dart';
+import 'package:paino_tab/services/ad_mob_service.dart';
 import 'package:paino_tab/services/auth_service.dart';
 import 'package:path_provider/path_provider.dart';
 import '../controllers/home_controller.dart';
@@ -1305,7 +1307,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   bool hide = true;
   double value = 0.0;
   double maxValue = 180.0;
-  bool isOwned = true;
+  bool isOwned = false;
   final player = AudioPlayer();
   late Timer timer;
 
@@ -1326,6 +1328,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         });
       }
     });
+    checkOwnershipStatus();
   }
 
   void openPdfViewer(BuildContext context, bool isOwned) {
@@ -1335,7 +1338,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
           return PdfViewScreen(
             pdfPath: isOwned
                 ? HomeController.to.getOriginalPdfSource(widget.book.detail)
-                : HomeController.to.getOriginalPdfSource(widget.book.detail),
+                : HomeController.to.getSamplePdfSource(widget.book.detail),
           );
         },
       ),
@@ -1366,6 +1369,21 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
       requiredTokens = pages * 0.025;
     }
     return requiredTokens.round(); // Round to the nearest integer
+  }
+
+  void checkOwnershipStatus() {
+    final userLibrary = UserDataBox.userBox!.values.first.userDataLibrary;
+    final bookDetail = widget.book.detail;
+
+    if (userLibrary.contains(bookDetail)) {
+      setState(() {
+        isOwned = true;
+      });
+    } else {
+      setState(() {
+        isOwned = false;
+      });
+    }
   }
 
   @override
@@ -1523,7 +1541,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               Expanded(
                                 child: TextWidget(
                                   text: widget.book.artist,
-                                  fontSize: 10,
+                                  fontSize: 11,
                                   color: MyColors.blackColor,
                                 ),
                               )
@@ -1544,7 +1562,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               Expanded(
                                 child: TextWidget(
                                   text: widget.book.genre,
-                                  fontSize: 10,
+                                  fontSize: 11,
                                   color: MyColors.blackColor,
                                   overflow: TextOverflow
                                       .ellipsis, // Display ellipsis if the text overflows
@@ -1568,7 +1586,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               Expanded(
                                 child: TextWidget(
                                   text: widget.book.difficulty,
-                                  fontSize: 10,
+                                  fontSize: 11,
                                   color: MyColors.blackColor,
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
@@ -1591,7 +1609,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               Expanded(
                                 child: TextWidget(
                                   text: widget.book.pages,
-                                  fontSize: 10,
+                                  fontSize: 11,
                                   color: MyColors.blackColor,
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
@@ -1926,6 +1944,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   double maxValue = 180.0;
   final player = AudioPlayer();
   late Timer timer;
+  RewardedAd? _rewardedAd;
 
   String formatTime(int seconds) {
     return '${(Duration(seconds: seconds))}'.split('.')[0].padLeft(8);
@@ -1944,6 +1963,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   @override
   void initState() {
     super.initState();
+    createRewardedAd();
     timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (play) {
         player.getCurrentPosition().then((position) {
@@ -1955,6 +1975,41 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         });
       }
     });
+  }
+
+  void createRewardedAd() {
+    RewardedAd.load(
+      adUnitId: AdMobService.rewardedAdUnitId!,
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (ad) {
+          setState(() {
+            _rewardedAd = ad;
+          });
+        },
+        onAdFailedToLoad: (error) {
+          setState(() {
+            _rewardedAd = null;
+          });
+        },
+      ),
+    );
+  }
+
+  void showRewardedAd() {
+    if (_rewardedAd != null) {
+      _rewardedAd!.fullScreenContentCallback =
+          FullScreenContentCallback(onAdDismissedFullScreenContent: ((ad) {
+        ad.dispose();
+        createRewardedAd();
+      }), onAdFailedToShowFullScreenContent: (((ad, error) {
+        ad.dispose();
+        createRewardedAd();
+      })));
+
+      _rewardedAd!.show(
+          onUserEarnedReward: ((ad, reward) => {print("You earned a reward")}));
+    }
   }
 
   Future<void> getAudioDuration() async {
@@ -1969,6 +2024,34 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   Future<void> playAudioFromUrl(String url) async {
     await player.play(UrlSource(url));
     getAudioDuration(); // Play audio from the provided URL
+  }
+
+  Future<void> AddtoLibrary(BuildContext context) async {
+    final int userPoints =
+        int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
+    final int requiredTokens =
+        int.tryParse(_calculateRequiredTokens(int.parse(widget.song.pages))) ??
+            0;
+    final String tokenText =
+        _calculateRequiredTokens(int.parse(widget.song.pages));
+
+    if (tokenText == 'Watch video and redeem') {
+      // Show the rewarded ad
+      showRewardedAd();
+    } else if (requiredTokens <= userPoints) {
+      var _ = await HomeController.to.updateLibrary(
+          LoginBox.userBox!.values.first.authToken, widget.song.detail);
+      var _data = HomeController.to
+          .getuserData(LoginBox.userBox!.values.first.authToken);
+      if (_) {
+        Get.snackbar("${widget.song.title} is added to library", '');
+      } else {
+        Get.snackbar("Failed to update library", '');
+      }
+    } else {
+      // Not enough points, show a generic snackbar
+      Get.snackbar("Not enough points", '');
+    }
   }
 
   @override
@@ -2038,7 +2121,8 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Wrap(
-                            spacing: 2.0,
+                            spacing: 5,
+                            runSpacing: 5,
                             alignment: WrapAlignment.spaceBetween,
                             children: [
                               LayoutBuilder(
@@ -2058,7 +2142,9 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                   }
 
                                   return CustomContainer(
-                                    onpressed: () {},
+                                    onpressed: () {
+                                      AddtoLibrary(context);
+                                    },
                                     height: size.height * 0.04,
                                     width: tokenWidth,
                                     color: MyColors.whiteColor,
@@ -2131,7 +2217,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                   Expanded(
                                     child: TextWidget(
                                       text: widget.song.artist,
-                                      fontSize: 10,
+                                      fontSize: 11,
                                       color: MyColors.blackColor,
                                     ),
                                   )
@@ -2152,7 +2238,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                   Expanded(
                                     child: TextWidget(
                                       text: widget.song.genre,
-                                      fontSize: 10,
+                                      fontSize: 11,
                                       color: MyColors.blackColor,
                                       overflow: TextOverflow
                                           .ellipsis, // Display ellipsis if the text overflows
@@ -2177,7 +2263,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                   Expanded(
                                     child: TextWidget(
                                       text: widget.song.difficulty,
-                                      fontSize: 10,
+                                      fontSize: 11,
                                       color: MyColors.blackColor,
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 1,
@@ -2200,7 +2286,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                   Expanded(
                                     child: TextWidget(
                                       text: widget.song.pages,
-                                      fontSize: 10,
+                                      fontSize: 11,
                                       color: MyColors.blackColor,
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 1,

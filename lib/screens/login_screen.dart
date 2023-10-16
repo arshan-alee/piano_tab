@@ -22,7 +22,6 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  RewardedAd? _rewardedAd;
 
   final FocusNode _email = FocusNode();
   final FocusNode _password = FocusNode();
@@ -38,7 +37,6 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
 
-    createRewardedAd();
     _email.addListener(() {
       setState(() {
         _emailFocused = _email.hasFocus;
@@ -58,41 +56,6 @@ class _LoginScreenState extends State<LoginScreen> {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
-  }
-
-  void createRewardedAd() {
-    RewardedAd.load(
-      adUnitId: AdMobService.rewardedAdUnitId!,
-      request: const AdRequest(),
-      rewardedAdLoadCallback: RewardedAdLoadCallback(
-        onAdLoaded: (ad) {
-          setState(() {
-            _rewardedAd = ad;
-          });
-        },
-        onAdFailedToLoad: (error) {
-          setState(() {
-            _rewardedAd = null;
-          });
-        },
-      ),
-    );
-  }
-
-  void showRewardedAd() {
-    if (_rewardedAd != null) {
-      _rewardedAd!.fullScreenContentCallback =
-          FullScreenContentCallback(onAdDismissedFullScreenContent: ((ad) {
-        ad.dispose();
-        createRewardedAd();
-      }), onAdFailedToShowFullScreenContent: (((ad, error) {
-        ad.dispose();
-        createRewardedAd();
-      })));
-
-      _rewardedAd!.show(
-          onUserEarnedReward: ((ad, reward) => {print("You earned a reward")}));
-    }
   }
 
   @override
@@ -119,9 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: MyColors.blackColor,
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
-                    onTap: () {
-                      showRewardedAd();
-                    }),
+                    onTap: () {}),
                 TextWidget(
                   text: 'Login to your existent account',
                   color: MyColors.greyColor,

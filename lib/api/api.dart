@@ -70,17 +70,15 @@ class ApiService {
 
     try {
       print("$baseUrl?batch&library&points");
-      // var headers = {'Content-Type': 'application/json'};
       var request =
           http.Request('POST', Uri.parse('$baseUrl?batch&library&points'));
       request.body = jsonEncode({"auth": auth});
-      // request.headers.addAll(headers);
 
       http.Response response =
           await http.Response.fromStream(await request.send());
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
       print("user data response: ${jsonResponse['data']}");
-      // Use the UserModelFromJson function to create a UserData object
+
       var userData = UserModelFromJson(response.body);
 
       var userBox = UserDataBox.userBox!;
@@ -104,11 +102,19 @@ class ApiService {
     return jsonDecode(response.body);
   }
 
-  static Future<Map<String, dynamic>> updateLibrary(
-      String auth, String newLibrary) async {
-    final url = Uri.parse('$baseUrl?update_library');
-    final response =
-        await http.post(url, body: {'auth': auth, 'new_library': newLibrary});
-    return jsonDecode(response.body);
+  static Future<bool> updateLibrary(String auth, String newLibrary) async {
+    var request = http.Request('POST', Uri.parse('${baseUrl}?update_library'));
+    request.body = json.encode({'auth': auth, 'new_library': newLibrary});
+
+    http.Response response =
+        await http.Response.fromStream(await request.send());
+    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+    if (jsonResponse['status'] == "success") {
+      print(jsonResponse['message']);
+      return true;
+    } else {
+      print(jsonResponse['message']);
+      return false;
+    }
   }
 }
