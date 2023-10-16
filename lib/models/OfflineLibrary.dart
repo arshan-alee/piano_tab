@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:hive/hive.dart';
 
 part 'OfflineLibrary.g.dart';
@@ -28,5 +30,11 @@ class OfflineLibrary {
       'points': points,
       'offlineLibrary': offlineLibrary,
     };
+  }
+
+  static String encodeOfflineLibrary(List<String> offlineLibrary) {
+    List<String> sanitizedLibrary =
+        offlineLibrary.map((item) => item.trim()).toList();
+    return jsonEncode(sanitizedLibrary);
   }
 }

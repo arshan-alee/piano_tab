@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:paino_tab/controllers/home_controller.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
+import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
 import 'package:paino_tab/screens/login_screen.dart';
 
@@ -91,12 +92,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
           .getuserData(LoginBox.userBox!.values.first.authToken);
       print(UserDataBox.userBox!.values.first.toJson());
       if (_ && _data) {
-        var message = LoginBox.userBox!.values.first.message;
-        Get.snackbar(message, '');
         HomeController.to.index = 0;
         Get.offAll(() => const HomeScreen(
               isLoggedIn: true,
             ));
+        OfflineLibraryBox.updateIsLoggedIn(true);
+        final userDataLibrary =
+            UserDataBox.userBox!.values.first.userDataLibrary;
+        final offlineLibrary =
+            OfflineLibraryBox.userBox!.values.first.offlineLibrary;
+
+        if (userDataLibrary != []) {
+          for (final item in userDataLibrary) {
+            if (!offlineLibrary.contains(item)) {
+              OfflineLibraryBox.updateLibrary(item);
+            }
+          }
+        }
+        print("Logged in ??");
+        print(OfflineLibraryBox.userBox!.values.first.isLoggedIn);
       }
     }
   }

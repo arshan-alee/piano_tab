@@ -184,8 +184,20 @@ class _LoginScreenState extends State<LoginScreen> {
                           Get.offAll(() => const HomeScreen(
                                 isLoggedIn: true,
                               ));
-                          await OfflineLibraryBox.updateIsLoggedIn(true);
-                          print("logged in status ?? ");
+                          OfflineLibraryBox.updateIsLoggedIn(true);
+                          final userDataLibrary =
+                              UserDataBox.userBox!.values.first.userDataLibrary;
+                          final offlineLibrary = OfflineLibraryBox
+                              .userBox!.values.first.offlineLibrary;
+
+                          if (userDataLibrary != []) {
+                            for (final item in userDataLibrary) {
+                              if (!offlineLibrary.contains(item)) {
+                                OfflineLibraryBox.updateLibrary(item);
+                              }
+                            }
+                          }
+                          print("Logged in ??");
                           print(OfflineLibraryBox
                               .userBox!.values.first.isLoggedIn);
                         } else {

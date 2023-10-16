@@ -35,11 +35,17 @@ class UserData extends HiveObject {
     List<String> library;
 
     if (libraryData is String) {
-      // If libraryData is a single string, create a list with that string
-      library = [libraryData];
+      if (libraryData == "[]") {
+        library = [];
+      } else {
+        library = [libraryData];
+      }
     } else if (libraryData is List) {
-      // If libraryData is a list, assume it's a list of strings
-      library = List<String>.from(libraryData);
+      if (libraryData == []) {
+        library = [];
+      } else {
+        library = List<String>.from(libraryData);
+      }
     } else {
       // Handle other cases (e.g., empty or null data)
       library = [];

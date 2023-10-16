@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:paino_tab/models/OfflineLibrary.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
 import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
@@ -2000,7 +2001,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     );
   }
 
-  void showRewardedAd() {
+  Future<void> showRewardedAd() async {
     if (_rewardedAd != null) {
       _rewardedAd!.fullScreenContentCallback =
           FullScreenContentCallback(onAdDismissedFullScreenContent: ((ad) {
@@ -2011,7 +2012,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         createRewardedAd();
       })));
 
-      _rewardedAd!.show(
+      await _rewardedAd!.show(
           onUserEarnedReward: ((ad, reward) => {print("You earned a reward")}));
     }
   }
@@ -2054,12 +2055,19 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     final String tokenText =
         _calculateRequiredTokens(int.parse(widget.song.pages));
 
-    if (tokenText == 'Watch video and redeem') {
+    // Check if the song is already in the library
+    final isSongInLibrary = OfflineLibraryBox
+        .userBox!.values.first.offlineLibrary
+        .contains(widget.song.detail);
+
+    if (isSongInLibrary) {
+      // Show a snackbar saying "Already in the library"
+      Get.snackbar("Already in the library", '');
+    } else if (tokenText == 'Watch video and redeem') {
       // Show the rewarded ad
       showRewardedAd();
     } else if (requiredTokens <= userPoints) {
-      var _ = await HomeController.to.updateLibrary(
-          LoginBox.userBox!.values.first.authToken, widget.song.detail);
+      var _ = await OfflineLibraryBox.updateLibrary(widget.song.detail);
       var _data = HomeController.to
           .getuserData(LoginBox.userBox!.values.first.authToken);
       if (_) {
@@ -2071,6 +2079,10 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
       // Not enough points, show a generic snackbar
       Get.snackbar("Not enough points", '');
     }
+
+    var a = OfflineLibrary.encodeOfflineLibrary(
+        OfflineLibraryBox.userBox!.values.first.offlineLibrary);
+    print(a);
   }
 
   void checkOwnershipStatus() {
