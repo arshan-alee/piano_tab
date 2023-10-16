@@ -15,8 +15,8 @@ class HomeController extends GetxController {
 
   Future<int> getSongs() async {
     try {
-      var response =
-          await http.get(Uri.parse('https://ktswebhub.com/dev/api/'));
+      var response = await http
+          .get(Uri.parse('https://ktswebhub.com/ppbl/api.php?catalog'));
       if (response.statusCode == 200) {
         songs = songsFromJson(response.body);
         status.value = 0;
