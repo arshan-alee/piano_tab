@@ -69,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           const BookPage(),
                           const SearchPage(),
                           widget.isLoggedIn == true
-                              ? const LibraryPage()
+                              ? LibraryPage()
                               : LibraryOffline(),
                           const SongPage()
                         ],

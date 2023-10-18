@@ -1363,7 +1363,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     }
   }
 
-  int calculateRequiredTokens(int pages) {
+  String calculateRequiredTokens(int pages) {
     double requiredTokens = 0;
     if (pages >= 24 && pages <= 75) {
       requiredTokens = pages * 0.5;
@@ -1372,7 +1372,49 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     } else if (pages >= 101 && pages <= 300) {
       requiredTokens = pages * 0.025;
     }
-    return requiredTokens.round(); // Round to the nearest integer
+    return '${requiredTokens.round()}'; // Round to the nearest integer
+  }
+
+  Future<void> AddtoLibrary(BuildContext context) async {
+    final int userPoints =
+        int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
+    final int requiredTokens =
+        int.tryParse(calculateRequiredTokens(int.parse(widget.book.pages))) ??
+            0;
+    final String tokenText =
+        calculateRequiredTokens(int.parse(widget.book.pages));
+
+    // Check if the song is already in the library
+    final isSongInLibrary = OfflineLibraryBox
+        .userBox!.values.first.offlineLibrary
+        .contains(widget.book.detail);
+
+    if (isSongInLibrary) {
+      // Show a snackbar saying "Already in the library"
+      Get.snackbar("Already in the library", '');
+    } else if (requiredTokens <= userPoints) {
+      var _ = await OfflineLibraryBox.updateLibrary(widget.book.detail);
+      var _data = HomeController.to
+          .getuserData(LoginBox.userBox!.values.first.authToken);
+      if (_) {
+        Get.snackbar("${widget.book.title} is added to library", '');
+      } else {
+        Get.snackbar("Failed to update library", '');
+      }
+    } else {
+      // Not enough points, show a generic snackbar
+      Get.snackbar("Not enough points", '');
+    }
+
+    var a = OfflineLibrary.encodeOfflineLibrary(
+        OfflineLibraryBox.userBox!.values.first.offlineLibrary);
+    print(a);
+    if (OfflineLibraryBox.userBox!.values.first.isLoggedIn == true) {
+      var submitted = HomeController.to
+          .updateLibrary(LoginBox.userBox!.values.first.authToken, a);
+      var userdata = await HomeController.to
+          .getuserData(LoginBox.userBox!.values.first.authToken);
+    }
   }
 
   void checkOwnershipStatus() {
@@ -1489,7 +1531,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                 ),
                               ),
                               CustomContainer(
-                                onpressed: () {},
+                                onpressed: () {
+                                  AddtoLibrary(context);
+                                },
                                 height: size.height * 0.04,
                                 width: size.width * 0.2,
                                 color: MyColors.whiteColor,
@@ -2083,10 +2127,12 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     var a = OfflineLibrary.encodeOfflineLibrary(
         OfflineLibraryBox.userBox!.values.first.offlineLibrary);
     print(a);
-    var submitted = HomeController.to
-        .updateLibrary(LoginBox.userBox!.values.first.authToken, a);
-    var userdata = await HomeController.to
-        .getuserData(LoginBox.userBox!.values.first.authToken);
+    if (OfflineLibraryBox.userBox!.values.first.isLoggedIn == true) {
+      var submitted = HomeController.to
+          .updateLibrary(LoginBox.userBox!.values.first.authToken, a);
+      var userdata = await HomeController.to
+          .getuserData(LoginBox.userBox!.values.first.authToken);
+    }
   }
 
   void checkOwnershipStatus() {
