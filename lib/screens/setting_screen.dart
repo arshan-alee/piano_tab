@@ -14,8 +14,7 @@ import '../utils/colors.dart';
 import '../utils/model.dart';
 
 class SettingScreen extends StatefulWidget {
-  const SettingScreen({super.key, required this.userName, required this.email});
-  final String userName;
+  const SettingScreen({super.key, required this.email});
   final String email;
   @override
   State<SettingScreen> createState() => _SettingScreenState();
@@ -88,7 +87,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           height: size.height * 0.02,
                         ),
                         Container(
-                          height: size.height * 0.2,
+                          height: size.height * 0.13,
                           width: size.width,
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
@@ -97,24 +96,6 @@ class _SettingScreenState extends State<SettingScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.person,
-                                    color: MyColors.whiteColor,
-                                  ),
-                                  SizedBox(
-                                    width: size.width * 0.05,
-                                  ),
-                                  TextWidget(
-                                    text: widget.userName,
-                                    fontSize: 18,
-                                  )
-                                ],
-                              ),
-                              Divider(
-                                color: MyColors.lightGrey,
-                              ),
                               Row(
                                 children: [
                                   Icon(

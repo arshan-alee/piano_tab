@@ -23,7 +23,7 @@ class _SongPageState extends State<SongPage> {
     Size size = MediaQuery.of(context).size;
     List<Songs> sng =
         HomeController.filterSongs(HomeController.to.songs!, type: 'song');
-    List<SongModel> songs = HomeController.to.songModelList(songs: sng);
+    List<ListItemModel> songs = HomeController.to.songModelList(songs: sng);
 
     return WillPopScope(
       onWillPop: () async {

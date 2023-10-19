@@ -52,6 +52,7 @@ dependencies:
   hive_flutter:
   audioplayers: ^5.2.0
   build_runner:
+  rate_my_app:
 
 
 dev_dependencies:

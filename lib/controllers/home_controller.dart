@@ -89,57 +89,59 @@ class HomeController extends GetxController {
     }).toList();
   }
 
-  List<BookModel> bookModelList({required List<Songs> songs}) {
-    List<BookModel> lst = [];
+  List<ListItemModel> bookModelList({required List<Songs> songs}) {
+    List<ListItemModel> lst = [];
     songs.forEach((e) {
       // print(
       //     'imgs : https://www.ktswebhub.com/ppbl/resources/images2/${e.bkSku}b.jpg');
-      BookModel bookModel = BookModel(
-          e.image == null
-              ? "https://media.istockphoto.com/id/106533163/photo/plan.jpg?s=612x612&w=0&k=20&c=-XArhVuWKh1hqkBc7YWO-oCy785cuQuS3o2-oOpNBCQ="
-              : "https://www.ktswebhub.com/ppbl/resources/images2/${e.bkSku}b.jpg",
-          // "https: //www.ktswebhub.com/ppbl/resources/images2/BK059178.jpg/",
-          e.bkName == null ? '' : e.bkName!,
-          e.bkSku == null ? '' : e.bkSku!,
-          'yellow',
-          int.parse(e.pages!) <= 5
-              ? "${int.parse(e.pages!) * 1}"
-              : int.parse(e.pages!) > 5 && int.parse(e.pages!) <= 10
-                  ? "${int.parse(e.pages!) * 0.5}"
-                  : "${int.parse(e.pages!) * 0.25}",
-          e.price == null ? '' : e.price!,
-          e.artist == null ? '' : e.artist!,
-          e.genre == null ? '' : e.genre!,
-          e.pages == null ? '' : e.pages!,
-          e.difficulty == null ? '' : e.difficulty!,
-          e.description == null ? '' : e.description!);
-      lst.add(bookModel);
-    });
-    return lst;
-  }
-
-  List<SongModel> songModelList({required List<Songs> songs}) {
-    List<SongModel> songList = [];
-    songs.forEach((e) {
-      SongModel songModel = SongModel(
-        e.songName == null ? '' : e.songName!,
-        e.songSku == null ? '' : e.songSku!,
-        e.difficulty == "Intermediate"
-            ? "yellow"
-            : e.difficulty == "Advanced"
-                ? 'red'
-                : 'green',
+      ListItemModel bookModel = ListItemModel(
+        // "https: //www.ktswebhub.com/ppbl/resources/images2/BK059178.jpg/",
+        e.bkName == null ? '' : e.bkName!,
+        e.bkSku == null ? '' : e.bkSku!,
+        'yellow',
         int.parse(e.pages!) <= 5
             ? "${int.parse(e.pages!) * 1}"
             : int.parse(e.pages!) > 5 && int.parse(e.pages!) <= 10
                 ? "${int.parse(e.pages!) * 0.5}"
                 : "${int.parse(e.pages!) * 0.25}",
         e.pages == null ? '' : e.pages!,
+        e.price == null ? '' : e.price!,
         e.artist == null ? '' : e.artist!,
         e.genre == null ? '' : e.genre!,
         e.difficulty == null ? '' : e.difficulty!,
         e.description == null ? '' : e.description!,
+        e.image == null
+            ? "https://media.istockphoto.com/id/106533163/photo/plan.jpg?s=612x612&w=0&k=20&c=-XArhVuWKh1hqkBc7YWO-oCy785cuQuS3o2-oOpNBCQ="
+            : "https://www.ktswebhub.com/ppbl/resources/images2/${e.bkSku}b.jpg",
       );
+      lst.add(bookModel);
+    });
+    return lst;
+  }
+
+  List<ListItemModel> songModelList({required List<Songs> songs}) {
+    List<ListItemModel> songList = [];
+    songs.forEach((e) {
+      ListItemModel songModel = ListItemModel(
+          e.songName == null ? '' : e.songName!,
+          e.songSku == null ? '' : e.songSku!,
+          e.difficulty == "Intermediate"
+              ? "yellow"
+              : e.difficulty == "Advanced"
+                  ? 'red'
+                  : 'green',
+          int.parse(e.pages!) <= 5
+              ? "${int.parse(e.pages!) * 1}"
+              : int.parse(e.pages!) > 5 && int.parse(e.pages!) <= 10
+                  ? "${int.parse(e.pages!) * 0.5}"
+                  : "${int.parse(e.pages!) * 0.25}",
+          e.pages == null ? '' : e.pages!,
+          e.price == null ? '' : e.price!,
+          e.artist == null ? '' : e.artist!,
+          e.genre == null ? '' : e.genre!,
+          e.difficulty == null ? '' : e.difficulty!,
+          e.description == null ? '' : e.description!,
+          e.image == null ? '' : e.image!);
       songList.add(songModel);
     });
     return songList;

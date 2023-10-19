@@ -592,10 +592,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                               InkWell(
                                 onTap: () {
                                   Scaffold.of(context).closeDrawer();
-                                  Get.to(() => SettingScreen(
-                                        email: email,
-                                        userName: username,
-                                      ));
+                                  Get.to(() => SettingScreen(email: email));
                                 },
                                 child: Image.asset(
                                   'assets/images/settings.png',

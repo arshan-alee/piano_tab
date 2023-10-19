@@ -23,7 +23,7 @@ class _BookPageState extends State<BookPage> {
   Widget build(BuildContext context) {
     List<Songs> sng =
         HomeController.filterSongs(HomeController.to.songs!, type: 'book');
-    List<BookModel> books = HomeController.to.bookModelList(songs: sng);
+    List<ListItemModel> books = HomeController.to.bookModelList(songs: sng);
     Size size = MediaQuery.of(context).size;
 
     return WillPopScope(
@@ -83,7 +83,7 @@ class _BookPageState extends State<BookPage> {
                             selectedBookIndex = index; // Store selected index
                           });
                         },
-                        child: BookWidget(
+                        child: RecentReleasedWidget(
                           list: books[index],
                         ),
                       ),

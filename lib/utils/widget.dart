@@ -34,6 +34,49 @@ class CustomAppBar extends StatefulWidget {
 }
 
 class _CustomAppBarState extends State<CustomAppBar> {
+  RewardedAd? _rewardedAd;
+
+  @override
+  void initState() {
+    super.initState();
+    createRewardedAd();
+  }
+
+  void createRewardedAd() {
+    RewardedAd.load(
+      adUnitId: AdMobService.rewardedAdUnitId!,
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (ad) {
+          setState(() {
+            _rewardedAd = ad;
+          });
+        },
+        onAdFailedToLoad: (error) {
+          setState(() {
+            _rewardedAd = null;
+          });
+        },
+      ),
+    );
+  }
+
+  void showRewardedAd() {
+    if (_rewardedAd != null) {
+      _rewardedAd!.fullScreenContentCallback =
+          FullScreenContentCallback(onAdDismissedFullScreenContent: ((ad) {
+        ad.dispose();
+        createRewardedAd();
+      }), onAdFailedToShowFullScreenContent: (((ad, error) {
+        ad.dispose();
+        createRewardedAd();
+      })));
+
+      _rewardedAd!.show(
+          onUserEarnedReward: ((ad, reward) => {print("You earned a reward")}));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -171,7 +214,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   height: size.height * 0.01,
                 ),
                 CustomContainer(
-                    onpressed: () {},
+                    onpressed: () {
+                      showRewardedAd();
+                    },
                     height: size.height * 0.035,
                     width: size.width * 0.2,
                     color: MyColors.primaryColor,
@@ -255,113 +300,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 SizedBox(
                   height: size.height * 0.015,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextWidget(
-                      text: 'Follow us on Facebook',
-                      fontSize: 14,
-                      color: MyColors.primaryColor,
-                    ),
-                    CustomContainer(
-                        onpressed: () {},
-                        height: size.height * 0.035,
-                        width: size.width * 0.15,
-                        color: MyColors.whiteColor,
-                        borderRadius: 40,
-                        borderColor: MyColors.primaryColor,
-                        borderWidth: 1.2,
-                        widget: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  const CircleAvatar(
-                                    backgroundImage:
-                                        AssetImage('assets/images/logo_2.png'),
-                                    maxRadius: 7.5,
-                                  ),
-                                  Container(
-                                    height: size.height * 0.025,
-                                    width: 1,
-                                    color:
-                                        MyColors.primaryColor.withOpacity(0.5),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: TextWidget(
-                                text: '23',
-                                fontSize: 12,
-                                color: MyColors.primaryColor,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            )
-                          ],
-                        ))
-                  ],
-                ),
-                SizedBox(
-                  height: size.height * 0.015,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextWidget(
-                      text: 'Follow us on Twitter',
-                      fontSize: 14,
-                      color: MyColors.primaryColor,
-                    ),
-                    CustomContainer(
-                        onpressed: () {},
-                        height: size.height * 0.035,
-                        width: size.width * 0.15,
-                        color: MyColors.whiteColor,
-                        borderRadius: 40,
-                        borderColor: MyColors.primaryColor,
-                        borderWidth: 1.2,
-                        widget: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  const CircleAvatar(
-                                    backgroundImage:
-                                        AssetImage('assets/images/logo_2.png'),
-                                    maxRadius: 7.5,
-                                  ),
-                                  Container(
-                                    height: size.height * 0.025,
-                                    width: 1,
-                                    color:
-                                        MyColors.primaryColor.withOpacity(0.5),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: TextWidget(
-                                text: '23',
-                                fontSize: 12,
-                                color: MyColors.primaryColor,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            )
-                          ],
-                        ))
-                  ],
-                )
               ],
             ),
           ),
@@ -642,19 +580,23 @@ class TextWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      child: Text(
-        text,
-        style: TextStyle(
-          fontFamily: fontFamily ?? 'Inter',
-          color: color ?? MyColors.whiteColor,
-          fontWeight: fontWeight ?? FontWeight.w400,
-          letterSpacing: letterSpacing ?? 0.1,
-          fontSize: fontSize ?? 16,
-          overflow: overflow,
-          decoration: underline ?? TextDecoration.none,
+      child: FittedBox(
+        fit: BoxFit
+            .scaleDown, // This will scale down the text to fit in one line
+        child: Text(
+          text,
+          style: TextStyle(
+            fontFamily: fontFamily ?? 'Inter',
+            color: color ?? MyColors.whiteColor,
+            fontWeight: fontWeight ?? FontWeight.w400,
+            letterSpacing: letterSpacing ?? 0.1,
+            fontSize: fontSize ?? 16,
+            overflow: overflow,
+            decoration: underline ?? TextDecoration.none,
+          ),
+          maxLines: maxLines,
+          softWrap: true, // Allow text to wrap within the available space
         ),
-        maxLines: maxLines,
-        softWrap: true, // Allow text to wrap within the available space
       ),
     );
   }
@@ -935,10 +877,37 @@ class BottomWidget extends StatelessWidget {
 
 class RecentReleasedWidget extends StatelessWidget {
   const RecentReleasedWidget({super.key, required this.list});
-  final SongModel list;
+  final ListItemModel list;
+
+  String calculateRequiredTokens(int pages, bool isBook) {
+    if (isBook) {
+      double requiredTokens = 0;
+      if (pages >= 24 && pages <= 75) {
+        requiredTokens = pages * 0.5;
+      } else if (pages >= 76 && pages <= 100) {
+        requiredTokens = pages * 0.4;
+      } else if (pages >= 101 && pages <= 300) {
+        requiredTokens = pages * 0.025;
+      }
+      return '${requiredTokens.round()}'; // Round to the nearest integer
+    } else {
+      if (pages == 1) {
+        return '1';
+      } else if (pages >= 2 && pages <= 5) {
+        return '${(pages * 3).round()}';
+      } else {
+        return '${(pages * 2).round()}';
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    final bool isBook = list.detail.startsWith('BK');
+    final String tokenText =
+        calculateRequiredTokens(int.parse(list.pages), isBook);
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Container(
@@ -952,29 +921,35 @@ class RecentReleasedWidget extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Container(
-                  height: 165.h,
-                  decoration: const BoxDecoration(
-                      image: DecorationImage(
-                          image: AssetImage('assets/images/background.jpeg'),
-                          fit: BoxFit.fill)),
-                  child: Center(
-                    child: CircleAvatar(
-                      maxRadius: 40,
-                      backgroundColor: MyColors.whiteColor,
-                      child: Center(
-                        child: Image.asset(
-                          'assets/images/new_logo.png',
+                isBook
+                    ? Image.network(
+                        list.imageUrl,
+                        fit: BoxFit.cover,
+                      )
+                    : Container(
+                        height: 165.h,
+                        decoration: BoxDecoration(
+                            image: DecorationImage(
+                                image:
+                                    AssetImage('assets/images/background.jpeg'),
+                                fit: BoxFit.fill)),
+                        child: Center(
+                          child: CircleAvatar(
+                            maxRadius: 40,
+                            backgroundColor: MyColors.whiteColor,
+                            child: Center(
+                              child: Image.asset(
+                                'assets/images/new_logo.png',
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
               ],
             ),
             Container(
               height: 85.h,
-              width: 145.w,
+              width: 175.w,
               color: MyColors.darkBlue,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
@@ -983,7 +958,7 @@ class RecentReleasedWidget extends StatelessWidget {
                   children: [
                     TextWidget(
                       text: list.title,
-                      fontSize: 14.sp,
+                      fontSize: 13.sp,
                     ),
                     SizedBox(
                       height: size.height * 0.005,
@@ -991,18 +966,14 @@ class RecentReleasedWidget extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        TextWidget(
-                          text: list.detail,
-                          fontSize: 10.sp,
-                          color: MyColors.lightGrey,
-                        ),
+                        Spacer(),
                         Icon(
                           Icons.circle,
                           color: list.color == 'red'
                               ? MyColors.red
                               : list.color == 'yellow'
                                   ? MyColors.yellowColor
-                                  : MyColors.transparent,
+                                  : MyColors.greenColor,
                           size: 14.h,
                         )
                       ],
@@ -1014,23 +985,63 @@ class RecentReleasedWidget extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.star,
-                              color: MyColors.yellowColor,
-                              size: 20,
-                            ),
-                            TextWidget(
-                              text: list.rating,
-                              fontSize: 14.sp,
-                            )
-                          ],
+                        CustomContainer(
+                          onpressed: () {},
+                          height: 19.h,
+                          width: 55.w,
+                          color: MyColors.whiteColor,
+                          borderRadius: 40,
+                          borderColor: MyColors.transparent,
+                          borderWidth: 0,
+                          widget: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              const CircleAvatar(
+                                backgroundImage:
+                                    AssetImage('assets/images/logo_2.png'),
+                                maxRadius: 8,
+                              ),
+                              TextWidget(
+                                fontSize: 12.sp,
+                                text: tokenText,
+                                color: MyColors.blackColor,
+                              ),
+                            ],
+                          ),
                         ),
-                        TextWidget(
-                          text: 'Pages: ${list.pages}',
-                          fontSize: 12.sp,
-                        )
+                        isBook
+                            ? CustomContainer(
+                                onpressed: () {},
+                                height: size.height * 0.028,
+                                width: size.width * 0.20,
+                                color: MyColors.whiteColor,
+                                borderRadius: 40,
+                                borderColor: MyColors.transparent,
+                                borderWidth: 0,
+                                widget: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    TextWidget(
+                                      text: ' \$ ${list.price}',
+                                      color: MyColors.blackColor,
+                                      fontSize: 12.sp,
+                                    ),
+                                    Container(
+                                      height: size.height * 0.02,
+                                      width: 1.5,
+                                      color: MyColors.greyColor,
+                                    ),
+                                    Image.asset(
+                                      'assets/images/amazon.png',
+                                      height: 12,
+                                    )
+                                  ],
+                                ))
+                            : TextWidget(
+                                text: 'Pages: ${list.pages}',
+                                fontSize: 12.sp,
+                              )
                       ],
                     )
                   ],
@@ -1046,7 +1057,7 @@ class RecentReleasedWidget extends StatelessWidget {
 
 class JazzWidget extends StatelessWidget {
   const JazzWidget({super.key, required this.list});
-  final SongModel list;
+  final ListItemModel list;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -1158,7 +1169,7 @@ class JazzWidget extends StatelessWidget {
 
 class BookWidget extends StatelessWidget {
   BookWidget({super.key, required this.list});
-  final BookModel list;
+  final ListItemModel list;
   final HomeController ctrl = Get.find();
   @override
   Widget build(BuildContext context) {
@@ -1298,7 +1309,7 @@ class BookWidget extends StatelessWidget {
 }
 
 class BookDetailScreen extends StatefulWidget {
-  final BookModel book;
+  final ListItemModel book;
   const BookDetailScreen({super.key, required this.book});
 
   @override
@@ -1589,7 +1600,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               Expanded(
                                 child: TextWidget(
                                   text: widget.book.artist,
-                                  fontSize: 11,
+                                  fontSize: 14,
                                   color: MyColors.blackColor,
                                 ),
                               )
@@ -1610,7 +1621,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               Expanded(
                                 child: TextWidget(
                                   text: widget.book.genre,
-                                  fontSize: 11,
+                                  fontSize: 14,
                                   color: MyColors.blackColor,
                                   overflow: TextOverflow
                                       .ellipsis, // Display ellipsis if the text overflows
@@ -1634,7 +1645,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               Expanded(
                                 child: TextWidget(
                                   text: widget.book.difficulty,
-                                  fontSize: 11,
+                                  fontSize: 14,
                                   color: MyColors.blackColor,
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
@@ -1657,7 +1668,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               Expanded(
                                 child: TextWidget(
                                   text: widget.book.pages,
-                                  fontSize: 11,
+                                  fontSize: 14,
                                   color: MyColors.blackColor,
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
@@ -1835,10 +1846,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             SizedBox(
               height: size.height * 0.015,
             ),
-            TextWidget(
-                color: MyColors.blackColor.withOpacity(0.4),
-                fontSize: 16.sp,
-                text: widget.book.description),
+            Text(widget.book.description,
+                style: TextStyle(
+                    color: MyColors.blackColor.withOpacity(0.4),
+                    fontSize: 16.sp)),
             SizedBox(
               height: size.height * 0.02,
             ),
@@ -1977,7 +1988,7 @@ class _DownloadingDialogState extends State<DownloadingDialog> {
 }
 
 class SongDetailScreen extends StatefulWidget {
-  final SongModel song;
+  final ListItemModel song;
   const SongDetailScreen({super.key, required this.song});
 
   @override
@@ -2313,7 +2324,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                   Expanded(
                                     child: TextWidget(
                                       text: widget.song.artist,
-                                      fontSize: 11,
+                                      fontSize: 14,
                                       color: MyColors.blackColor,
                                     ),
                                   )
@@ -2334,7 +2345,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                   Expanded(
                                     child: TextWidget(
                                       text: widget.song.genre,
-                                      fontSize: 11,
+                                      fontSize: 14,
                                       color: MyColors.blackColor,
                                       overflow: TextOverflow
                                           .ellipsis, // Display ellipsis if the text overflows
@@ -2359,7 +2370,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                   Expanded(
                                     child: TextWidget(
                                       text: widget.song.difficulty,
-                                      fontSize: 11,
+                                      fontSize: 14,
                                       color: MyColors.blackColor,
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 1,
@@ -2562,10 +2573,10 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
             SizedBox(
               height: size.height * 0.01,
             ),
-            TextWidget(
-                fontSize: 14.sp,
-                color: MyColors.blackColor.withOpacity(0.4),
-                text: widget.song.description),
+            Text(widget.song.description,
+                style: TextStyle(
+                    color: MyColors.blackColor.withOpacity(0.4),
+                    fontSize: 16.sp)),
             SizedBox(
               height: size.height * 0.02,
             ),
