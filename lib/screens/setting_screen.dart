@@ -21,9 +21,35 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
+  final List<String> offlineLibrary =
+      OfflineLibraryBox.userBox!.values.first.offlineLibrary;
+  List<ListItemModel> items = [];
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    // Get the userLibrary once and store it.
+    final userLibrary = HomeController.to.getLibraryData(offlineLibrary);
+
+    setState(() {
+      items = HomeController.to.itemModellList(songs: userLibrary);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    if (OfflineLibraryBox.userBox!.values.first.isLoggedIn == true) {
+      return loggedInView(size);
+    } else {
+      return notLoggedInView(size);
+    }
+  }
+
+  Widget loggedInView(Size size) {
     return Scaffold(
       backgroundColor: MyColors.whiteColor,
       body: SafeArea(
@@ -160,14 +186,17 @@ class _SettingScreenState extends State<SettingScreen> {
                         SizedBox(
                           height: 230.h,
                           width: size.width,
-                          child: ListView.separated(
-                            separatorBuilder: (context, index) => SizedBox(
-                              width: size.width * 0.035,
+                          child: Expanded(
+                            child: ListView.separated(
+                              shrinkWrap: true,
+                              separatorBuilder: (context, index) => SizedBox(
+                                width: size.width * 0.035,
+                              ),
+                              scrollDirection: Axis.horizontal,
+                              itemCount: 5,
+                              itemBuilder: (context, index) =>
+                                  RecentReleasedWidget(list: items[index]),
                             ),
-                            scrollDirection: Axis.horizontal,
-                            itemCount: albumList.length,
-                            itemBuilder: (context, index) =>
-                                RecentReleasedWidget(list: albumList[index]),
                           ),
                         ),
                         SizedBox(
@@ -193,14 +222,17 @@ class _SettingScreenState extends State<SettingScreen> {
                         SizedBox(
                           height: 230.h,
                           width: size.width,
-                          child: ListView.separated(
-                            separatorBuilder: (context, index) => SizedBox(
-                              width: size.width * 0.035,
+                          child: Expanded(
+                            child: ListView.separated(
+                              shrinkWrap: true,
+                              separatorBuilder: (context, index) => SizedBox(
+                                width: size.width * 0.035,
+                              ),
+                              scrollDirection: Axis.horizontal,
+                              itemCount: albumList.length,
+                              itemBuilder: (context, index) =>
+                                  RecentReleasedWidget(list: albumList[index]),
                             ),
-                            scrollDirection: Axis.horizontal,
-                            itemCount: albumList.length,
-                            itemBuilder: (context, index) =>
-                                RecentReleasedWidget(list: albumList[index]),
                           ),
                         ),
                         SizedBox(
@@ -209,6 +241,63 @@ class _SettingScreenState extends State<SettingScreen> {
                       ],
                     ),
                   ))
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget notLoggedInView(Size size) {
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(15),
+          child: Column(
+            children: [
+              CustomAppBar(
+                  action: InkWell(
+                    onTap: () {
+                      Get.back();
+                    },
+                    child: Icon(
+                      Icons.arrow_back_ios_new,
+                      color: MyColors.primaryColor,
+                    ),
+                  ),
+                  title: 'Account'),
+              SizedBox(
+                height: size.height * 0.06,
+              ),
+              TextWidget(
+                text: 'You have to login\n           first!',
+                fontSize: 26,
+                color: MyColors.blackColor,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextWidget(
+                    text: "Don't have an account?",
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: MyColors.greyColor,
+                  ),
+                  TextWidget(
+                    onTap: () {
+                      Get.offAll(() => const LoginScreen());
+                    },
+                    text: 'Login',
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: MyColors.primaryColor,
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: size.height * 0.05,
+              ),
+              Image.asset('assets/images/library.png'),
             ],
           ),
         ),

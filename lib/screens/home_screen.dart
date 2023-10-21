@@ -15,14 +15,21 @@ import 'package:paino_tab/utils/widget.dart';
 import '../utils/custom_drawer.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.isLoggedIn});
+  const HomeScreen(
+      {super.key, required this.isLoggedIn, required this.initialIndex});
   final bool isLoggedIn;
+  final int initialIndex;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;

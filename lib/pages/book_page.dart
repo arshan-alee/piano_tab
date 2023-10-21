@@ -23,7 +23,7 @@ class _BookPageState extends State<BookPage> {
   Widget build(BuildContext context) {
     List<Songs> sng =
         HomeController.filterSongs(HomeController.to.songs!, type: 'book');
-    List<ListItemModel> books = HomeController.to.bookModelList(songs: sng);
+    List<ListItemModel> books = HomeController.to.itemModellList(songs: sng);
     Size size = MediaQuery.of(context).size;
 
     return WillPopScope(

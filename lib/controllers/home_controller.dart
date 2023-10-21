@@ -66,15 +66,18 @@ class HomeController extends GetxController {
     int? maxPages,
     int? minPages,
     String? artist,
+    String? difficulty,
     String? type, // Use 'book' or 'song' as values
     String? genre,
   }) {
     return songs.where((song) {
       // Price filter
-      if (maxPrice != null && double.parse(song.price!) > maxPrice)
+      if (maxPrice != null && double.parse(song.price!) > maxPrice) {
         return false;
-      if (minPrice != null && double.parse(song.price!) < minPrice)
+      }
+      if (minPrice != null && double.parse(song.price!) < minPrice) {
         return false;
+      }
       // Pages filter
       if (maxPages != null && int.parse(song.pages!) > maxPages) return false;
       if (minPages != null && int.parse(song.pages!) < minPages) return false;
@@ -85,44 +88,47 @@ class HomeController extends GetxController {
       if (type == 'song' && song.songSku!.startsWith('BK')) return false;
       // Genre filter
       if (genre != null && song.genre != genre) return false;
-      return true; // If none of the criteria is violated, include the song
+      if (difficulty == 'Beginner' && song.difficulty != difficulty)
+        return false;
+      if (difficulty == 'Intermediate' && song.difficulty != difficulty)
+        return false;
+      if (difficulty == 'Advanced' && song.difficulty != difficulty)
+        return false;
+      if (difficulty == 'Various' && song.difficulty != difficulty)
+        return false;
+      return true;
     }).toList();
   }
 
-  List<ListItemModel> bookModelList({required List<Songs> songs}) {
+  List<ListItemModel> itemModellList({required List<Songs> songs}) {
     List<ListItemModel> lst = [];
-    songs.forEach((e) {
-      // print(
-      //     'imgs : https://www.ktswebhub.com/ppbl/resources/images2/${e.bkSku}b.jpg');
-      ListItemModel bookModel = ListItemModel(
-        // "https: //www.ktswebhub.com/ppbl/resources/images2/BK059178.jpg/",
-        e.bkName == null ? '' : e.bkName!,
-        e.bkSku == null ? '' : e.bkSku!,
-        'yellow',
-        int.parse(e.pages!) <= 5
-            ? "${int.parse(e.pages!) * 1}"
-            : int.parse(e.pages!) > 5 && int.parse(e.pages!) <= 10
-                ? "${int.parse(e.pages!) * 0.5}"
-                : "${int.parse(e.pages!) * 0.25}",
-        e.pages == null ? '' : e.pages!,
-        e.price == null ? '' : e.price!,
-        e.artist == null ? '' : e.artist!,
-        e.genre == null ? '' : e.genre!,
-        e.difficulty == null ? '' : e.difficulty!,
-        e.description == null ? '' : e.description!,
-        e.image == null
-            ? "https://media.istockphoto.com/id/106533163/photo/plan.jpg?s=612x612&w=0&k=20&c=-XArhVuWKh1hqkBc7YWO-oCy785cuQuS3o2-oOpNBCQ="
-            : "https://www.ktswebhub.com/ppbl/resources/images2/${e.bkSku}b.jpg",
-      );
-      lst.add(bookModel);
-    });
-    return lst;
-  }
 
-  List<ListItemModel> songModelList({required List<Songs> songs}) {
-    List<ListItemModel> songList = [];
     songs.forEach((e) {
-      ListItemModel songModel = ListItemModel(
+      if (e.songSku != null && e.songSku!.startsWith('BK')) {
+        // This is a book
+        ListItemModel bookModel = ListItemModel(
+          e.bkName == null ? '' : e.bkName!,
+          e.songSku == null ? '' : e.songSku!,
+          'yellow',
+          int.parse(e.pages!) <= 5
+              ? "${int.parse(e.pages!) * 1}"
+              : int.parse(e.pages!) > 5 && int.parse(e.pages!) <= 10
+                  ? "${int.parse(e.pages!) * 0.5}"
+                  : "${int.parse(e.pages!) * 0.25}",
+          e.pages == null ? '' : e.pages!,
+          e.price == null ? '' : e.price!,
+          e.artist == null ? '' : e.artist!,
+          e.genre == null ? '' : e.genre!,
+          e.difficulty == null ? '' : e.difficulty!,
+          e.description == null ? '' : e.description!,
+          e.image == null
+              ? "https://media.istockphoto.com/id/106533163/photo/plan.jpg?s=612x612&w=0&k=20&c=-XArhVuWKh1hqkBc7YWO-oCy785cuQuS3o2-oOpNBCQ="
+              : "https://www.ktswebhub.com/ppbl/resources/images2/${e.songSku}b.jpg",
+        );
+        lst.add(bookModel);
+      } else {
+        // This is a song
+        ListItemModel songModel = ListItemModel(
           e.songName == null ? '' : e.songName!,
           e.songSku == null ? '' : e.songSku!,
           e.difficulty == "Intermediate"
@@ -141,10 +147,13 @@ class HomeController extends GetxController {
           e.genre == null ? '' : e.genre!,
           e.difficulty == null ? '' : e.difficulty!,
           e.description == null ? '' : e.description!,
-          e.image == null ? '' : e.image!);
-      songList.add(songModel);
+          e.image == null ? '' : e.image!,
+        );
+        lst.add(songModel);
+      }
     });
-    return songList;
+
+    return lst;
   }
 
   /*Future<bool?> getSpData() async {

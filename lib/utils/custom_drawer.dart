@@ -114,7 +114,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                               },
                                               child: Container(
                                                 height: size.height * 0.063,
-                                                width: size.width * 0.43,
+                                                width: size.width * 0.5,
                                                 decoration: BoxDecoration(
                                                   color: MyColors.whiteColor,
                                                   border: Border.all(
@@ -162,7 +162,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                               },
                                               child: Container(
                                                 height: size.height * 0.063,
-                                                width: size.width * 0.43,
+                                                width: size.width * 0.53,
                                                 decoration: BoxDecoration(
                                                   color: MyColors.whiteColor,
                                                   border: Border.all(
@@ -222,7 +222,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                               },
                                               child: Container(
                                                 height: size.height * 0.063,
-                                                width: size.width * 0.43,
+                                                width: size.width * 0.53,
                                                 decoration: BoxDecoration(
                                                   color: MyColors.whiteColor,
                                                   border: Border.all(
@@ -271,7 +271,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                               },
                                               child: Container(
                                                 height: size.height * 0.063,
-                                                width: size.width * 0.43,
+                                                width: size.width * 0.53,
                                                 decoration: BoxDecoration(
                                                   color: MyColors.whiteColor,
                                                   border: Border.all(
@@ -344,7 +344,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                               },
                                               child: Container(
                                                 height: size.height * 0.063,
-                                                width: size.width * 0.43,
+                                                width: size.width * 0.5,
                                                 decoration: BoxDecoration(
                                                   color: MyColors.whiteColor,
                                                   border: Border.all(
@@ -392,7 +392,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                               },
                                               child: Container(
                                                 height: size.height * 0.063,
-                                                width: size.width * 0.43,
+                                                width: size.width * 0.5,
                                                 decoration: BoxDecoration(
                                                   color: MyColors.whiteColor,
                                                   border: Border.all(
@@ -450,7 +450,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                               },
                                               child: Container(
                                                 height: size.height * 0.063,
-                                                width: size.width * 0.43,
+                                                width: size.width * 0.5,
                                                 decoration: BoxDecoration(
                                                   color: MyColors.whiteColor,
                                                   border: Border.all(
@@ -496,7 +496,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                             ),
                                             Container(
                                               height: size.height * 0.063,
-                                              width: size.width * 0.43,
+                                              width: size.width * 0.5,
                                               decoration: BoxDecoration(
                                                   color: MyColors.whiteColor,
                                                   borderRadius:

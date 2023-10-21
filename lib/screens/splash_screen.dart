@@ -33,6 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
               } else {
                 Get.offAll(() => const HomeScreen(
                       isLoggedIn: true,
+                      initialIndex: 0,
                     ));
               }
               // HomeController.to.getSpData().then(

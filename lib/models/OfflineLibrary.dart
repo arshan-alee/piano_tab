@@ -15,14 +15,18 @@ class OfflineLibrary {
   @HiveField(2)
   List<String> offlineLibrary;
 
-  OfflineLibrary({
-    bool? isLoggedIn,
-    String? points,
-    List<String>? offlineLibrary,
-  })  : isLoggedIn = isLoggedIn ?? false,
+  @HiveField(3)
+  List<String> favourites;
+
+  OfflineLibrary(
+      {bool? isLoggedIn,
+      String? points,
+      List<String>? offlineLibrary,
+      List<String>? favourites})
+      : isLoggedIn = isLoggedIn ?? false,
         points = points ?? '0', // Set default value as '0'
-        offlineLibrary =
-            offlineLibrary ?? []; // Set default value as an empty list
+        offlineLibrary = offlineLibrary ?? [],
+        favourites = favourites ?? []; // Set default value as an empty list
 
   Map<String, dynamic> toJson() {
     return {

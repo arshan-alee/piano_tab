@@ -18,8 +18,7 @@ class LibraryPage extends StatefulWidget {
 class _LibraryPageState extends State<LibraryPage> {
   final List<String> offlineLibrary =
       OfflineLibraryBox.userBox!.values.first.offlineLibrary;
-  List<ListItemModel> songModels = [];
-  List<ListItemModel> bookModels = [];
+  List<ListItemModel> items = [];
 
   @override
   void initState() {
@@ -32,19 +31,8 @@ class _LibraryPageState extends State<LibraryPage> {
     final userLibrary = HomeController.to.getLibraryData(offlineLibrary);
 
     setState(() {
-      songModels = getSongModels(userLibrary);
-      bookModels = getBookModels(userLibrary);
+      items = HomeController.to.itemModellList(songs: userLibrary);
     });
-  }
-
-  List<ListItemModel> getSongModels(List<Songs> userLibrary) {
-    List<Songs> songs = HomeController.filterSongs(userLibrary, type: 'song');
-    return HomeController.to.songModelList(songs: songs);
-  }
-
-  List<ListItemModel> getBookModels(List<Songs> userLibrary) {
-    List<Songs> books = HomeController.filterSongs(userLibrary, type: 'book');
-    return HomeController.to.bookModelList(songs: books);
   }
 
   @override
@@ -116,9 +104,9 @@ class _LibraryPageState extends State<LibraryPage> {
                   crossAxisSpacing: 20,
                   mainAxisExtent: 250.h,
                   childAspectRatio: 1.h),
-              itemCount: albumList.length,
+              itemCount: items.length,
               itemBuilder: (context, index) =>
-                  RecentReleasedWidget(list: albumList[index]),
+                  RecentReleasedWidget(list: items[index]),
             ),
           ),
           SizedBox(

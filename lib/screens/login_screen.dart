@@ -183,6 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           HomeController.to.index = 0;
                           Get.offAll(() => const HomeScreen(
                                 isLoggedIn: true,
+                                initialIndex: 0,
                               ));
                           OfflineLibraryBox.updateIsLoggedIn(true);
                           final userDataLibrary =

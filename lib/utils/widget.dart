@@ -15,6 +15,7 @@ import 'package:paino_tab/screens/home_screen.dart';
 import 'package:paino_tab/services/ad_mob_service.dart';
 import 'package:paino_tab/services/auth_service.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import '../controllers/home_controller.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'colors.dart';
@@ -298,12 +299,87 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   ],
                 ),
                 SizedBox(
-                  height: size.height * 0.015,
+                  height: size.height * 0.055,
                 ),
+                CustomContainer(
+                  onpressed: () {},
+                  height: size.height * 0.04,
+                  width: size.width * 0.4,
+                  color: MyColors.primaryColor,
+                  borderRadius: 40,
+                  borderColor: MyColors.primaryColor,
+                  borderWidth: 1.2,
+                  widget: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return RatingBarDialog();
+                            },
+                          );
+                        },
+                        child: TextWidget(
+                          text: 'Rate Our App',
+                          fontSize: 14,
+                          color: MyColors.whiteColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class RatingBarDialog extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text("Rate This App"),
+      content: StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          double rating = 0.0;
+
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text("Rate the app: $rating"),
+              RatingBar.builder(
+                unratedColor: Colors.grey,
+                itemCount: 5,
+                allowHalfRating: true,
+                glow: false,
+                tapOnlyMode: true,
+                itemBuilder: (context, index) => Icon(
+                  Icons.star,
+                ),
+                onRatingUpdate: (val) {
+                  setState(() {
+                    rating = val;
+                  });
+                },
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Save the rating, e.g., submit it to your server
+                  print("User has rated the app: $rating");
+
+                  // Close the dialog
+                  Navigator.of(context).pop();
+                },
+                child: Text("Submit"),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -412,6 +488,7 @@ class SkipButton extends StatelessWidget {
 
               Get.offAll(() => const HomeScreen(
                     isLoggedIn: false,
+                    initialIndex: 0,
                   ));
             },
             height: size.height * 0.035,
@@ -988,7 +1065,7 @@ class RecentReleasedWidget extends StatelessWidget {
                         CustomContainer(
                           onpressed: () {},
                           height: 19.h,
-                          width: 55.w,
+                          width: 45.w,
                           color: MyColors.whiteColor,
                           borderRadius: 40,
                           borderColor: MyColors.transparent,
@@ -1040,7 +1117,7 @@ class RecentReleasedWidget extends StatelessWidget {
                                 ))
                             : TextWidget(
                                 text: 'Pages: ${list.pages}',
-                                fontSize: 12.sp,
+                                fontSize: 11.sp,
                               )
                       ],
                     )

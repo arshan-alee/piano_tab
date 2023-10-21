@@ -94,7 +94,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (_ && _data) {
         HomeController.to.index = 0;
         Get.offAll(() => const HomeScreen(
-              isLoggedIn: true,
+              isLoggedIn: true, initialIndex: 0,
             ));
         OfflineLibraryBox.updateIsLoggedIn(true);
         final userDataLibrary =
