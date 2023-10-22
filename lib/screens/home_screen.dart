@@ -25,9 +25,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late PageController _pageController;
   @override
   void initState() {
     super.initState();
+    HomeController.to.index = widget.initialIndex;
+    _pageController = PageController(initialPage: widget.initialIndex);
   }
 
   @override
@@ -35,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: MyColors.whiteColor,
-      drawer: const CustomDrawer(),
+      drawer: CustomDrawer(initialIndex: widget.initialIndex),
       drawerEnableOpenDragGesture: false,
       endDrawer: const CustomEndDrawer(),
       endDrawerEnableOpenDragGesture: false,
@@ -65,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Expanded(
                       flex: 10,
                       child: PageView(
-                        controller: HomeController.to.homePageController,
+                        controller: _pageController,
                         onPageChanged: (value) {
                           setState(() {
                             HomeController.to.index = value;
@@ -120,12 +123,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         .toJson());
                                     print(UserDataBox
                                         .userBox!.values.first.userDataLibrary);
-                                    HomeController.to.homePageController
-                                        .animateToPage(0,
-                                            duration: const Duration(
-                                                milliseconds: 10),
-                                            curve:
-                                                Curves.fastLinearToSlowEaseIn);
+                                    _pageController.animateToPage(0,
+                                        duration:
+                                            const Duration(milliseconds: 10),
+                                        curve: Curves.fastLinearToSlowEaseIn);
                                   },
                                   icon: Icons.home_rounded,
                                   text: 'Home',
@@ -140,12 +141,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: BottomWidget(
                                   icon: Icons.book,
                                   onTap: () {
-                                    HomeController.to.homePageController
-                                        .animateToPage(1,
-                                            duration: const Duration(
-                                                milliseconds: 10),
-                                            curve:
-                                                Curves.fastLinearToSlowEaseIn);
+                                    _pageController.animateToPage(1,
+                                        duration:
+                                            const Duration(milliseconds: 10),
+                                        curve: Curves.fastLinearToSlowEaseIn);
                                   },
                                   text: 'Books',
                                   iconColor: HomeController.to.index == 1
@@ -159,12 +158,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: BottomWidget(
                                   icon: Icons.search,
                                   onTap: () {
-                                    HomeController.to.homePageController
-                                        .animateToPage(2,
-                                            duration: const Duration(
-                                                milliseconds: 10),
-                                            curve:
-                                                Curves.fastLinearToSlowEaseIn);
+                                    _pageController.animateToPage(2,
+                                        duration:
+                                            const Duration(milliseconds: 10),
+                                        curve: Curves.fastLinearToSlowEaseIn);
                                   },
                                   text: 'Search',
                                   color: HomeController.to.index == 2
@@ -178,12 +175,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: BottomWidget(
                                   icon: Icons.local_library,
                                   onTap: () {
-                                    HomeController.to.homePageController
-                                        .animateToPage(3,
-                                            duration: const Duration(
-                                                milliseconds: 10),
-                                            curve:
-                                                Curves.fastLinearToSlowEaseIn);
+                                    _pageController.animateToPage(3,
+                                        duration:
+                                            const Duration(milliseconds: 10),
+                                        curve: Curves.fastLinearToSlowEaseIn);
                                   },
                                   text: 'Library',
                                   color: HomeController.to.index == 3
@@ -197,12 +192,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: BottomWidget(
                                   icon: Icons.music_note_rounded,
                                   onTap: () {
-                                    HomeController.to.homePageController
-                                        .animateToPage(4,
-                                            duration: const Duration(
-                                                milliseconds: 10),
-                                            curve:
-                                                Curves.fastLinearToSlowEaseIn);
+                                    _pageController.animateToPage(4,
+                                        duration:
+                                            const Duration(milliseconds: 10),
+                                        curve: Curves.fastLinearToSlowEaseIn);
                                   },
                                   text: 'Song',
                                   color: HomeController.to.index == 4

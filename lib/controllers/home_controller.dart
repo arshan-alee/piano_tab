@@ -210,6 +210,11 @@ class HomeController extends GetxController {
     return _;
   }
 
+  Future<bool> updatePoints(String auth, int newpoints) async {
+    var _ = await ApiService.updatePoints(auth, newpoints);
+    return _;
+  }
+
   /*Future<String?> setUserName(String userName) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('UserName', userName);

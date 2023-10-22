@@ -53,6 +53,7 @@ dependencies:
   audioplayers: ^5.2.0
   build_runner:
   flutter_rating_bar:
+  
 
 
 dev_dependencies:

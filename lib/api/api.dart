@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:paino_tab/models/LoginModel.dart';
 import 'package:paino_tab/models/UserDataModel.dart';
@@ -94,12 +93,20 @@ class ApiService {
     }
   }
 
-  static Future<Map<String, dynamic>> updatePoints(
-      String auth, int newPoints) async {
-    final url = Uri.parse('$baseUrl?update_points');
-    final response =
-        await http.post(url, body: {'auth': auth, 'new_points': newPoints});
-    return jsonDecode(response.body);
+  static Future<bool> updatePoints(String auth, int newPoints) async {
+    var request = http.Request('POST', Uri.parse('${baseUrl}?update_points'));
+    request.body = json.encode({'auth': auth, 'new_points': newPoints});
+
+    http.Response response =
+        await http.Response.fromStream(await request.send());
+    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+    if (jsonResponse['status'] == "success") {
+      print(jsonResponse['message']);
+      return true;
+    } else {
+      print(jsonResponse['message']);
+      return false;
+    }
   }
 
   static Future<bool> updateLibrary(String auth, String newLibrary) async {

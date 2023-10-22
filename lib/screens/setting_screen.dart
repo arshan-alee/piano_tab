@@ -6,6 +6,7 @@ import 'package:paino_tab/controllers/home_controller.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
 import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
+import 'package:paino_tab/screens/home_screen.dart';
 import 'package:paino_tab/screens/login_screen.dart';
 import 'package:paino_tab/screens/reset_password.dart';
 import 'package:paino_tab/utils/widget.dart';
@@ -27,6 +28,7 @@ class _SettingScreenState extends State<SettingScreen> {
       OfflineLibraryBox.userBox!.values.first.favourites;
   List<ListItemModel> owned = [];
   List<ListItemModel> favourites = [];
+  bool isLoggedIn = OfflineLibraryBox.userBox!.values.first.isLoggedIn;
 
   @override
   void initState() {
@@ -183,6 +185,10 @@ class _SettingScreenState extends State<SettingScreen> {
                             TextWidget(
                               text: 'See all',
                               color: MyColors.blueColor,
+                              onTap: () {
+                                Get.to(HomeScreen(
+                                    isLoggedIn: isLoggedIn, initialIndex: 3));
+                              },
                             ),
                           ],
                         ),
@@ -232,6 +238,10 @@ class _SettingScreenState extends State<SettingScreen> {
                               child: TextWidget(
                                 text: 'See all',
                                 color: MyColors.blueColor,
+                                onTap: () {
+                                  Get.to(HomeScreen(
+                                      isLoggedIn: isLoggedIn, initialIndex: 3));
+                                },
                               ),
                             ),
                           ],

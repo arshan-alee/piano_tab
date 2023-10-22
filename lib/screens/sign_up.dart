@@ -92,11 +92,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
           .getuserData(LoginBox.userBox!.values.first.authToken);
       print(UserDataBox.userBox!.values.first.toJson());
       if (_ && _data) {
+        await OfflineLibraryBox.setDefault();
+        OfflineLibraryBox.updateIsLoggedIn(true);
         HomeController.to.index = 0;
         Get.offAll(() => const HomeScreen(
-              isLoggedIn: true, initialIndex: 0,
+              isLoggedIn: true,
+              initialIndex: 0,
             ));
-        OfflineLibraryBox.updateIsLoggedIn(true);
         final userDataLibrary =
             UserDataBox.userBox!.values.first.userDataLibrary;
         final offlineLibrary =

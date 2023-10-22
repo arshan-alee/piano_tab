@@ -167,10 +167,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 CustomContainer(
                     onpressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        // HomeController.to.setEmail(emailController.text);
-                        // HomeController.to.setUserName('');
-                        // HomeController.to.loginSpData();
-
                         var _ = await HomeController.to.login(
                             emailController.value.text.trim().toLowerCase(),
                             passwordController.value.text);
@@ -178,6 +174,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             LoginBox.userBox!.values.first.authToken);
                         print(UserDataBox.userBox!.values.first.toJson());
                         if (_ && _data) {
+                          await OfflineLibraryBox.setDefault();
+                          OfflineLibraryBox.updateIsLoggedIn(true);
                           var message = LoginBox.userBox!.values.first.message;
                           Get.snackbar(message, '');
                           HomeController.to.index = 0;
@@ -185,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 isLoggedIn: true,
                                 initialIndex: 0,
                               ));
-                          OfflineLibraryBox.updateIsLoggedIn(true);
+
                           final userDataLibrary =
                               UserDataBox.userBox!.values.first.userDataLibrary;
                           final offlineLibrary = OfflineLibraryBox

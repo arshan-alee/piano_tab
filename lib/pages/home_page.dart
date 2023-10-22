@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:paino_tab/controllers/home_controller.dart';
+import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/models/songs_model.dart';
+import 'package:paino_tab/pages/song_page.dart';
+import 'package:paino_tab/screens/home_screen.dart';
 import 'package:paino_tab/utils/model.dart';
 import 'package:paino_tab/utils/widget.dart';
 
@@ -21,6 +25,7 @@ class _HomePageState extends State<HomePage> {
   List<ListItemModel> contemporary = [];
   List<ListItemModel> classical = [];
   List<ListItemModel> tvfilm = [];
+  bool isLoggedIn = OfflineLibraryBox.userBox!.values.first.isLoggedIn;
   @override
   void initState() {
     super.initState();
@@ -120,32 +125,42 @@ class _HomePageState extends State<HomePage> {
                     itemBuilder: (context, index) {
                       if (index == 8) {
                         return GestureDetector(
-                          onTap: () {},
-                          child: Container(
-                            width: 150, // Adjust the width as needed
-                            height: 250.h,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
+                            onTap: () {
+                              Get.offAll(HomeScreen(
+                                  isLoggedIn: isLoggedIn, initialIndex: 4));
+                            },
+                            child: Container(
+                              width: 150, // Adjust the width as needed
+                              height: 250.h,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
-                                color:
-                                    const Color.fromARGB(179, 226, 223, 223)),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                TextWidget(
-                                  text: 'Browse',
-                                  color: MyColors.blackColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
+                                gradient: const LinearGradient(
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    Color.fromARGB(
+                                        179, 226, 223, 223), // Existing color
+                                    Colors.white, // White color
+                                  ],
                                 ),
-                                Icon(
-                                  Icons.arrow_forward,
-                                  color: MyColors.blackColor,
-                                )
-                              ],
-                            ),
-                          ),
-                        );
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextWidget(
+                                    text: 'Browse',
+                                    color: MyColors.blackColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    color: MyColors.blackColor,
+                                  ),
+                                ],
+                              ),
+                            ));
                       } else {
                         return RecentReleasedWidget(list: beginner[index]);
                       }
@@ -180,32 +195,42 @@ class _HomePageState extends State<HomePage> {
                     itemBuilder: (context, index) {
                       if (index == 8) {
                         return GestureDetector(
-                          onTap: () {},
-                          child: Container(
-                            width: 150, // Adjust the width as needed
-                            height: 250.h,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
+                            onTap: () {
+                              Get.offAll(HomeScreen(
+                                  isLoggedIn: isLoggedIn, initialIndex: 4));
+                            },
+                            child: Container(
+                              width: 150, // Adjust the width as needed
+                              height: 250.h,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
-                                color:
-                                    const Color.fromARGB(179, 226, 223, 223)),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                TextWidget(
-                                  text: 'Browse',
-                                  color: MyColors.blackColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
+                                gradient: const LinearGradient(
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    Color.fromARGB(
+                                        179, 226, 223, 223), // Existing color
+                                    Colors.white, // White color
+                                  ],
                                 ),
-                                Icon(
-                                  Icons.arrow_forward,
-                                  color: MyColors.blackColor,
-                                )
-                              ],
-                            ),
-                          ),
-                        );
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextWidget(
+                                    text: 'Browse',
+                                    color: MyColors.blackColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    color: MyColors.blackColor,
+                                  ),
+                                ],
+                              ),
+                            ));
                       } else {
                         return RecentReleasedWidget(
                             list: twentyonepilot[index]);
@@ -242,35 +267,42 @@ class _HomePageState extends State<HomePage> {
                       if (index == 8) {
                         // This is the last item, display the "Browse" button
                         return GestureDetector(
-                          onTap: () {
-                            // Handle the "Browse" button click
-                            // You can navigate to another screen or perform an action here.
-                          },
-                          child: Container(
-                            width: 150, // Adjust the width as needed
-                            height: 250.h,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
+                            onTap: () {
+                              Get.offAll(HomeScreen(
+                                  isLoggedIn: isLoggedIn, initialIndex: 4));
+                            },
+                            child: Container(
+                              width: 150, // Adjust the width as needed
+                              height: 250.h,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
-                                color:
-                                    const Color.fromARGB(179, 226, 223, 223)),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                TextWidget(
-                                  text: 'Browse',
-                                  color: MyColors.blackColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
+                                gradient: const LinearGradient(
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    Color.fromARGB(
+                                        179, 226, 223, 223), // Existing color
+                                    Colors.white, // White color
+                                  ],
                                 ),
-                                Icon(
-                                  Icons.arrow_forward,
-                                  color: MyColors.blackColor,
-                                )
-                              ],
-                            ),
-                          ),
-                        );
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextWidget(
+                                    text: 'Browse',
+                                    color: MyColors.blackColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    color: MyColors.blackColor,
+                                  ),
+                                ],
+                              ),
+                            ));
                       } else {
                         // Display your regular items from the 'tvfilm' list
                         return RecentReleasedWidget(list: pop[index]);
@@ -307,35 +339,42 @@ class _HomePageState extends State<HomePage> {
                       if (index == 8) {
                         // This is the last item, display the "Browse" button
                         return GestureDetector(
-                          onTap: () {
-                            // Handle the "Browse" button click
-                            // You can navigate to another screen or perform an action here.
-                          },
-                          child: Container(
-                            width: 150, // Adjust the width as needed
-                            height: 250.h,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
+                            onTap: () {
+                              Get.offAll(HomeScreen(
+                                  isLoggedIn: isLoggedIn, initialIndex: 4));
+                            },
+                            child: Container(
+                              width: 150, // Adjust the width as needed
+                              height: 250.h,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
-                                color:
-                                    const Color.fromARGB(179, 226, 223, 223)),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                TextWidget(
-                                  text: 'Browse',
-                                  color: MyColors.blackColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
+                                gradient: const LinearGradient(
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    Color.fromARGB(
+                                        179, 226, 223, 223), // Existing color
+                                    Colors.white, // White color
+                                  ],
                                 ),
-                                Icon(
-                                  Icons.arrow_forward,
-                                  color: MyColors.blackColor,
-                                )
-                              ],
-                            ),
-                          ),
-                        );
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextWidget(
+                                    text: 'Browse',
+                                    color: MyColors.blackColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    color: MyColors.blackColor,
+                                  ),
+                                ],
+                              ),
+                            ));
                       } else {
                         // Display your regular items from the 'tvfilm' list
                         return RecentReleasedWidget(list: contemporary[index]);
@@ -372,35 +411,42 @@ class _HomePageState extends State<HomePage> {
                       if (index == 8) {
                         // This is the last item, display the "Browse" button
                         return GestureDetector(
-                          onTap: () {
-                            // Handle the "Browse" button click
-                            // You can navigate to another screen or perform an action here.
-                          },
-                          child: Container(
-                            width: 150, // Adjust the width as needed
-                            height: 250.h,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
+                            onTap: () {
+                              Get.offAll(HomeScreen(
+                                  isLoggedIn: isLoggedIn, initialIndex: 4));
+                            },
+                            child: Container(
+                              width: 150, // Adjust the width as needed
+                              height: 250.h,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
-                                color:
-                                    const Color.fromARGB(179, 226, 223, 223)),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                TextWidget(
-                                  text: 'Browse',
-                                  color: MyColors.blackColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
+                                gradient: const LinearGradient(
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    Color.fromARGB(
+                                        179, 226, 223, 223), // Existing color
+                                    Colors.white, // White color
+                                  ],
                                 ),
-                                Icon(
-                                  Icons.arrow_forward,
-                                  color: MyColors.blackColor,
-                                )
-                              ],
-                            ),
-                          ),
-                        );
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextWidget(
+                                    text: 'Browse',
+                                    color: MyColors.blackColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    color: MyColors.blackColor,
+                                  ),
+                                ],
+                              ),
+                            ));
                       } else {
                         // Display your regular items from the 'tvfilm' list
                         return RecentReleasedWidget(list: classical[index]);
@@ -437,35 +483,42 @@ class _HomePageState extends State<HomePage> {
                       if (index == 8) {
                         // This is the last item, display the "Browse" button
                         return GestureDetector(
-                          onTap: () {
-                            // Handle the "Browse" button click
-                            // You can navigate to another screen or perform an action here.
-                          },
-                          child: Container(
-                            width: 150, // Adjust the width as needed
-                            height: 250.h,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
+                            onTap: () {
+                              Get.offAll(HomeScreen(
+                                  isLoggedIn: isLoggedIn, initialIndex: 4));
+                            },
+                            child: Container(
+                              width: 150, // Adjust the width as needed
+                              height: 250.h,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
-                                color:
-                                    const Color.fromARGB(179, 226, 223, 223)),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                TextWidget(
-                                  text: 'Browse',
-                                  color: MyColors.blackColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
+                                gradient: const LinearGradient(
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    Color.fromARGB(
+                                        179, 226, 223, 223), // Existing color
+                                    Colors.white, // White color
+                                  ],
                                 ),
-                                Icon(
-                                  Icons.arrow_forward,
-                                  color: MyColors.blackColor,
-                                )
-                              ],
-                            ),
-                          ),
-                        );
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextWidget(
+                                    text: 'Browse',
+                                    color: MyColors.blackColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    color: MyColors.blackColor,
+                                  ),
+                                ],
+                              ),
+                            ));
                       } else {
                         // Display your regular items from the 'tvfilm' list
                         return RecentReleasedWidget(list: tvfilm[index]);
@@ -474,7 +527,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 SizedBox(
-                  height: size.height * 0.1,
+                  height: size.height * 0.13,
                 ),
               ],
             ),

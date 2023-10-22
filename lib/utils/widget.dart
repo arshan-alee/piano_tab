@@ -36,7 +36,8 @@ class CustomAppBar extends StatefulWidget {
 
 class _CustomAppBarState extends State<CustomAppBar> {
   RewardedAd? _rewardedAd;
-
+  final int userPoints =
+      int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
   @override
   void initState() {
     super.initState();
@@ -74,7 +75,21 @@ class _CustomAppBarState extends State<CustomAppBar> {
       })));
 
       _rewardedAd!.show(
-          onUserEarnedReward: ((ad, reward) => {print("You earned a reward")}));
+        onUserEarnedReward: (ad, reward) {
+          print("You earned a reward");
+
+          // Your code to update points and user data
+          int newPoints = userPoints + 1;
+
+          HomeController.to
+              .updatePoints(LoginBox.userBox!.values.first.authToken, newPoints)
+              .then((pointsUpdated) async {
+            var userdata = await HomeController.to
+                .getuserData(LoginBox.userBox!.values.first.authToken);
+            // Perform additional actions with userdata
+          });
+        },
+      );
     }
   }
 
@@ -216,10 +231,11 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 ),
                 CustomContainer(
                     onpressed: () {
-                      showRewardedAd();
+                      showRewardedAd;
+                      int newpoints = userPoints + 1;
                     },
-                    height: size.height * 0.035,
-                    width: size.width * 0.2,
+                    height: size.height * 0.038,
+                    width: size.width * 0.25,
                     color: MyColors.primaryColor,
                     borderRadius: 20,
                     borderColor: MyColors.transparent,
@@ -773,7 +789,7 @@ class OtherSignIn extends StatelessWidget {
       width: size.width * 0.73,
       child: Column(children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CustomContainer(
                 onpressed: () async {
@@ -821,130 +837,130 @@ class OtherSignIn extends StatelessWidget {
                     )
                   ],
                 )),
-            CustomContainer(
-                onpressed: () {},
-                height: size.height * 0.05,
-                width: size.width * 0.35,
-                color: MyColors.primaryColor,
-                borderRadius: 40,
-                borderColor: MyColors.transparent,
-                borderWidth: 0,
-                widget: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Image.asset(
-                            'assets/images/apple.png',
-                            height: 20,
-                          ),
-                          Container(
-                            height: size.height * 0.03,
-                            width: 1.5,
-                            color: MyColors.lightGrey,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Expanded(
-                      flex: 3,
-                      child: TextWidget(
-                        text: 'Apple',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    )
-                  ],
-                )),
+            // CustomContainer(
+            //     onpressed: () {},
+            //     height: size.height * 0.05,
+            //     width: size.width * 0.35,
+            //     color: MyColors.primaryColor,
+            //     borderRadius: 40,
+            //     borderColor: MyColors.transparent,
+            //     borderWidth: 0,
+            //     widget: Row(
+            //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //       children: [
+            //         Expanded(
+            //           flex: 2,
+            //           child: Row(
+            //             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //             children: [
+            //               Image.asset(
+            //                 'assets/images/apple.png',
+            //                 height: 20,
+            //               ),
+            //               Container(
+            //                 height: size.height * 0.03,
+            //                 width: 1.5,
+            //                 color: MyColors.lightGrey,
+            //               ),
+            //             ],
+            //           ),
+            //         ),
+            //         const Expanded(
+            //           flex: 3,
+            //           child: TextWidget(
+            //             text: 'Apple',
+            //             fontSize: 14,
+            //             fontWeight: FontWeight.w400,
+            //           ),
+            //         )
+            //       ],
+            //     )),
           ],
         ),
-        SizedBox(
-          height: size.height * 0.018,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            CustomContainer(
-                onpressed: () {},
-                height: size.height * 0.05,
-                width: size.width * 0.35,
-                color: MyColors.primaryColor,
-                borderRadius: 40,
-                borderColor: MyColors.transparent,
-                borderWidth: 0,
-                widget: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Image.asset(
-                            'assets/images/twitter.png',
-                            height: 20,
-                          ),
-                          Container(
-                            height: size.height * 0.03,
-                            width: 1.5,
-                            color: MyColors.lightGrey,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Expanded(
-                      flex: 3,
-                      child: TextWidget(
-                        text: 'Twitter',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    )
-                  ],
-                )),
-            CustomContainer(
-                onpressed: () {},
-                height: size.height * 0.05,
-                width: size.width * 0.35,
-                color: MyColors.primaryColor,
-                borderRadius: 40,
-                borderColor: MyColors.transparent,
-                borderWidth: 0,
-                widget: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Image.asset(
-                            'assets/images/facebook.png',
-                            height: 20,
-                          ),
-                          Container(
-                            height: size.height * 0.03,
-                            width: 1.5,
-                            color: MyColors.lightGrey,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Expanded(
-                      flex: 3,
-                      child: TextWidget(
-                        text: 'Facebook',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    )
-                  ],
-                )),
-          ],
-        )
+        // SizedBox(
+        //   height: size.height * 0.018,
+        // ),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //   children: [
+        //     CustomContainer(
+        //         onpressed: () {},
+        //         height: size.height * 0.05,
+        //         width: size.width * 0.35,
+        //         color: MyColors.primaryColor,
+        //         borderRadius: 40,
+        //         borderColor: MyColors.transparent,
+        //         borderWidth: 0,
+        //         widget: Row(
+        //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        //           children: [
+        //             Expanded(
+        //               flex: 2,
+        //               child: Row(
+        //                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        //                 children: [
+        //                   Image.asset(
+        //                     'assets/images/twitter.png',
+        //                     height: 20,
+        //                   ),
+        //                   Container(
+        //                     height: size.height * 0.03,
+        //                     width: 1.5,
+        //                     color: MyColors.lightGrey,
+        //                   ),
+        //                 ],
+        //               ),
+        //             ),
+        //             const Expanded(
+        //               flex: 3,
+        //               child: TextWidget(
+        //                 text: 'Twitter',
+        //                 fontSize: 14,
+        //                 fontWeight: FontWeight.w400,
+        //               ),
+        //             )
+        //           ],
+        //         )),
+        //     CustomContainer(
+        //         onpressed: () {},
+        //         height: size.height * 0.05,
+        //         width: size.width * 0.35,
+        //         color: MyColors.primaryColor,
+        //         borderRadius: 40,
+        //         borderColor: MyColors.transparent,
+        //         borderWidth: 0,
+        //         widget: Row(
+        //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        //           children: [
+        //             Expanded(
+        //               flex: 2,
+        //               child: Row(
+        //                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        //                 children: [
+        //                   Image.asset(
+        //                     'assets/images/facebook.png',
+        //                     height: 20,
+        //                   ),
+        //                   Container(
+        //                     height: size.height * 0.03,
+        //                     width: 1.5,
+        //                     color: MyColors.lightGrey,
+        //                   ),
+        //                 ],
+        //               ),
+        //             ),
+        //             const Expanded(
+        //               flex: 3,
+        //               child: TextWidget(
+        //                 text: 'Facebook',
+        //                 fontSize: 14,
+        //                 fontWeight: FontWeight.w400,
+        //               ),
+        //             )
+        //           ],
+        //         )),
+        //   ],
+        // )
       ]),
     );
   }
@@ -1446,6 +1462,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   bool isOwned = false;
   final player = AudioPlayer();
   late Timer timer;
+  late PdfViewerController _pdfViewController;
+  final int userPoints =
+      int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
 
   String formatTime(int seconds) {
     return '${(Duration(seconds: seconds))}'.split('.')[0].padLeft(8);
@@ -1453,6 +1472,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 
   void initState() {
     super.initState();
+    _pdfViewController = PdfViewerController();
     timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (play) {
         player.getCurrentPosition().then((position) {
@@ -1465,20 +1485,6 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
       }
     });
     checkOwnershipStatus();
-  }
-
-  void openPdfViewer(BuildContext context, bool isOwned) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) {
-          return PdfViewScreen(
-            pdfPath: isOwned
-                ? HomeController.to.getOriginalPdfSource(widget.book.detail)
-                : HomeController.to.getSamplePdfSource(widget.book.detail),
-          );
-        },
-      ),
-    );
   }
 
   Future<void> playAudioFromUrl(String url) async {
@@ -1508,15 +1514,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   }
 
   Future<void> AddtoLibrary(BuildContext context) async {
-    final int userPoints =
-        int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
     final int requiredTokens =
         int.tryParse(calculateRequiredTokens(int.parse(widget.book.pages))) ??
             0;
-    final String tokenText =
-        calculateRequiredTokens(int.parse(widget.book.pages));
 
-    // Check if the song is already in the library
     final isSongInLibrary = OfflineLibraryBox
         .userBox!.values.first.offlineLibrary
         .contains(widget.book.detail);
@@ -1542,8 +1543,11 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         OfflineLibraryBox.userBox!.values.first.offlineLibrary);
     print(a);
     if (OfflineLibraryBox.userBox!.values.first.isLoggedIn == true) {
+      int newPoints = userPoints - requiredTokens;
       var submitted = HomeController.to
           .updateLibrary(LoginBox.userBox!.values.first.authToken, a);
+      var pointsUpdated = HomeController.to
+          .updatePoints(LoginBox.userBox!.values.first.authToken, newPoints);
       var userdata = await HomeController.to
           .getuserData(LoginBox.userBox!.values.first.authToken);
     }
@@ -1610,12 +1614,16 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                         Center(
                             child: InkWell(
                           onTap: () {
-                            openPdfViewer(context, isOwned);
+                            _showPdfViewer(
+                                context,
+                                isOwned
+                                    ? HomeController.to.getOriginalPdfSource(
+                                        widget.book.detail)
+                                    : HomeController.to.getSamplePdfSource(
+                                        widget.book.detail));
                           },
                           child: Icon(
-                            isOwned
-                                ? CupertinoIcons.eye_fill
-                                : CupertinoIcons.eye_slash_fill,
+                            CupertinoIcons.eye_fill,
                             size: 40,
                             color: MyColors.whiteColor,
                           ),
@@ -1736,14 +1744,14 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               Expanded(
                                 child: TextWidget(
                                   text: 'Artist:',
-                                  fontSize: 14,
+                                  fontSize: 15,
                                   color: MyColors.blackColor,
                                 ),
                               ),
                               Expanded(
                                 child: TextWidget(
                                   text: widget.book.artist,
-                                  fontSize: 14,
+                                  fontSize: 15,
                                   color: MyColors.blackColor,
                                 ),
                               )
@@ -1757,14 +1765,14 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               Expanded(
                                 child: TextWidget(
                                   text: 'Genre',
-                                  fontSize: 14,
+                                  fontSize: 15,
                                   color: MyColors.blackColor,
                                 ),
                               ),
                               Expanded(
                                 child: TextWidget(
                                   text: widget.book.genre,
-                                  fontSize: 14,
+                                  fontSize: 15,
                                   color: MyColors.blackColor,
                                   overflow: TextOverflow
                                       .ellipsis, // Display ellipsis if the text overflows
@@ -1781,14 +1789,14 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               Expanded(
                                 child: TextWidget(
                                   text: 'Difficulty:',
-                                  fontSize: 14,
+                                  fontSize: 15,
                                   color: MyColors.blackColor,
                                 ),
                               ),
                               Expanded(
                                 child: TextWidget(
                                   text: widget.book.difficulty,
-                                  fontSize: 14,
+                                  fontSize: 15,
                                   color: MyColors.blackColor,
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
@@ -1804,14 +1812,14 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               Expanded(
                                 child: TextWidget(
                                   text: 'Pages:',
-                                  fontSize: 14,
+                                  fontSize: 15,
                                   color: MyColors.blackColor,
                                 ),
                               ),
                               Expanded(
                                 child: TextWidget(
                                   text: widget.book.pages,
-                                  fontSize: 14,
+                                  fontSize: 15,
                                   color: MyColors.blackColor,
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
@@ -2004,55 +2012,47 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
       ),
     );
   }
-}
 
-class PdfViewScreen extends StatefulWidget {
-  final String pdfPath;
-
-  PdfViewScreen({
-    required this.pdfPath,
-  });
-
-  @override
-  _PdfViewScreenState createState() => _PdfViewScreenState();
-}
-
-class _PdfViewScreenState extends State<PdfViewScreen> {
-  late PdfViewerController _pdfViewController;
-
-  @override
-  void initState() {
-    _pdfViewController = PdfViewerController();
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('PDF Viewer'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.file_download),
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (context) => DownloadingDialog(
-                        pdfPath: widget.pdfPath,
-                      ));
-            },
+  void _showPdfViewer(BuildContext context, String pdfPath) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext bc) {
+        return Container(
+          height: MediaQuery.of(context).size.height *
+              0.8, // Adjust the height as needed
+          child: Column(
+            children: [
+              AppBar(
+                title: Text('PDF Viewer'),
+                centerTitle: true,
+                actions: [
+                  IconButton(
+                    icon: Icon(Icons.file_download),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => DownloadingDialog(
+                          pdfPath: pdfPath, // Pass the PDF path to the dialog
+                        ),
+                      );
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.print),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+              Expanded(
+                child: SfPdfViewer.network(
+                  pdfPath, // Use the passed PDF path here
+                  controller: _pdfViewController,
+                ),
+              ),
+            ],
           ),
-          IconButton(
-            icon: Icon(Icons.print),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: SfPdfViewer.network(
-        widget.pdfPath,
-        controller: _pdfViewController,
-      ),
+        );
+      },
     );
   }
 }
@@ -2095,6 +2095,7 @@ class _DownloadingDialogState extends State<DownloadingDialog> {
 
   Future<String> _getFilePath(String filename) async {
     final dir = await getApplicationDocumentsDirectory();
+    print("${dir.path}/$filename");
     return "${dir.path}/$filename";
   }
 
@@ -2148,6 +2149,10 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   late Timer timer;
   bool isOwned = false;
   RewardedAd? _rewardedAd;
+  late PdfViewerController _pdfViewController;
+  bool isLoggedIn = OfflineLibraryBox.userBox!.values.first.isLoggedIn;
+  final int userPoints =
+      int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
 
   String formatTime(int seconds) {
     return '${(Duration(seconds: seconds))}'.split('.')[0].padLeft(8);
@@ -2167,6 +2172,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   void initState() {
     super.initState();
     createRewardedAd();
+    _pdfViewController = PdfViewerController();
     timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (play) {
         player.getCurrentPosition().then((position) {
@@ -2215,21 +2221,6 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     }
   }
 
-  void openPdfViewer(BuildContext context, bool isOwned) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) {
-          return PdfViewScreen(
-            pdfPath: isOwned
-                ? HomeController.to.getOriginalPdfSource(widget.song.detail)
-                : HomeController.to.getSamplePdfSource(widget.song.detail),
-          );
-        },
-      ),
-    );
-    checkOwnershipStatus();
-  }
-
   Future<void> getAudioDuration() async {
     final duration = await player.getDuration();
     if (duration != null) {
@@ -2245,13 +2236,14 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   }
 
   Future<void> AddtoLibrary(BuildContext context) async {
-    final int userPoints =
-        int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
     final int requiredTokens =
         int.tryParse(_calculateRequiredTokens(int.parse(widget.song.pages))) ??
             0;
     final String tokenText =
         _calculateRequiredTokens(int.parse(widget.song.pages));
+
+    // Check if the user is logged in
+    final bool isLoggedIn = OfflineLibraryBox.userBox!.values.first.isLoggedIn;
 
     // Check if the song is already in the library
     final isSongInLibrary = OfflineLibraryBox
@@ -2260,30 +2252,44 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
 
     if (isSongInLibrary) {
       // Show a snackbar saying "Already in the library"
-      Get.snackbar("Already in the library", '');
+      if (isLoggedIn) {
+        Get.snackbar("Already in the library", '');
+      }
     } else if (tokenText == 'Watch video and redeem') {
       await OfflineLibraryBox.updateLibrary(widget.song.detail);
       showRewardedAd();
+      if (isLoggedIn) {
+        Get.snackbar("Create an account to add items to the library", '');
+      }
     } else if (requiredTokens <= userPoints) {
       var _ = await OfflineLibraryBox.updateLibrary(widget.song.detail);
       var _data = HomeController.to
           .getuserData(LoginBox.userBox!.values.first.authToken);
-      if (_) {
-        Get.snackbar("${widget.song.title} is added to library", '');
+      if (isLoggedIn) {
+        Get.snackbar("${widget.song.title} is added to the library", '');
       } else {
-        Get.snackbar("Failed to update library", '');
+        // Prompt the user to create an account
+        Get.snackbar("Create an account to add items to the library", '');
       }
     } else {
       // Not enough points, show a generic snackbar
-      Get.snackbar("Not enough points", '');
+      if (isLoggedIn) {
+        Get.snackbar("Not enough points", '');
+      } else {
+        // Prompt the user to create an account
+        Get.snackbar("Create an account to add items to the library", '');
+      }
     }
 
     var a = OfflineLibrary.encodeOfflineLibrary(
         OfflineLibraryBox.userBox!.values.first.offlineLibrary);
     print(a);
     if (OfflineLibraryBox.userBox!.values.first.isLoggedIn == true) {
+      int newPoints = userPoints - requiredTokens;
       var submitted = HomeController.to
           .updateLibrary(LoginBox.userBox!.values.first.authToken, a);
+      var pointsUpdated = HomeController.to
+          .updatePoints(LoginBox.userBox!.values.first.authToken, newPoints);
       var userdata = await HomeController.to
           .getuserData(LoginBox.userBox!.values.first.authToken);
     }
@@ -2343,14 +2349,16 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                         Center(
                           child: InkWell(
                             onTap: () {
-                              setState(() {
-                                hide = !hide;
-                              });
+                              _showPdfViewer(
+                                  context,
+                                  isOwned
+                                      ? HomeController.to.getOriginalPdfSource(
+                                          widget.song.detail)
+                                      : HomeController.to.getSamplePdfSource(
+                                          widget.song.detail));
                             },
                             child: Icon(
-                              hide == true
-                                  ? CupertinoIcons.eye_fill
-                                  : CupertinoIcons.eye_slash_fill,
+                              CupertinoIcons.eye_fill,
                               size: 40,
                               color: MyColors.whiteColor,
                             ),
@@ -2482,14 +2490,14 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                   Expanded(
                                     child: TextWidget(
                                       text: 'Artist:',
-                                      fontSize: 14,
+                                      fontSize: 15,
                                       color: MyColors.blackColor,
                                     ),
                                   ),
                                   Expanded(
                                     child: TextWidget(
                                       text: widget.song.artist,
-                                      fontSize: 14,
+                                      fontSize: 15,
                                       color: MyColors.blackColor,
                                     ),
                                   )
@@ -2503,14 +2511,14 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                   Expanded(
                                     child: TextWidget(
                                       text: 'Genre',
-                                      fontSize: 14,
+                                      fontSize: 15,
                                       color: MyColors.blackColor,
                                     ),
                                   ),
                                   Expanded(
                                     child: TextWidget(
                                       text: widget.song.genre,
-                                      fontSize: 14,
+                                      fontSize: 15,
                                       color: MyColors.blackColor,
                                       overflow: TextOverflow
                                           .ellipsis, // Display ellipsis if the text overflows
@@ -2528,7 +2536,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                   Expanded(
                                     child: TextWidget(
                                       text: 'Difficulty:',
-                                      fontSize: 14,
+                                      fontSize: 15,
                                       color: MyColors.blackColor,
                                     ),
                                   ),
@@ -2551,14 +2559,14 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                   Expanded(
                                     child: TextWidget(
                                       text: 'Pages:',
-                                      fontSize: 14,
+                                      fontSize: 15,
                                       color: MyColors.blackColor,
                                     ),
                                   ),
                                   Expanded(
                                     child: TextWidget(
                                       text: widget.song.pages,
-                                      fontSize: 11,
+                                      fontSize: 15,
                                       color: MyColors.blackColor,
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 1,
@@ -2751,6 +2759,49 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showPdfViewer(BuildContext context, String pdfPath) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext bc) {
+        return Container(
+          height: MediaQuery.of(context).size.height *
+              0.8, // Adjust the height as needed
+          child: Column(
+            children: [
+              AppBar(
+                title: Text('PDF Viewer'),
+                centerTitle: true,
+                actions: [
+                  IconButton(
+                    icon: Icon(Icons.file_download),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => DownloadingDialog(
+                          pdfPath: pdfPath, // Pass the PDF path to the dialog
+                        ),
+                      );
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.print),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+              Expanded(
+                child: SfPdfViewer.network(
+                  pdfPath, // Use the passed PDF path here
+                  controller: _pdfViewController,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

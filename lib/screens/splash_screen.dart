@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
             if (HomeController.to.status.value == 0) {
               var userBox = LoginBox.userBox!;
 
-              if (userBox.values.isEmpty) {
+              if (userBox.values.first.authToken == '') {
                 Get.offAll(() => const LoginScreen());
               } else {
                 Get.offAll(() => const HomeScreen(

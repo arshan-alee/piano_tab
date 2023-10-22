@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
+import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
+import 'package:paino_tab/screens/home_screen.dart';
 import 'package:paino_tab/utils/widget.dart';
 
 import '../controllers/home_controller.dart';
@@ -8,15 +10,23 @@ import '../screens/setting_screen.dart';
 import 'colors.dart';
 
 class CustomDrawer extends StatefulWidget {
-  const CustomDrawer({super.key});
+  final int initialIndex;
+  const CustomDrawer({super.key, required this.initialIndex});
 
   @override
   State<CustomDrawer> createState() => _CustomDrawerState();
 }
 
 class _CustomDrawerState extends State<CustomDrawer> {
+  String email = '';
+  String username = '';
+  int index = 0;
+  Color color = MyColors.darkGrey;
+  bool isLoggedIn = OfflineLibraryBox.userBox!.values.first.isLoggedIn;
+
   @override
   void initState() {
+    index = widget.initialIndex;
     var userBox = LoginBox.userBox!.values.first;
     email = userBox.email;
 
@@ -37,10 +47,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
     super.initState();
   }
 
-  String email = '';
-  String username = '';
-  int index = 0;
-  Color color = MyColors.darkGrey;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -111,6 +117,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                 setState(() {
                                                   index = 0;
                                                 });
+                                                Get.offAll(HomeScreen(
+                                                    isLoggedIn: isLoggedIn,
+                                                    initialIndex: 0));
                                               },
                                               child: Container(
                                                 height: size.height * 0.063,
@@ -159,6 +168,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                 setState(() {
                                                   index = 1;
                                                 });
+                                                Get.offAll(HomeScreen(
+                                                    isLoggedIn: isLoggedIn,
+                                                    initialIndex: 1));
                                               },
                                               child: Container(
                                                 height: size.height * 0.063,
@@ -219,6 +231,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                 setState(() {
                                                   index = 2;
                                                 });
+                                                Get.offAll(HomeScreen(
+                                                    isLoggedIn: isLoggedIn,
+                                                    initialIndex: 4));
                                               },
                                               child: Container(
                                                 height: size.height * 0.063,
@@ -268,6 +283,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                 setState(() {
                                                   index = 3;
                                                 });
+                                                Get.offAll(HomeScreen(
+                                                    isLoggedIn: isLoggedIn,
+                                                    initialIndex: 3));
                                               },
                                               child: Container(
                                                 height: size.height * 0.063,
