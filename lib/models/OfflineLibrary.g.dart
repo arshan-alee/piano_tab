@@ -20,19 +20,25 @@ class OfflineLibraryAdapter extends TypeAdapter<OfflineLibrary> {
       isLoggedIn: fields[0] as bool?,
       points: fields[1] as String?,
       offlineLibrary: (fields[2] as List?)?.cast<String>(),
+      favourites: (fields[3] as List?)?.cast<String>(),
+      rating: fields[4] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, OfflineLibrary obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.isLoggedIn)
       ..writeByte(1)
       ..write(obj.points)
       ..writeByte(2)
-      ..write(obj.offlineLibrary);
+      ..write(obj.offlineLibrary)
+      ..writeByte(3)
+      ..write(obj.favourites)
+      ..writeByte(4)
+      ..write(obj.rating);
   }
 
   @override

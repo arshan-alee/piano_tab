@@ -339,27 +339,60 @@ class _CustomAppBarState extends State<CustomAppBar> {
   }
 }
 
-class RatingBarDialog extends StatelessWidget {
+class RatingBarDialog extends StatefulWidget {
+  @override
+  _RatingBarDialogState createState() => _RatingBarDialogState();
+}
+
+class _RatingBarDialogState extends State<RatingBarDialog> {
+  double rating = 0.0;
+  bool isSubmitted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Check if the user has already rated the app
+    final double userRating =
+        OfflineLibraryBox.userBox!.values.first.rating ?? 0.0;
+    if (userRating > 0.0) {
+      setState(() {
+        rating = userRating;
+        isSubmitted = true;
+      });
+    }
+  }
+
+  void submitRating(double rating) {
+    // Save the rating, e.g., submit it to your server
+    print("User has rated the app: $rating");
+
+    // Update the user's rating in the OfflineLibraryBox
+    OfflineLibraryBox.updateRating(rating);
+
+    setState(() {
+      isSubmitted = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text("Rate This App"),
-      content: StatefulBuilder(
-        builder: (BuildContext context, StateSetter setState) {
-          double rating = 0.0;
-
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text("Rate the app: $rating"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Row(
+            children: [
               RatingBar.builder(
                 unratedColor: Colors.grey,
                 itemCount: 5,
+                initialRating: rating, // Set initialRating
                 allowHalfRating: true,
-                glow: false,
+                glow: true,
                 tapOnlyMode: true,
                 itemBuilder: (context, index) => Icon(
                   Icons.star,
+                  color: Color.fromARGB(255, 255, 217, 0),
                 ),
                 onRatingUpdate: (val) {
                   setState(() {
@@ -367,19 +400,30 @@ class RatingBarDialog extends StatelessWidget {
                   });
                 },
               ),
-              ElevatedButton(
-                onPressed: () {
-                  // Save the rating, e.g., submit it to your server
-                  print("User has rated the app: $rating");
-
-                  // Close the dialog
-                  Navigator.of(context).pop();
-                },
-                child: Text("Submit"),
+              SizedBox(width: 8.0),
+              TextWidget(
+                text: '$rating',
+                fontSize: 16,
+                color: MyColors.blackColor,
               ),
             ],
-          );
-        },
+          ),
+          SizedBox(height: 8.0),
+          if (!isSubmitted) // Display the "Submit" button if not submitted
+            ElevatedButton(
+              onPressed: () {
+                // Call the function to submit the rating
+                submitRating(rating);
+              },
+              child: Text("Submit"),
+            ),
+          if (isSubmitted)
+            TextWidget(
+              text: "Thank you for rating our app!",
+              fontSize: 16,
+              color: MyColors.blackColor,
+            ),
+        ],
       ),
     );
   }
@@ -1650,11 +1694,33 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               InkWell(
                                 onTap: () {
                                   setState(() {
-                                    like = !like;
+                                    final favorites = OfflineLibraryBox
+                                        .userBox!.values.first.favourites;
+                                    if (favorites
+                                        .contains(widget.book.detail)) {
+                                      // Remove from favorites
+                                      OfflineLibraryBox.removeFromFavorites(
+                                          widget.book.detail);
+                                      if (OfflineLibraryBox
+                                          .userBox!.values.first.isLoggedIn) {
+                                        Get.snackbar(
+                                            "Removed from favorites", "");
+                                      }
+                                    } else {
+                                      // Add to favorites
+                                      OfflineLibraryBox.addToFavorites(
+                                          widget.book.detail);
+                                      if (OfflineLibraryBox
+                                          .userBox!.values.first.isLoggedIn) {
+                                        Get.snackbar("Added to favorites", "");
+                                      }
+                                    }
                                   });
                                 },
                                 child: Icon(
-                                  like
+                                  OfflineLibraryBox
+                                          .userBox!.values.first.favourites
+                                          .contains(widget.book.detail)
                                       ? CupertinoIcons.heart_fill
                                       : CupertinoIcons.heart,
                                   color: MyColors.red,
@@ -2372,16 +2438,38 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                               InkWell(
                                 onTap: () {
                                   setState(() {
-                                    like = !like;
+                                    final favorites = OfflineLibraryBox
+                                        .userBox!.values.first.favourites;
+                                    if (favorites
+                                        .contains(widget.song.detail)) {
+                                      // Remove from favorites
+                                      OfflineLibraryBox.removeFromFavorites(
+                                          widget.song.detail);
+                                      if (OfflineLibraryBox
+                                          .userBox!.values.first.isLoggedIn) {
+                                        Get.snackbar(
+                                            "Removed from favorites", "");
+                                      }
+                                    } else {
+                                      // Add to favorites
+                                      OfflineLibraryBox.addToFavorites(
+                                          widget.song.detail);
+                                      if (OfflineLibraryBox
+                                          .userBox!.values.first.isLoggedIn) {
+                                        Get.snackbar("Added to favorites", "");
+                                      }
+                                    }
                                   });
                                 },
                                 child: Icon(
-                                  like
+                                  OfflineLibraryBox
+                                          .userBox!.values.first.favourites
+                                          .contains(widget.song.detail)
                                       ? CupertinoIcons.heart_fill
                                       : CupertinoIcons.heart,
                                   color: MyColors.red,
                                 ),
-                              ),
+                              )
                             ],
                           ),
                           Column(

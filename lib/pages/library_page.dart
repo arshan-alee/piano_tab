@@ -18,7 +18,10 @@ class LibraryPage extends StatefulWidget {
 class _LibraryPageState extends State<LibraryPage> {
   final List<String> offlineLibrary =
       OfflineLibraryBox.userBox!.values.first.offlineLibrary;
-  List<ListItemModel> items = [];
+  final List<String> favrites =
+      OfflineLibraryBox.userBox!.values.first.favourites;
+  List<ListItemModel> owned = [];
+  List<ListItemModel> favourites = [];
 
   @override
   void initState() {
@@ -29,9 +32,11 @@ class _LibraryPageState extends State<LibraryPage> {
   Future<void> loadData() async {
     // Get the userLibrary once and store it.
     final userLibrary = HomeController.to.getLibraryData(offlineLibrary);
+    final fav = HomeController.to.getLibraryData(favrites);
 
     setState(() {
-      items = HomeController.to.itemModellList(songs: userLibrary);
+      owned = HomeController.to.itemModellList(songs: userLibrary);
+      favourites = HomeController.to.itemModellList(songs: fav);
     });
   }
 
@@ -46,37 +51,50 @@ class _LibraryPageState extends State<LibraryPage> {
             height: size.height * 0.015,
           ),
           Container(
-            height: size.height * 0.4,
+            height: size.height * 0.46,
             width: size.width,
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(14),
-                gradient: MyColors.gradient),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const TextWidget(
-                text: 'Favorites',
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-              ),
-              Divider(
-                height: 12,
-                color: MyColors.blackColor.withOpacity(0.4),
-                thickness: 0.5,
-              ),
-              Expanded(
-                  child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 20,
-                    mainAxisExtent: 250.h,
-                    childAspectRatio: 1.h),
-                itemCount: albumList.length,
-                itemBuilder: (context, index) =>
-                    RecentReleasedWidget(list: albumList[index]),
-              ))
-            ]),
+              borderRadius: BorderRadius.circular(14),
+              gradient: MyColors.gradient,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const TextWidget(
+                  text: 'Favorites',
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+                Divider(
+                  height: 12,
+                  color: MyColors.blackColor.withOpacity(0.4),
+                  thickness: 0.5,
+                ),
+                Expanded(
+                  child: favourites.isEmpty
+                      ? Center(
+                          child: TextWidget(
+                            text: 'Favorites are empty',
+                            fontSize: 18,
+                          ),
+                        )
+                      : GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 12,
+                            crossAxisSpacing: 20,
+                            mainAxisExtent: 250.h,
+                            childAspectRatio: 1.h,
+                          ),
+                          itemCount: favourites.length,
+                          itemBuilder: (context, index) =>
+                              RecentReleasedWidget(list: favourites[index]),
+                        ),
+                ),
+              ],
+            ),
           ),
           SizedBox(
             height: size.height * 0.015,
@@ -95,19 +113,26 @@ class _LibraryPageState extends State<LibraryPage> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 20,
-                  crossAxisSpacing: 20,
-                  mainAxisExtent: 250.h,
-                  childAspectRatio: 1.h),
-              itemCount: items.length,
-              itemBuilder: (context, index) =>
-                  RecentReleasedWidget(list: items[index]),
-            ),
+            child: owned.isEmpty
+                ? Center(
+                    child: TextWidget(
+                      text: "You don't own anything right now",
+                      fontSize: 18,
+                    ),
+                  )
+                : GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 20,
+                        crossAxisSpacing: 20,
+                        mainAxisExtent: 250.h,
+                        childAspectRatio: 1.h),
+                    itemCount: owned.length,
+                    itemBuilder: (context, index) =>
+                        RecentReleasedWidget(list: owned[index]),
+                  ),
           ),
           SizedBox(
             height: size.height * 0.12,

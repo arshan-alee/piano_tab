@@ -75,7 +75,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           const HomePage(),
                           const BookPage(),
                           const SearchPage(),
-                          widget.isLoggedIn == true
+                          OfflineLibraryBox.userBox!.values.first.isLoggedIn ==
+                                  true
                               ? LibraryPage()
                               : LibraryOffline(),
                           const SongPage()

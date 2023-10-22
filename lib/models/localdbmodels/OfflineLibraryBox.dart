@@ -50,6 +50,51 @@ class OfflineLibraryBox {
     }
   }
 
+  static Future<bool> addToFavorites(String favouriteItem) async {
+    final box = await Hive.openBox<OfflineLibrary>(boxName);
+    final offlinelibrary = box.get(boxName);
+
+    if (offlinelibrary != null) {
+      if (favouriteItem.isNotEmpty &&
+          !offlinelibrary.favourites.contains(favouriteItem)) {
+        offlinelibrary.favourites.add(favouriteItem);
+        await box.put(boxName, offlinelibrary);
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  static Future<bool> removeFromFavorites(String favouriteItem) async {
+    final box = await Hive.openBox<OfflineLibrary>(boxName);
+    final offlinelibrary = box.get(boxName);
+
+    if (offlinelibrary != null) {
+      if (favouriteItem.isNotEmpty &&
+          offlinelibrary.favourites.contains(favouriteItem)) {
+        offlinelibrary.favourites.remove(favouriteItem);
+        await box.put(boxName, offlinelibrary);
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  static Future<void> updateRating(double rating) async {
+    box = await Hive.openBox<OfflineLibrary>(boxName);
+    final offlineLibrary = box!.get(boxName);
+
+    if (offlineLibrary == null) {
+      final newOfflineLibrary = OfflineLibrary(rating: rating);
+      await box!.put(boxName, newOfflineLibrary);
+    } else {
+      offlineLibrary.rating = rating;
+      await box!.put(boxName, offlineLibrary);
+    }
+  }
+
   static Box<OfflineLibrary>? get userBox {
     if (box == null) {
       throw Exception("Offline Library box has not been initialized.");
@@ -60,10 +105,11 @@ class OfflineLibraryBox {
   static Future<void> setDefault() async {
     if (box != null) {
       final defaultModel = OfflineLibrary(
-        isLoggedIn: false, // Set your default isLoggedIn value here
-        points: '0', // Set your default points value here
-        offlineLibrary: [], // Set your default library value here
-      );
+          isLoggedIn: false,
+          points: '0',
+          offlineLibrary: [],
+          favourites: [],
+          rating: 0.0);
       await box!.clear();
       await box!.put(boxName, defaultModel);
     }

@@ -23,7 +23,11 @@ class SettingScreen extends StatefulWidget {
 class _SettingScreenState extends State<SettingScreen> {
   final List<String> offlineLibrary =
       OfflineLibraryBox.userBox!.values.first.offlineLibrary;
-  List<ListItemModel> items = [];
+  final List<String> favrites =
+      OfflineLibraryBox.userBox!.values.first.favourites;
+  List<ListItemModel> owned = [];
+  List<ListItemModel> favourites = [];
+
   @override
   void initState() {
     super.initState();
@@ -33,9 +37,11 @@ class _SettingScreenState extends State<SettingScreen> {
   Future<void> loadData() async {
     // Get the userLibrary once and store it.
     final userLibrary = HomeController.to.getLibraryData(offlineLibrary);
+    final fav = HomeController.to.getLibraryData(favrites);
 
     setState(() {
-      items = HomeController.to.itemModellList(songs: userLibrary);
+      owned = HomeController.to.itemModellList(songs: userLibrary);
+      favourites = HomeController.to.itemModellList(songs: fav);
     });
   }
 
@@ -187,16 +193,27 @@ class _SettingScreenState extends State<SettingScreen> {
                           height: 230.h,
                           width: size.width,
                           child: Expanded(
-                            child: ListView.separated(
-                              shrinkWrap: true,
-                              separatorBuilder: (context, index) => SizedBox(
-                                width: size.width * 0.035,
-                              ),
-                              scrollDirection: Axis.horizontal,
-                              itemCount: 5,
-                              itemBuilder: (context, index) =>
-                                  RecentReleasedWidget(list: items[index]),
-                            ),
+                            child: owned.isEmpty
+                                ? Center(
+                                    child: TextWidget(
+                                      text: "You don't own anything right now",
+                                      fontSize: 18,
+                                      color: MyColors.grey,
+                                    ),
+                                  )
+                                : ListView.separated(
+                                    shrinkWrap: true,
+                                    separatorBuilder: (context, index) =>
+                                        SizedBox(
+                                      width: size.width * 0.035,
+                                    ),
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount:
+                                        owned.length < 5 ? owned.length : 5,
+                                    itemBuilder: (context, index) =>
+                                        RecentReleasedWidget(
+                                            list: owned[index]),
+                                  ),
                           ),
                         ),
                         SizedBox(
@@ -210,9 +227,12 @@ class _SettingScreenState extends State<SettingScreen> {
                               color: MyColors.blackColor,
                               fontSize: 22,
                             ),
-                            TextWidget(
-                              text: 'See all',
-                              color: MyColors.blueColor,
+                            InkWell(
+                              onTap: () {},
+                              child: TextWidget(
+                                text: 'See all',
+                                color: MyColors.blueColor,
+                              ),
                             ),
                           ],
                         ),
@@ -223,16 +243,28 @@ class _SettingScreenState extends State<SettingScreen> {
                           height: 230.h,
                           width: size.width,
                           child: Expanded(
-                            child: ListView.separated(
-                              shrinkWrap: true,
-                              separatorBuilder: (context, index) => SizedBox(
-                                width: size.width * 0.035,
-                              ),
-                              scrollDirection: Axis.horizontal,
-                              itemCount: albumList.length,
-                              itemBuilder: (context, index) =>
-                                  RecentReleasedWidget(list: albumList[index]),
-                            ),
+                            child: favourites.isEmpty
+                                ? Center(
+                                    child: TextWidget(
+                                      text: 'Favorites are empty',
+                                      fontSize: 18,
+                                      color: MyColors.grey,
+                                    ),
+                                  )
+                                : ListView.separated(
+                                    shrinkWrap: true,
+                                    separatorBuilder: (context, index) =>
+                                        SizedBox(
+                                      width: size.width * 0.035,
+                                    ),
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: favourites.length < 5
+                                        ? favourites.length
+                                        : 5,
+                                    itemBuilder: (context, index) =>
+                                        RecentReleasedWidget(
+                                            list: favourites[index]),
+                                  ),
                           ),
                         ),
                         SizedBox(
