@@ -27,16 +27,19 @@ class MyAuthenticationService {
   //   }
   // }
 
-  Future authenticateWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
-      final String? authToken = googleAuth?.idToken;
+  static Future<GoogleSignInAccount?> authenticateWithGoogle() async {
+    final googleSignIn = GoogleSignIn();
 
-      return authToken; // Return the Google ID token to the server for verification
+    try {
+      // final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      // final GoogleSignInAuthentication? googleAuth =
+      //     await googleUser?.authentication;
+      // final String? authToken = googleAuth?.idToken;
+      return googleSignIn.signIn();
+      // return authToken; // Return the Google ID token to the server for verification
     } catch (e) {
       // Handle any errors during Google authentication
+      print(e);
       return null;
     }
   }

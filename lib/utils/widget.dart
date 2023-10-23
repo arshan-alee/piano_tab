@@ -793,13 +793,15 @@ class OtherSignIn extends StatelessWidget {
           children: [
             CustomContainer(
                 onpressed: () async {
-                  String authToken =
-                      await MyAuthenticationService().authenticateWithGoogle();
-                  if (authToken != null) {
-                    // Authentication successful, you can add your logic here
-                  } else {
-                    // Handle authentication failure
-                  }
+                  final user =
+                      await MyAuthenticationService.authenticateWithGoogle();
+                  // String authToken =
+                  //     await MyAuthenticationService().authenticateWithGoogle();
+                  // if (authToken != null) {
+                  //   // Authentication successful, you can add your logic here
+                  // } else {
+                  //   // Handle authentication failure
+                  // }
                 },
                 height: size.height * 0.05,
                 width: size.width * 0.35,
