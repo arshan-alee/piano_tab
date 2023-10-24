@@ -62,23 +62,22 @@ class _SettingScreenState extends State<SettingScreen> {
       backgroundColor: MyColors.whiteColor,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
+          padding: const EdgeInsets.all(10),
           child: Column(
             children: [
+              CustomAppBar(
+                  action: InkWell(
+                    onTap: () {
+                      Get.back();
+                    },
+                    child: Icon(
+                      Icons.arrow_back_ios_new,
+                      color: MyColors.primaryColor,
+                    ),
+                  ),
+                  title: 'Account'),
               Expanded(
-                  child: CustomAppBar(
-                      action: InkWell(
-                        onTap: () {
-                          Get.back();
-                        },
-                        child: Icon(
-                          Icons.arrow_back_ios_new,
-                          color: MyColors.primaryColor,
-                        ),
-                      ),
-                      title: 'Account')),
-              Expanded(
-                  flex: 10,
+                  flex: 1,
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
@@ -198,29 +197,26 @@ class _SettingScreenState extends State<SettingScreen> {
                         SizedBox(
                           height: 230.h,
                           width: size.width,
-                          child: Expanded(
-                            child: owned.isEmpty
-                                ? Center(
-                                    child: TextWidget(
-                                      text: "You don't own anything right now",
-                                      fontSize: 18,
-                                      color: MyColors.grey,
-                                    ),
-                                  )
-                                : ListView.separated(
-                                    shrinkWrap: true,
-                                    separatorBuilder: (context, index) =>
-                                        SizedBox(
-                                      width: size.width * 0.035,
-                                    ),
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount:
-                                        owned.length < 5 ? owned.length : 5,
-                                    itemBuilder: (context, index) =>
-                                        RecentReleasedWidget(
-                                            list: owned[index]),
+                          child: owned.isEmpty
+                              ? Center(
+                                  child: TextWidget(
+                                    text: "You don't own anything right now",
+                                    fontSize: 18,
+                                    color: MyColors.grey,
                                   ),
-                          ),
+                                )
+                              : ListView.separated(
+                                  shrinkWrap: true,
+                                  separatorBuilder: (context, index) =>
+                                      SizedBox(
+                                    width: size.width * 0.035,
+                                  ),
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount:
+                                      owned.length < 5 ? owned.length : 5,
+                                  itemBuilder: (context, index) =>
+                                      RecentReleasedWidget(list: owned[index]),
+                                ),
                         ),
                         SizedBox(
                           height: size.height * 0.02,
@@ -252,30 +248,28 @@ class _SettingScreenState extends State<SettingScreen> {
                         SizedBox(
                           height: 230.h,
                           width: size.width,
-                          child: Expanded(
-                            child: favourites.isEmpty
-                                ? Center(
-                                    child: TextWidget(
-                                      text: 'Favorites are empty',
-                                      fontSize: 18,
-                                      color: MyColors.grey,
-                                    ),
-                                  )
-                                : ListView.separated(
-                                    shrinkWrap: true,
-                                    separatorBuilder: (context, index) =>
-                                        SizedBox(
-                                      width: size.width * 0.035,
-                                    ),
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: favourites.length < 5
-                                        ? favourites.length
-                                        : 5,
-                                    itemBuilder: (context, index) =>
-                                        RecentReleasedWidget(
-                                            list: favourites[index]),
+                          child: favourites.isEmpty
+                              ? Center(
+                                  child: TextWidget(
+                                    text: 'Favorites are empty',
+                                    fontSize: 18,
+                                    color: MyColors.grey,
                                   ),
-                          ),
+                                )
+                              : ListView.separated(
+                                  shrinkWrap: true,
+                                  separatorBuilder: (context, index) =>
+                                      SizedBox(
+                                    width: size.width * 0.035,
+                                  ),
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: favourites.length < 5
+                                      ? favourites.length
+                                      : 5,
+                                  itemBuilder: (context, index) =>
+                                      RecentReleasedWidget(
+                                          list: favourites[index]),
+                                ),
                         ),
                         SizedBox(
                           height: size.height * 0.02,

@@ -803,8 +803,8 @@ class OtherSignIn extends StatelessWidget {
                   //   // Handle authentication failure
                   // }
                 },
-                height: size.height * 0.05,
-                width: size.width * 0.35,
+                height: size.height * 0.07,
+                width: size.width * 0.4,
                 color: MyColors.primaryColor,
                 borderRadius: 40,
                 borderColor: MyColors.transparent,
@@ -819,7 +819,7 @@ class OtherSignIn extends StatelessWidget {
                         children: [
                           Image.asset(
                             'assets/images/google.png',
-                            height: 20,
+                            height: 25,
                           ),
                           Container(
                             height: size.height * 0.03,
@@ -833,7 +833,7 @@ class OtherSignIn extends StatelessWidget {
                       flex: 3,
                       child: TextWidget(
                         text: 'Google',
-                        fontSize: 14,
+                        fontSize: 17,
                         fontWeight: FontWeight.w400,
                       ),
                     )
@@ -1580,12 +1580,27 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    final isSongInLibrary = OfflineLibraryBox
+        .userBox!.values.first.offlineLibrary
+        .contains(widget.book.detail);
+    bool isLoggedIn = OfflineLibraryBox.userBox!.values.first.isLoggedIn;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Center(
+              child: TextWidget(
+                text: widget.book.title,
+                fontSize: 15,
+                color: MyColors.blackColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             SizedBox(
               height: size.height * 0.03,
             ),
@@ -1672,35 +1687,42 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                   ],
                                 ),
                               ),
-                              CustomContainer(
-                                onpressed: () {
-                                  AddtoLibrary(context);
-                                },
-                                height: size.height * 0.04,
-                                width: size.width * 0.2,
-                                color: MyColors.whiteColor,
-                                borderRadius: 8,
-                                borderColor: MyColors.primaryColor,
-                                borderWidth: 1.5,
-                                widget: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundColor: MyColors.transparent,
-                                      backgroundImage: const AssetImage(
-                                          'assets/images/logo_2.png'),
-                                      maxRadius: 8,
-                                    ),
-                                    TextWidget(
-                                      text:
-                                          '${calculateRequiredTokens(int.parse(widget.book.pages))}', // Convert pages to int
-                                      color: MyColors.blueColor,
-                                      fontSize: 14,
+                              !isSongInLibrary
+                                  ? CustomContainer(
+                                      onpressed: () {
+                                        AddtoLibrary(context);
+                                      },
+                                      height: size.height * 0.04,
+                                      width: size.width * 0.2,
+                                      color: MyColors.whiteColor,
+                                      borderRadius: 8,
+                                      borderColor: MyColors.primaryColor,
+                                      borderWidth: 1.5,
+                                      widget: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          CircleAvatar(
+                                            backgroundColor:
+                                                MyColors.transparent,
+                                            backgroundImage: const AssetImage(
+                                                'assets/images/logo_2.png'),
+                                            maxRadius: 8,
+                                          ),
+                                          TextWidget(
+                                            text:
+                                                '${calculateRequiredTokens(int.parse(widget.book.pages))}', // Convert pages to int
+                                            color: MyColors.blueColor,
+                                            fontSize: 14,
+                                          )
+                                        ],
+                                      ),
                                     )
-                                  ],
-                                ),
-                              ),
+                                  : (isLoggedIn
+                                      ? SizedBox()
+                                      : TextWidget(
+                                          text: 'Redeemed',
+                                          color: MyColors.blackColor)),
                               InkWell(
                                 onTap: () {
                                   setState(() {
@@ -2018,40 +2040,42 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   void _showPdfViewer(BuildContext context, String pdfPath) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (BuildContext bc) {
-        return Container(
-          height: MediaQuery.of(context).size.height *
-              0.8, // Adjust the height as needed
-          child: Column(
-            children: [
-              AppBar(
-                title: Text('PDF Viewer'),
-                centerTitle: true,
-                actions: [
-                  IconButton(
-                    icon: Icon(Icons.file_download),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => DownloadingDialog(
-                          pdfPath: pdfPath, // Pass the PDF path to the dialog
-                        ),
-                      );
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.print),
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-              Expanded(
-                child: SfPdfViewer.network(
-                  pdfPath, // Use the passed PDF path here
-                  controller: _pdfViewController,
+        return FractionallySizedBox(
+          heightFactor: 0.9, // Occupies full screen height
+          child: Container(
+            child: Column(
+              children: [
+                AppBar(
+                  title: TextWidget(text: widget.book.title),
+                  centerTitle: true,
+                  actions: [
+                    IconButton(
+                      icon: Icon(Icons.file_download),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => DownloadingDialog(
+                            pdfPath: pdfPath, // Pass the PDF path to the dialog
+                          ),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.print),
+                      onPressed: () {},
+                    ),
+                  ],
                 ),
-              ),
-            ],
+                Expanded(
+                  child: SfPdfViewer.network(
+                    pdfPath, // Use the passed PDF path here
+                    controller: _pdfViewController,
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -2315,12 +2339,26 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    final isSongInLibrary = OfflineLibraryBox
+        .userBox!.values.first.offlineLibrary
+        .contains(widget.song.detail);
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Center(
+              child: TextWidget(
+                text: widget.song.title,
+                fontSize: 15,
+                color: MyColors.blackColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             SizedBox(
               height: size.height * 0.03,
             ),
@@ -2401,33 +2439,42 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                     tokenTextSize = 10.0; // Adjusted text size
                                   }
 
-                                  return CustomContainer(
-                                    onpressed: () {
-                                      AddtoLibrary(context);
-                                    },
-                                    height: size.height * 0.04,
-                                    width: tokenWidth,
-                                    color: MyColors.whiteColor,
-                                    borderRadius: 10,
-                                    borderColor: MyColors.primaryColor,
-                                    borderWidth: 1.5,
-                                    widget: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        const CircleAvatar(
-                                          backgroundImage: AssetImage(
-                                              'assets/images/logo_2.png'),
-                                          maxRadius: 8,
-                                        ),
-                                        TextWidget(
-                                          fontSize: tokenTextSize,
-                                          text: tokenText,
-                                          color: MyColors.blueColor,
-                                        ),
-                                      ],
-                                    ),
-                                  );
+                                  return !isSongInLibrary
+                                      ? CustomContainer(
+                                          onpressed: () {
+                                            AddtoLibrary(context);
+                                          },
+                                          height: size.height * 0.04,
+                                          width: tokenWidth,
+                                          color: MyColors.whiteColor,
+                                          borderRadius: 8,
+                                          borderColor: MyColors.primaryColor,
+                                          borderWidth: 1.5,
+                                          widget: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              CircleAvatar(
+                                                backgroundColor:
+                                                    MyColors.transparent,
+                                                backgroundImage: const AssetImage(
+                                                    'assets/images/logo_2.png'),
+                                                maxRadius: 8,
+                                              ),
+                                              TextWidget(
+                                                text:
+                                                    tokenText, // Convert pages to int
+                                                color: MyColors.blueColor,
+                                                fontSize: 14,
+                                              )
+                                            ],
+                                          ),
+                                        )
+                                      : (isLoggedIn
+                                          ? SizedBox()
+                                          : TextWidget(
+                                              text: 'Redeemed',
+                                              color: MyColors.blackColor));
                                 },
                               ),
                               CustomContainer(
@@ -2767,40 +2814,42 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   void _showPdfViewer(BuildContext context, String pdfPath) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (BuildContext bc) {
-        return Container(
-          height: MediaQuery.of(context).size.height *
-              0.8, // Adjust the height as needed
-          child: Column(
-            children: [
-              AppBar(
-                title: Text('PDF Viewer'),
-                centerTitle: true,
-                actions: [
-                  IconButton(
-                    icon: Icon(Icons.file_download),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => DownloadingDialog(
-                          pdfPath: pdfPath, // Pass the PDF path to the dialog
-                        ),
-                      );
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.print),
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-              Expanded(
-                child: SfPdfViewer.network(
-                  pdfPath, // Use the passed PDF path here
-                  controller: _pdfViewController,
+        return FractionallySizedBox(
+          heightFactor: 0.9, // Occupies full screen height
+          child: Container(
+            child: Column(
+              children: [
+                AppBar(
+                  title: TextWidget(text: widget.song.title),
+                  centerTitle: true,
+                  actions: [
+                    IconButton(
+                      icon: Icon(Icons.file_download),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => DownloadingDialog(
+                            pdfPath: pdfPath, // Pass the PDF path to the dialog
+                          ),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.print),
+                      onPressed: () {},
+                    ),
+                  ],
                 ),
-              ),
-            ],
+                Expanded(
+                  child: SfPdfViewer.network(
+                    pdfPath, // Use the passed PDF path here
+                    controller: _pdfViewController,
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },

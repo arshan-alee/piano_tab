@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:paino_tab/controllers/home_controller.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
+import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/screens/home_screen.dart';
 import 'package:paino_tab/screens/login_screen.dart';
 
@@ -27,15 +28,20 @@ class _SplashScreenState extends State<SplashScreen> {
           (value) {
             if (HomeController.to.status.value == 0) {
               var userBox = LoginBox.userBox!;
-
-              if (userBox.values.first.authToken == '') {
+              if (userBox.values.isEmpty) {
                 Get.offAll(() => const LoginScreen());
               } else {
-                Get.offAll(() => const HomeScreen(
-                      isLoggedIn: true,
-                      initialIndex: 0,
-                    ));
+                if (userBox.values.first.authToken == '') {
+                  Get.offAll(() => const LoginScreen());
+                } else {
+                  Get.offAll(() => HomeScreen(
+                        isLoggedIn:
+                            OfflineLibraryBox.userBox!.values.first.isLoggedIn,
+                        initialIndex: 0,
+                      ));
+                }
               }
+
               // HomeController.to.getSpData().then(
               //   (value) {
               //     if (value == null || value == false) {
