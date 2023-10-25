@@ -84,6 +84,7 @@ class HomeController extends GetxController {
       // Artist filter
       if (artist != null && song.artist != artist) return false;
       // Type filter
+      if (type == 'both') return true;
       if (type == 'book' && !song.songSku!.startsWith('BK')) return false;
       if (type == 'song' && song.songSku!.startsWith('BK')) return false;
       // Genre filter

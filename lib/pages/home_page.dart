@@ -199,12 +199,12 @@ class _HomePageState extends State<HomePage> {
                                         decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(10),
-                                          gradient: const LinearGradient(
+                                          gradient: LinearGradient(
                                             begin: Alignment.centerLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              Color.fromARGB(179, 226, 223,
-                                                  223), // Existing color
+                                              MyColors
+                                                  .darkBlue, // Existing color
                                               Colors.white, // White color
                                             ],
                                           ),
@@ -215,13 +215,13 @@ class _HomePageState extends State<HomePage> {
                                           children: [
                                             TextWidget(
                                               text: 'Browse',
-                                              color: MyColors.blackColor,
+                                              color: MyColors.whiteColor,
                                               fontSize: 18,
                                               fontWeight: FontWeight.w500,
                                             ),
                                             Icon(
                                               Icons.arrow_forward,
-                                              color: MyColors.blackColor,
+                                              color: MyColors.whiteColor,
                                             ),
                                           ],
                                         ),
@@ -282,12 +282,12 @@ class _HomePageState extends State<HomePage> {
                                         decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(10),
-                                          gradient: const LinearGradient(
+                                          gradient: LinearGradient(
                                             begin: Alignment.centerLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              Color.fromARGB(179, 226, 223,
-                                                  223), // Existing color
+                                              MyColors
+                                                  .darkBlue, // Existing color
                                               Colors.white, // White color
                                             ],
                                           ),
@@ -298,13 +298,13 @@ class _HomePageState extends State<HomePage> {
                                           children: [
                                             TextWidget(
                                               text: 'Browse',
-                                              color: MyColors.blackColor,
+                                              color: MyColors.whiteColor,
                                               fontSize: 18,
                                               fontWeight: FontWeight.w500,
                                             ),
                                             Icon(
                                               Icons.arrow_forward,
-                                              color: MyColors.blackColor,
+                                              color: MyColors.whiteColor,
                                             ),
                                           ],
                                         ),
@@ -351,7 +351,6 @@ class _HomePageState extends State<HomePage> {
                               itemCount: 9,
                               itemBuilder: (context, index) {
                                 if (index == 8) {
-                                  // This is the last item, display the "Browse" button
                                   return GestureDetector(
                                       onTap: () {
                                         Get.offAll(HomeScreen(
@@ -366,12 +365,12 @@ class _HomePageState extends State<HomePage> {
                                         decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(10),
-                                          gradient: const LinearGradient(
+                                          gradient: LinearGradient(
                                             begin: Alignment.centerLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              Color.fromARGB(179, 226, 223,
-                                                  223), // Existing color
+                                              MyColors
+                                                  .darkBlue, // Existing color
                                               Colors.white, // White color
                                             ],
                                           ),
@@ -382,13 +381,13 @@ class _HomePageState extends State<HomePage> {
                                           children: [
                                             TextWidget(
                                               text: 'Browse',
-                                              color: MyColors.blackColor,
+                                              color: MyColors.whiteColor,
                                               fontSize: 18,
                                               fontWeight: FontWeight.w500,
                                             ),
                                             Icon(
                                               Icons.arrow_forward,
-                                              color: MyColors.blackColor,
+                                              color: MyColors.whiteColor,
                                             ),
                                           ],
                                         ),
@@ -451,12 +450,12 @@ class _HomePageState extends State<HomePage> {
                                         decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(10),
-                                          gradient: const LinearGradient(
+                                          gradient: LinearGradient(
                                             begin: Alignment.centerLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              Color.fromARGB(179, 226, 223,
-                                                  223), // Existing color
+                                              MyColors
+                                                  .darkBlue, // Existing color
                                               Colors.white, // White color
                                             ],
                                           ),
@@ -467,13 +466,13 @@ class _HomePageState extends State<HomePage> {
                                           children: [
                                             TextWidget(
                                               text: 'Browse',
-                                              color: MyColors.blackColor,
+                                              color: MyColors.whiteColor,
                                               fontSize: 18,
                                               fontWeight: FontWeight.w500,
                                             ),
                                             Icon(
                                               Icons.arrow_forward,
-                                              color: MyColors.blackColor,
+                                              color: MyColors.whiteColor,
                                             ),
                                           ],
                                         ),
@@ -536,12 +535,12 @@ class _HomePageState extends State<HomePage> {
                                         decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(10),
-                                          gradient: const LinearGradient(
+                                          gradient: LinearGradient(
                                             begin: Alignment.centerLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              Color.fromARGB(179, 226, 223,
-                                                  223), // Existing color
+                                              MyColors
+                                                  .darkBlue, // Existing color
                                               Colors.white, // White color
                                             ],
                                           ),
@@ -552,13 +551,13 @@ class _HomePageState extends State<HomePage> {
                                           children: [
                                             TextWidget(
                                               text: 'Browse',
-                                              color: MyColors.blackColor,
+                                              color: MyColors.whiteColor,
                                               fontSize: 18,
                                               fontWeight: FontWeight.w500,
                                             ),
                                             Icon(
                                               Icons.arrow_forward,
-                                              color: MyColors.blackColor,
+                                              color: MyColors.whiteColor,
                                             ),
                                           ],
                                         ),
@@ -621,12 +620,12 @@ class _HomePageState extends State<HomePage> {
                                         decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(10),
-                                          gradient: const LinearGradient(
+                                          gradient: LinearGradient(
                                             begin: Alignment.centerLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              Color.fromARGB(179, 226, 223,
-                                                  223), // Existing color
+                                              MyColors
+                                                  .darkBlue, // Existing color
                                               Colors.white, // White color
                                             ],
                                           ),
@@ -637,13 +636,13 @@ class _HomePageState extends State<HomePage> {
                                           children: [
                                             TextWidget(
                                               text: 'Browse',
-                                              color: MyColors.blackColor,
+                                              color: MyColors.whiteColor,
                                               fontSize: 18,
                                               fontWeight: FontWeight.w500,
                                             ),
                                             Icon(
                                               Icons.arrow_forward,
-                                              color: MyColors.blackColor,
+                                              color: MyColors.whiteColor,
                                             ),
                                           ],
                                         ),

@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
+import 'package:http/http.dart' as http;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,11 +13,13 @@ import 'package:paino_tab/models/OfflineLibrary.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
 import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
+import 'package:paino_tab/models/songs_model.dart';
 import 'package:paino_tab/screens/home_screen.dart';
 import 'package:paino_tab/services/ad_mob_service.dart';
 import 'package:paino_tab/services/auth_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:share_plus/share_plus.dart';
 import '../controllers/home_controller.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'colors.dart';
@@ -446,7 +450,25 @@ class _RatingBarDialogState extends State<RatingBarDialog> {
 }
 
 class CustomSearchDelegate extends SearchDelegate {
-  List<String> items = ['Alan Walker', 'Justin Bieber', 'Zayn', 'Drake'];
+  final List<Songs> songs;
+
+  // Callback to handle search results
+  final void Function(List<ListItemModel> searchResults) onSearch;
+
+  CustomSearchDelegate({
+    required this.songs,
+    required this.onSearch,
+  });
+
+  List<Songs> searchItems(List<Songs> songs, String searchTerm) {
+    searchTerm = searchTerm.toLowerCase();
+    return songs.where((song) {
+      final bkName = song.bkName!.toLowerCase();
+      final songName = song.songName!.toLowerCase();
+      return !bkName.contains(searchTerm) || !songName.contains(searchTerm);
+    }).toList();
+  }
+
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
@@ -479,24 +501,25 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    List<String> matchQuery = [];
-    for (var srch in items) {
-      if (srch.toLowerCase().contains(query.toLowerCase())) {
-        matchQuery.add(srch);
-      }
-    }
+    List<Songs> sng = searchItems(songs, query);
+    List<ListItemModel> items = HomeController.to.itemModellList(songs: sng);
+
+    // Call the onSearch callback to pass the search results back to the SearchPage.
+    onSearch(items);
+
     return ListView.builder(
-      itemCount: matchQuery.length,
+      itemCount: items.length,
       itemBuilder: (context, index) {
-        var result = matchQuery[index];
-        return ListTile(
+        return InkWell(
           onTap: () {
-            query = result;
+            // You can add your onTap logic here
+            // setState(() {
+            //   detailScreen = true;
+            //   selectedSongIndex = index;
+            //   bgnritem = true;
+            // });
           },
-          title: TextWidget(
-            text: result,
-            color: MyColors.blackColor,
-          ),
+          child: RecentReleasedWidget(list: items[index]),
         );
       },
     );
@@ -504,27 +527,28 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    List<String> matchQuery = [];
-    for (var srch in items) {
-      if (srch.toLowerCase().contains(query.toLowerCase())) {
-        matchQuery.add(srch);
-      }
-    }
-    return ListView.builder(
-      itemCount: matchQuery.length,
-      itemBuilder: (context, index) {
-        var result = matchQuery[index];
-        return ListTile(
-          onTap: () {
-            query = result;
-          },
-          title: TextWidget(
-            text: result,
-            color: MyColors.blackColor,
-          ),
-        );
-      },
-    );
+    // List<String> matchQuery = [];
+    // for (var srch in items) {
+    //   if (srch.toLowerCase().contains(query.toLowerCase())) {
+    //     matchQuery.add(srch);
+    //   }
+    // }
+    return SizedBox();
+    // ListView.builder(
+    //   itemCount: matchQuery.length,
+    //   itemBuilder: (context, index) {
+    //     var result = matchQuery[index];
+    //     return ListTile(
+    //       onTap: () {
+    //         query = result;
+    //       },
+    //       title: TextWidget(
+    //         text: result,
+    //         color: MyColors.blackColor,
+    //       ),
+    //     );
+    //   },
+    // );
   }
 }
 
@@ -1960,7 +1984,17 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             Row(
               children: [
                 CustomContainer(
-                    onpressed: () {},
+                    onpressed: () async {
+                      final url = Uri.parse(widget.book.imageUrl);
+                      final response = await http.get(url);
+                      final bytes = response.bodyBytes;
+                      final temp = await getTemporaryDirectory();
+                      final path = '${temp.path}/image.jpg';
+                      File(path).writeAsBytesSync(bytes);
+                      final XFile xfile = XFile(path);
+                      await Share.shareXFiles([xfile],
+                          text: '${widget.book.title}');
+                    },
                     height: size.height * 0.04,
                     width: size.width * 0.22,
                     color: MyColors.whiteColor,
@@ -1999,14 +2033,14 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                         )
                       ],
                     )),
-                SizedBox(
-                  width: size.width * 0.02,
-                ),
-                Icon(
-                  Icons.playlist_add,
-                  size: 32,
-                  color: MyColors.primaryColor,
-                )
+                // SizedBox(
+                //   width: size.width * 0.02,
+                // ),
+                // Icon(
+                //   Icons.playlist_add,
+                //   size: 32,
+                //   color: MyColors.primaryColor,
+                // )
               ],
             ),
             SizedBox(
@@ -2043,7 +2077,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
       isScrollControlled: true,
       builder: (BuildContext bc) {
         return FractionallySizedBox(
-          heightFactor: 0.9, // Occupies full screen height
+          heightFactor: 0.95, // Occupies full screen height
           child: Container(
             child: Column(
               children: [
@@ -2734,7 +2768,17 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
             Row(
               children: [
                 CustomContainer(
-                    onpressed: () {},
+                    onpressed: () async {
+                      final url = Uri.parse(widget.song.imageUrl);
+                      final response = await http.get(url);
+                      final bytes = response.bodyBytes;
+                      final temp = await getTemporaryDirectory();
+                      final path = '${temp.path}/image.jpg';
+                      File(path).writeAsBytesSync(bytes);
+                      final XFile xfile = XFile(path);
+                      await Share.shareXFiles([xfile],
+                          text: '${widget.song.title}');
+                    },
                     height: size.height * 0.04,
                     width: size.width * 0.22,
                     color: MyColors.whiteColor,
@@ -2773,14 +2817,14 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                         )
                       ],
                     )),
-                SizedBox(
-                  width: size.width * 0.02,
-                ),
-                Icon(
-                  Icons.playlist_add,
-                  size: 32,
-                  color: MyColors.primaryColor,
-                )
+                // SizedBox(
+                //   width: size.width * 0.02,
+                // ),
+                // Icon(
+                //   Icons.playlist_add,
+                //   size: 32,
+                //   color: MyColors.primaryColor,
+                // )
               ],
             ),
             SizedBox(
@@ -2817,7 +2861,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
       isScrollControlled: true,
       builder: (BuildContext bc) {
         return FractionallySizedBox(
-          heightFactor: 0.9, // Occupies full screen height
+          heightFactor: 0.95, // Occupies full screen height
           child: Container(
             child: Column(
               children: [
