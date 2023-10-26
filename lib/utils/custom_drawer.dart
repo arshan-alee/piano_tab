@@ -853,7 +853,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
                     height:
-                        artist == true ? size.height * 0.3 : size.height * 0.05,
+                        pages == true ? size.height * 0.3 : size.height * 0.05,
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
@@ -863,7 +863,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                               InkWell(
                                 onTap: () {
                                   setState(() {
-                                    artist = !artist;
+                                    pages = !pages;
                                   });
                                 },
                                 child: SizedBox(
@@ -982,7 +982,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
                     height:
-                        pages == true ? size.height * 0.2 : size.height * 0.05,
+                        genre == true ? size.height * 0.2 : size.height * 0.05,
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
@@ -992,7 +992,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                               InkWell(
                                 onTap: () {
                                   setState(() {
-                                    pages = !pages;
+                                    genre = !genre;
                                   });
                                 },
                                 child: SizedBox(
@@ -1008,7 +1008,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                         color: MyColors.blackColor,
                                       ),
                                       Icon(
-                                        pages == true
+                                        genre == true
                                             ? Icons.remove
                                             : Icons.add,
                                         size: 18,
@@ -1031,9 +1031,9 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                         setState(() {
                                           // Toggle the selection state of the artist
                                           if (selectedGenres.contains(genr)) {
-                                            selectedArtists.remove(genr);
+                                            selectedGenres.remove(genr);
                                           } else {
-                                            selectedArtists.add(genr);
+                                            selectedGenres.add(genr);
                                           }
                                         });
                                       },
@@ -1087,8 +1087,9 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                   ),
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
-                    height:
-                        pages == true ? size.height * 0.2 : size.height * 0.05,
+                    height: difficulty == true
+                        ? size.height * 0.2
+                        : size.height * 0.05,
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
@@ -1098,7 +1099,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                               InkWell(
                                 onTap: () {
                                   setState(() {
-                                    pages = !pages;
+                                    difficulty = !difficulty;
                                   });
                                 },
                                 child: SizedBox(
@@ -1114,7 +1115,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                         color: MyColors.blackColor,
                                       ),
                                       Icon(
-                                        pages == true
+                                        difficulty == true
                                             ? Icons.remove
                                             : Icons.add,
                                         size: 18,
@@ -1135,8 +1136,8 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                     return InkWell(
                                       onTap: () {
                                         setState(() {
-                                          // Toggle the selection state of the artist
-                                          if (selectedGenres.contains(diff)) {
+                                          if (selectedDifficulty
+                                              .contains(diff)) {
                                             selectedDifficulty.remove(diff);
                                           } else {
                                             selectedDifficulty.add(diff);
@@ -1150,11 +1151,12 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                           TextWidget(
                                             text: diff,
                                             fontSize: 14,
-                                            color: selectedGenres.contains(diff)
+                                            color: selectedDifficulty
+                                                    .contains(diff)
                                                 ? MyColors.blueColor
                                                 : MyColors.blackColor,
                                           ),
-                                          selectedGenres.contains(diff)
+                                          selectedDifficulty.contains(diff)
                                               ? Icon(
                                                   Icons.circle,
                                                   color: MyColors.blueColor,
@@ -1176,7 +1178,6 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                           Divider(
                             color: MyColors.greyColor,
                           ),
-                          // ... Continue with your existing code for other sections
                         ],
                       ),
                     ),
