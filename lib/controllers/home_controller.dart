@@ -13,12 +13,24 @@ class HomeController extends GetxController {
 
   List<Songs>? songs;
 
+    //this is setting book filters. just pull data from this dont create it seperately thats not logical .
+   List<String> authorBookFilter = List<String>();
+   List<int> pageBookFilter = List<int>();
+   List<String> genreBookFilter = List<String>();
+   List<String> difficultyBookFilter = List<String>();
+    //this is setting song filters. just pull data from this dont create it seperately thats not logical .
+   List<String> authorSongFilter = List<String>();
+   List<int> pageSongFilter = List<int>();
+   List<String> genreSongFilter = List<String>();
+   List<String> difficultySongFilter = List<String>();
+
   Future<int> getSongs() async {
     try {
       var response = await http
           .get(Uri.parse('https://ktswebhub.com/ppbl/api.php?catalog'));
       if (response.statusCode == 200) {
         songs = songsFromJson(response.body);
+        createFilters();
         status.value = 0;
         update();
         return status.value;
@@ -68,6 +80,57 @@ class HomeController extends GetxController {
     return artistNames;
   }
 
+  function createFilters(){
+    
+       authorBookFilter.add("All");
+       difficultyBookFilter.add("All");
+       genreBookFilter.add("All");   
+       pageBookFilter.add("All");
+       authorSongFilter.add("All");
+       difficultySongFilter.add("All");
+       genreSongFilter.add("All");
+       pageSongFilter.add("All");
+     
+    for (var song in songs) {
+      if (song.songSKU.startsWith("BK")) {
+         if(!authorBookFilter.contains(song.artist)){
+           authorBookFilter.add(song.artist);
+         }
+        if(!difficultyBookFilter.contains(song.difficulty)){
+           difficultyBookFilter.add(song.difficulty);
+         } 
+        if(!genreBookFilter.contains(song.genre)){
+           genreBookFilter.add(song.genre);
+         }
+        if(!pageBookFilter.contains(song.pages)){
+           pageBookFilter.add(song.pages);
+         }    
+      }else{
+         if(!authorSongFilter.contains(song.artist)){
+           authorSongFilter.add(song.artist);
+         }
+        if(!difficultySongFilter.contains(song.difficulty)){
+           difficultySongFilter.add(song.difficulty);
+         } 
+        if(!genreSongFilter.contains(song.genre)){
+           genreSongFilter.add(song.genre);
+         }
+        if(!pageSongFilter.contains(song.pages)){
+           pageSongFilter.add(song.pages);
+         }        
+    }
+      
+    authorBookFilter.sort();
+    difficultyBookFilter.sort();
+    genreBookFilter.sort();
+    pageBookFilter.sort();
+    authorSongFilter.sort();
+    difficultySongFilter.sort();
+    genreSongFilter.sort();
+    pageSongFilter.sort();
+  }
+    
+/*
   List<String> getAllGenreNames(List<Songs> songs) {
     // Use a Set to store unique genre names.
     Set<String> genreNamesSet = Set<String>();
@@ -86,7 +149,7 @@ class HomeController extends GetxController {
     genreNames.sort();
 
     return genreNames;
-  }
+  }*/
 
   List<Songs> getLibraryData(List<String> libraryItems) {
     List<Songs> userlibrary = songs!
@@ -101,10 +164,8 @@ class HomeController extends GetxController {
 
   static List<Songs> filterSongs(
     List<Songs> songs, {
-    double? maxPrice,
-    double? minPrice,
-    int? maxPages,
-    int? minPages,
+    double? maxPrice, 
+    int? maxPages, 
     String? artist,
     String? difficulty,
     String? type, // Use 'book' or 'song' as values
@@ -114,13 +175,9 @@ class HomeController extends GetxController {
       // Price filter
       if (maxPrice != null && double.parse(song.price!) > maxPrice) {
         return false;
-      }
-      if (minPrice != null && double.parse(song.price!) < minPrice) {
-        return false;
-      }
+      } 
       // Pages filter
-      if (maxPages != null && int.parse(song.pages!) > maxPages) return false;
-      if (minPages != null && int.parse(song.pages!) < minPages) return false;
+      if (maxPages != null && int.parse(song.pages!) > maxPages) return false; 
       // Artist filter
       if (artist != null && song.artist != artist) return false;
       // Type filter
