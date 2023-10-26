@@ -13,7 +13,7 @@ import 'package:paino_tab/models/OfflineLibrary.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
 import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
-import 'package:paino_tab/models/songs_model.dart';
+import 'package:paino_tab/pages/search_page.dart';
 import 'package:paino_tab/screens/home_screen.dart';
 import 'package:paino_tab/services/ad_mob_service.dart';
 import 'package:paino_tab/services/auth_service.dart';
@@ -450,25 +450,11 @@ class _RatingBarDialogState extends State<RatingBarDialog> {
 }
 
 class CustomSearchDelegate extends SearchDelegate {
-  final List<Songs> songs;
+  Function(String) onQueryChanged; // Callback function to pass the query
 
-  // Callback to handle search results
-  final void Function(List<ListItemModel> searchResults) onSearch;
+  CustomSearchDelegate(this.onQueryChanged);
 
-  CustomSearchDelegate({
-    required this.songs,
-    required this.onSearch,
-  });
-
-  List<Songs> searchItems(List<Songs> songs, String searchTerm) {
-    searchTerm = searchTerm.toLowerCase();
-    return songs.where((song) {
-      final bkName = song.bkName!.toLowerCase();
-      final songName = song.songName!.toLowerCase();
-      return !bkName.contains(searchTerm) || !songName.contains(searchTerm);
-    }).toList();
-  }
-
+  List<String> items = ['Alan Walker', 'Justin Bieber', 'Zayn', 'Drake'];
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
@@ -501,38 +487,44 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    List<Songs> sng = searchItems(songs, query);
-    List<ListItemModel> items = HomeController.to.itemModellList(songs: sng);
+    List<String> matchQuery = [];
+    for (var srch in items) {
+      if (srch.toLowerCase().contains(query.toLowerCase())) {
+        matchQuery.add(srch);
+      }
+    }
 
-    // Call the onSearch callback to pass the search results back to the SearchPage.
-    onSearch(items);
+    if (query.isNotEmpty) {
+      onQueryChanged(query);
+      close(context, null); // Pass the query to the SearchPage
+    }
 
-    return ListView.builder(
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        return InkWell(
-          onTap: () {
-            // You can add your onTap logic here
-            // setState(() {
-            //   detailScreen = true;
-            //   selectedSongIndex = index;
-            //   bgnritem = true;
-            // });
-          },
-          child: RecentReleasedWidget(list: items[index]),
-        );
-      },
-    );
+    return SizedBox();
+    // ListView.builder(
+    //   itemCount: matchQuery.length,
+    //   itemBuilder: (context, index) {
+    //     var result = matchQuery[index];
+    //     return ListTile(
+    //       onTap: () {
+    //         query = result;
+    //       },
+    //       title: TextWidget(
+    //         text: result,
+    //         color: MyColors.blackColor,
+    //       ),
+    //     );
+    //   },
+    // );
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    // List<String> matchQuery = [];
-    // for (var srch in items) {
-    //   if (srch.toLowerCase().contains(query.toLowerCase())) {
-    //     matchQuery.add(srch);
-    //   }
-    // }
+    List<String> matchQuery = [];
+    for (var srch in items) {
+      if (srch.toLowerCase().contains(query.toLowerCase())) {
+        matchQuery.add(srch);
+      }
+    }
     return SizedBox();
     // ListView.builder(
     //   itemCount: matchQuery.length,

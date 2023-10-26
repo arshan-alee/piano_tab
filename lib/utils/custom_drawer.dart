@@ -653,6 +653,25 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
   bool genre = false;
   bool difficulty = false;
 
+  List<String> selectedArtists = [];
+  List<String> selectedPages = [];
+  List<String> selectedGenres = [];
+  List<String> selectedDifficulty = [];
+  List<String> artistNames = [];
+  List<String> genreNames = [];
+  List<String> maxpages = [];
+  List<String> difficultylevel = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the unique artist and genre names from your songs list.
+    artistNames = HomeController.to.getAllArtistNames(HomeController.to.songs!);
+    genreNames = HomeController.to.getAllGenreNames(HomeController.to.songs!);
+    maxpages = ['10', '20', '30', '40', '50'];
+    difficultylevel = ['Beginner', 'Intermediate', 'Advanced', 'Various'];
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -742,211 +761,211 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                             ],
                           ),
                           artist == true
-                              ? SingleChildScrollView(
-                                  child: Column(
-                                    children: [
-                                      SizedBox(
-                                        height: size.height * 0.02,
+                              ? ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: artistNames.length,
+                                  itemBuilder: (context, index) {
+                                    final artistName = artistNames[index];
+                                    return InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          // Toggle the selection state of the artist
+                                          if (selectedArtists
+                                              .contains(artistName)) {
+                                            selectedArtists.remove(artistName);
+                                          } else {
+                                            selectedArtists.add(artistName);
+                                          }
+                                        });
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          TextWidget(
+                                            text: artistName,
+                                            fontSize: 14,
+                                            color: selectedArtists
+                                                    .contains(artistName)
+                                                ? MyColors.blueColor
+                                                : MyColors.blackColor,
+                                          ),
+                                          selectedArtists.contains(artistName)
+                                              ? Icon(
+                                                  Icons.circle,
+                                                  color: MyColors.blueColor,
+                                                  size: 16,
+                                                )
+                                              : const Icon(
+                                                  Icons.circle_outlined,
+                                                  size: 16,
+                                                )
+                                        ],
                                       ),
-                                      InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            beethoven = !beethoven;
-                                          });
-                                        },
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            TextWidget(
-                                              text: 'Beethoven',
-                                              fontSize: 14,
-                                              color: beethoven == true
-                                                  ? MyColors.blueColor
-                                                  : MyColors.blackColor,
-                                            ),
-                                            beethoven == true
-                                                ? Icon(
-                                                    Icons.circle,
-                                                    color: MyColors.blueColor,
-                                                    size: 16,
-                                                  )
-                                                : const Icon(
-                                                    Icons.circle_outlined,
-                                                    size: 16,
-                                                  )
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: size.height * 0.02,
-                                      ),
-                                      InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            aerosmith = !aerosmith;
-                                          });
-                                        },
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            TextWidget(
-                                              text: 'Aerosmith',
-                                              fontSize: 14,
-                                              color: aerosmith == true
-                                                  ? MyColors.blueColor
-                                                  : MyColors.blackColor,
-                                            ),
-                                            aerosmith == true
-                                                ? Icon(
-                                                    Icons.circle,
-                                                    color: MyColors.blueColor,
-                                                    size: 16,
-                                                  )
-                                                : const Icon(
-                                                    Icons.circle_outlined,
-                                                    size: 16,
-                                                  )
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: size.height * 0.02,
-                                      ),
-                                      InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            greatBigWorld = !greatBigWorld;
-                                          });
-                                        },
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            TextWidget(
-                                              text: 'A great big world',
-                                              fontSize: 14,
-                                              color: greatBigWorld == true
-                                                  ? MyColors.blueColor
-                                                  : MyColors.blackColor,
-                                            ),
-                                            greatBigWorld == true
-                                                ? Icon(
-                                                    Icons.circle,
-                                                    color: MyColors.blueColor,
-                                                    size: 16,
-                                                  )
-                                                : const Icon(
-                                                    Icons.circle_outlined,
-                                                    size: 16,
-                                                  )
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: size.height * 0.02,
-                                      ),
-                                      InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            alanWalker = !alanWalker;
-                                          });
-                                        },
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            TextWidget(
-                                              text: 'Alan Walker',
-                                              fontSize: 14,
-                                              color: alanWalker == true
-                                                  ? MyColors.blueColor
-                                                  : MyColors.blackColor,
-                                            ),
-                                            alanWalker == true
-                                                ? Icon(
-                                                    Icons.circle,
-                                                    color: MyColors.blueColor,
-                                                    size: 16,
-                                                  )
-                                                : const Icon(
-                                                    Icons.circle_outlined,
-                                                    size: 16,
-                                                  )
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: size.height * 0.02,
-                                      ),
-                                      InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            american = !american;
-                                          });
-                                        },
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            TextWidget(
-                                              text: 'American folk song',
-                                              fontSize: 14,
-                                              color: american == true
-                                                  ? MyColors.blueColor
-                                                  : MyColors.blackColor,
-                                            ),
-                                            american == true
-                                                ? Icon(
-                                                    Icons.circle,
-                                                    color: MyColors.blueColor,
-                                                    size: 16,
-                                                  )
-                                                : const Icon(
-                                                    Icons.circle_outlined,
-                                                    size: 16,
-                                                  )
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: size.height * 0.02,
-                                      ),
-                                      InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            banjo = !banjo;
-                                          });
-                                        },
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            TextWidget(
-                                              text: 'Banjo Paterson',
-                                              fontSize: 14,
-                                              color: banjo == true
-                                                  ? MyColors.blueColor
-                                                  : MyColors.blackColor,
-                                            ),
-                                            banjo == true
-                                                ? Icon(
-                                                    Icons.circle,
-                                                    color: MyColors.blueColor,
-                                                    size: 16,
-                                                  )
-                                                : const Icon(
-                                                    Icons.circle_outlined,
-                                                    size: 16,
-                                                  )
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    );
+                                  },
                                 )
                               : const SizedBox(),
+                          SizedBox(
+                            height: size.height * 0.01,
+                          ),
+                          Divider(
+                            color: MyColors.greyColor,
+                          ),
+                          // Display selected artists with checkboxes below artist section
+                          Column(
+                            children: selectedArtists.map((artistName) {
+                              return CheckboxListTile(
+                                title: TextWidget(
+                                  text: artistName,
+                                  fontSize: 9,
+                                ),
+                                value: selectedArtists.contains(artistName),
+                                onChanged: (value) {
+                                  setState(() {
+                                    if (value!) {
+                                      selectedArtists.add(artistName);
+                                    } else {
+                                      selectedArtists.remove(artistName);
+                                    }
+                                  });
+                                },
+                              );
+                            }).toList(),
+                          ),
+                          SizedBox(
+                            height: size.height * 0.04,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: size.height * 0.01,
+                  ),
+                  Divider(
+                    color: MyColors.greyColor,
+                  ),
+                  SizedBox(
+                    height: size.height * 0.01,
+                  ),
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    height:
+                        artist == true ? size.height * 0.3 : size.height * 0.05,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    artist = !artist;
+                                  });
+                                },
+                                child: SizedBox(
+                                  height: size.height * 0.05,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      TextWidget(
+                                        text: 'Pages',
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: MyColors.blackColor,
+                                      ),
+                                      Icon(
+                                        pages == true
+                                            ? Icons.remove
+                                            : Icons.add,
+                                        size: 18,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          pages == true
+                              ? ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: maxpages.length,
+                                  itemBuilder: (context, index) {
+                                    final pageno = maxpages[index];
+                                    return InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          // Toggle the selection state of the artist
+                                          // if (selectedArtists
+                                          //     .contains(artistName)) {
+                                          //   selectedArtists.remove(artistName);
+                                          // } else {
+                                          //   selectedArtists.add(artistName);
+                                          // }
+                                        });
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          TextWidget(
+                                            text: pageno,
+                                            fontSize: 14,
+                                            color:
+                                                selectedPages.contains(pageno)
+                                                    ? MyColors.blueColor
+                                                    : MyColors.blackColor,
+                                          ),
+                                          selectedPages.contains(pageno)
+                                              ? Icon(
+                                                  Icons.circle,
+                                                  color: MyColors.blueColor,
+                                                  size: 16,
+                                                )
+                                              : const Icon(
+                                                  Icons.circle_outlined,
+                                                  size: 16,
+                                                )
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                )
+                              : const SizedBox(),
+                          SizedBox(
+                            height: size.height * 0.01,
+                          ),
+                          Divider(
+                            color: MyColors.greyColor,
+                          ),
+                          // Display selected artists with checkboxes below artist section
+                          Column(
+                            children: selectedPages.map((maxpage) {
+                              return CheckboxListTile(
+                                title: Text(maxpage),
+                                value: selectedPages.contains(maxpage),
+                                onChanged: (value) {
+                                  setState(() {
+                                    if (value!) {
+                                      selectedArtists.add(maxpage);
+                                    } else {
+                                      selectedArtists.remove(maxpage);
+                                    }
+                                  });
+                                },
+                              );
+                            }).toList(),
+                          ),
+                          SizedBox(
+                            height: size.height * 0.04,
+                          ),
+                          // Display genre section...
+                          // ... (similar logic as artists)
                         ],
                       ),
                     ),
@@ -964,77 +983,95 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                     duration: const Duration(milliseconds: 300),
                     height:
                         pages == true ? size.height * 0.2 : size.height * 0.05,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              pages = !pages;
-                            });
-                          },
-                          child: SizedBox(
-                            height: size.height * 0.05,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                TextWidget(
-                                  text: 'Pages',
-                                  fontSize: 16,
-                                  color: MyColors.blackColor,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    pages = !pages;
+                                  });
+                                },
+                                child: SizedBox(
+                                  height: size.height * 0.05,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      TextWidget(
+                                        text: 'Genre',
+                                        fontSize: 16,
+                                        color: MyColors.blackColor,
+                                      ),
+                                      Icon(
+                                        pages == true
+                                            ? Icons.remove
+                                            : Icons.add,
+                                        size: 18,
+                                      )
+                                    ],
+                                  ),
                                 ),
-                                Icon(
-                                  pages == true ? Icons.remove : Icons.add,
-                                  size: 18,
-                                )
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.01,
-                  ),
-                  Divider(
-                    color: MyColors.greyColor,
-                  ),
-                  SizedBox(
-                    height: size.height * 0.01,
-                  ),
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    height:
-                        genre == true ? size.height * 0.2 : size.height * 0.05,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              genre = !genre;
-                            });
-                          },
-                          child: SizedBox(
-                            height: size.height * 0.05,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                TextWidget(
-                                  text: 'Genre',
-                                  fontSize: 16,
-                                  color: MyColors.blackColor,
-                                ),
-                                Icon(
-                                  genre == true ? Icons.remove : Icons.add,
-                                  size: 20,
+                          genre == true
+                              ? ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: selectedGenres.length,
+                                  itemBuilder: (context, index) {
+                                    final genr = selectedGenres[index];
+                                    return InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          // Toggle the selection state of the artist
+                                          if (selectedGenres.contains(genr)) {
+                                            selectedArtists.remove(genr);
+                                          } else {
+                                            selectedArtists.add(genr);
+                                          }
+                                        });
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          TextWidget(
+                                            text: genr,
+                                            fontSize: 14,
+                                            color: selectedGenres.contains(genr)
+                                                ? MyColors.blueColor
+                                                : MyColors.blackColor,
+                                          ),
+                                          selectedGenres.contains(genr)
+                                              ? Icon(
+                                                  Icons.circle,
+                                                  color: MyColors.blueColor,
+                                                  size: 16,
+                                                )
+                                              : const Icon(
+                                                  Icons.circle_outlined,
+                                                  size: 16,
+                                                )
+                                        ],
+                                      ),
+                                    );
+                                  },
                                 )
-                              ],
-                            ),
+                              : const SizedBox(),
+                          SizedBox(
+                            height: size.height * 0.01,
                           ),
-                        ),
-                      ],
+                          Divider(
+                            color: MyColors.greyColor,
+                          ),
+                          // ... Continue with your existing code for other sections
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(
@@ -1049,37 +1086,97 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                   ),
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
-                    height: difficulty == true
-                        ? size.height * 0.2
-                        : size.height * 0.05,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              difficulty = !difficulty;
-                            });
-                          },
-                          child: SizedBox(
-                            height: size.height * 0.05,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                TextWidget(
-                                  text: 'Difficulty',
-                                  fontSize: 16,
-                                  color: MyColors.blackColor,
+                    height:
+                        pages == true ? size.height * 0.2 : size.height * 0.05,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    pages = !pages;
+                                  });
+                                },
+                                child: SizedBox(
+                                  height: size.height * 0.05,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      TextWidget(
+                                        text: 'Genre',
+                                        fontSize: 16,
+                                        color: MyColors.blackColor,
+                                      ),
+                                      Icon(
+                                        pages == true
+                                            ? Icons.remove
+                                            : Icons.add,
+                                        size: 18,
+                                      )
+                                    ],
+                                  ),
                                 ),
-                                Icon(
-                                  difficulty == true ? Icons.remove : Icons.add,
-                                  size: 20,
-                                )
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+                          difficulty == true
+                              ? ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: selectedDifficulty.length,
+                                  itemBuilder: (context, index) {
+                                    final diff = difficultylevel[index];
+                                    return InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          // Toggle the selection state of the artist
+                                          if (selectedGenres.contains(diff)) {
+                                            selectedDifficulty.remove(diff);
+                                          } else {
+                                            selectedDifficulty.add(diff);
+                                          }
+                                        });
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          TextWidget(
+                                            text: diff,
+                                            fontSize: 14,
+                                            color: selectedGenres.contains(diff)
+                                                ? MyColors.blueColor
+                                                : MyColors.blackColor,
+                                          ),
+                                          selectedGenres.contains(diff)
+                                              ? Icon(
+                                                  Icons.circle,
+                                                  color: MyColors.blueColor,
+                                                  size: 16,
+                                                )
+                                              : const Icon(
+                                                  Icons.circle_outlined,
+                                                  size: 16,
+                                                )
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                )
+                              : const SizedBox(),
+                          SizedBox(
+                            height: size.height * 0.01,
+                          ),
+                          Divider(
+                            color: MyColors.greyColor,
+                          ),
+                          // ... Continue with your existing code for other sections
+                        ],
+                      ),
                     ),
                   ),
                 ],

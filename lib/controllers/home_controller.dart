@@ -48,6 +48,46 @@ class HomeController extends GetxController {
     return 'https://www.ktswebhub.com/ppbl/resources/mp3s/$Sku.mp3';
   }
 
+  List<String> getAllArtistNames(List<Songs> songs) {
+    // Use a Set to store unique artist names.
+    Set<String> artistNamesSet = Set<String>();
+
+    // Iterate through the songs and add artist names to the set.
+    for (var song in songs) {
+      if (song.artist != null) {
+        artistNamesSet.add(song.artist!);
+      }
+    }
+
+    // Convert the set to a list to maintain the order.
+    List<String> artistNames = artistNamesSet.toList();
+
+    // Sort the list in alphabetical order.
+    artistNames.sort();
+
+    return artistNames;
+  }
+
+  List<String> getAllGenreNames(List<Songs> songs) {
+    // Use a Set to store unique genre names.
+    Set<String> genreNamesSet = Set<String>();
+
+    // Iterate through the songs and add genre names to the set.
+    for (var song in songs) {
+      if (song.genre != null) {
+        genreNamesSet.add(song.genre!);
+      }
+    }
+
+    // Convert the set to a list to maintain the order.
+    List<String> genreNames = genreNamesSet.toList();
+
+    // Sort the list in alphabetical order.
+    genreNames.sort();
+
+    return genreNames;
+  }
+
   List<Songs> getLibraryData(List<String> libraryItems) {
     List<Songs> userlibrary = songs!
         .where((song) =>

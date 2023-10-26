@@ -197,18 +197,9 @@ class _HomePageState extends State<HomePage> {
                                         height: 250.h,
                                         alignment: Alignment.center,
                                         decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          gradient: LinearGradient(
-                                            begin: Alignment.centerLeft,
-                                            end: Alignment.centerRight,
-                                            colors: [
-                                              MyColors
-                                                  .darkBlue, // Existing color
-                                              Colors.white, // White color
-                                            ],
-                                          ),
-                                        ),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            color: MyColors.darkBlue),
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
@@ -280,18 +271,9 @@ class _HomePageState extends State<HomePage> {
                                         height: 250.h,
                                         alignment: Alignment.center,
                                         decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          gradient: LinearGradient(
-                                            begin: Alignment.centerLeft,
-                                            end: Alignment.centerRight,
-                                            colors: [
-                                              MyColors
-                                                  .darkBlue, // Existing color
-                                              Colors.white, // White color
-                                            ],
-                                          ),
-                                        ),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            color: MyColors.darkBlue),
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
@@ -363,18 +345,9 @@ class _HomePageState extends State<HomePage> {
                                         height: 250.h,
                                         alignment: Alignment.center,
                                         decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          gradient: LinearGradient(
-                                            begin: Alignment.centerLeft,
-                                            end: Alignment.centerRight,
-                                            colors: [
-                                              MyColors
-                                                  .darkBlue, // Existing color
-                                              Colors.white, // White color
-                                            ],
-                                          ),
-                                        ),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            color: MyColors.darkBlue),
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
@@ -448,18 +421,9 @@ class _HomePageState extends State<HomePage> {
                                         height: 250.h,
                                         alignment: Alignment.center,
                                         decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          gradient: LinearGradient(
-                                            begin: Alignment.centerLeft,
-                                            end: Alignment.centerRight,
-                                            colors: [
-                                              MyColors
-                                                  .darkBlue, // Existing color
-                                              Colors.white, // White color
-                                            ],
-                                          ),
-                                        ),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            color: MyColors.darkBlue),
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
@@ -533,18 +497,9 @@ class _HomePageState extends State<HomePage> {
                                         height: 250.h,
                                         alignment: Alignment.center,
                                         decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          gradient: LinearGradient(
-                                            begin: Alignment.centerLeft,
-                                            end: Alignment.centerRight,
-                                            colors: [
-                                              MyColors
-                                                  .darkBlue, // Existing color
-                                              Colors.white, // White color
-                                            ],
-                                          ),
-                                        ),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            color: MyColors.darkBlue),
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
@@ -618,18 +573,9 @@ class _HomePageState extends State<HomePage> {
                                         height: 250.h,
                                         alignment: Alignment.center,
                                         decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          gradient: LinearGradient(
-                                            begin: Alignment.centerLeft,
-                                            end: Alignment.centerRight,
-                                            colors: [
-                                              MyColors
-                                                  .darkBlue, // Existing color
-                                              Colors.white, // White color
-                                            ],
-                                          ),
-                                        ),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            color: MyColors.darkBlue),
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,

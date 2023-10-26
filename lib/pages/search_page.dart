@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:paino_tab/controllers/home_controller.dart';
+import 'package:paino_tab/models/songs_model.dart';
 import 'package:paino_tab/utils/model.dart';
 
 import '../utils/colors.dart';
@@ -14,12 +16,30 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  List<Songs> searchitem = [];
   List<ListItemModel> searchResults = [];
+  String query = '';
 
-  void updateSearchResults(List<ListItemModel> results) {
-    setState(() {
-      searchResults = results;
+  List<Songs> searchItems(List<Songs> songs, String searchTerm) {
+    searchTerm = searchTerm.toLowerCase();
+    return songs.where((song) {
+      final bkName = song.bkName?.toLowerCase() ?? '';
+      final songName = song.songName?.toLowerCase() ?? '';
+      return bkName.contains(searchTerm) || songName.contains(searchTerm);
+    }).toList();
+  }
+
+  void updateQuery(String newQuery) {
+    Future.delayed(Duration.zero, () {
+      setState(() {
+        searchitem = searchItems(HomeController.to.songs!, newQuery);
+        searchResults = HomeController.to.itemModellList(songs: searchitem);
+      });
     });
+    print('query in searchpage $newQuery');
+    // setState(() {
+    //   query = newQuery;
+    // });
   }
 
   @override
@@ -39,9 +59,7 @@ class _SearchPageState extends State<SearchPage> {
                   showSearch(
                     context: context,
                     delegate: CustomSearchDelegate(
-                      songs: HomeController.to.songs!,
-                      onSearch: updateSearchResults,
-                    ),
+                        updateQuery), // Pass the callback function
                   );
                 },
                 height: size.height * 0.07,
@@ -61,20 +79,39 @@ class _SearchPageState extends State<SearchPage> {
                     ],
                   ),
                 )),
-            // SizedBox(
-            //   height: size.height * 0.05,
-            // ),
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(horizontal: 4),
-            //   child: Row(
-            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //     children: [
-            //       RecentReleasedWidget(
-            //         list: albumList[1],
-            //       )
-            //     ],
-            //   ),
-            // )
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: searchResults.isEmpty
+                      ? Center(
+                          child: TextWidget(
+                            text: "No Search Available",
+                            fontSize: 18,
+                          ),
+                        )
+                      : GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  mainAxisSpacing: 20,
+                                  crossAxisSpacing: 20,
+                                  mainAxisExtent: 250.h,
+                                  childAspectRatio: 1.h),
+                          itemCount: searchResults.length,
+                          itemBuilder: (context, index) => InkWell(
+                              onTap: () {},
+                              child: RecentReleasedWidget(
+                                  list: searchResults[index])),
+                        ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: size.height * 0.12,
+            ),
           ],
         ),
       ),
