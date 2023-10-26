@@ -1004,6 +1004,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                       TextWidget(
                                         text: 'Genre',
                                         fontSize: 16,
+                                        fontWeight: FontWeight.bold,
                                         color: MyColors.blackColor,
                                       ),
                                       Icon(
@@ -1107,8 +1108,9 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       TextWidget(
-                                        text: 'Genre',
+                                        text: 'Difficulty',
                                         fontSize: 16,
+                                        fontWeight: FontWeight.bold,
                                         color: MyColors.blackColor,
                                       ),
                                       Icon(
