@@ -692,542 +692,570 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                 borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(16),
                     bottomLeft: Radius.circular(16))),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextWidget(
-                        text: 'Filter',
-                        fontSize: 18,
-                        color: MyColors.blackColor,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextWidget(
+                      text: 'Filter',
+                      fontSize: 18,
+                      color: MyColors.blackColor,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        Scaffold.of(context).closeEndDrawer();
+                      },
+                      child: const Icon(
+                        Icons.clear,
+                        size: 20,
                       ),
-                      InkWell(
-                        onTap: () {
-                          Scaffold.of(context).closeEndDrawer();
-                        },
-                        child: const Icon(
-                          Icons.clear,
-                          size: 20,
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: size.height * 0.005,
-                  ),
-                  Divider(color: MyColors.greyColor),
-                  SizedBox(
-                    height: size.height * 0.04,
-                  ),
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    height:
-                        artist == true ? size.height * 0.3 : size.height * 0.05,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    artist = !artist;
-                                  });
-                                },
-                                child: SizedBox(
-                                  height: size.height * 0.05,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      TextWidget(
-                                        text: 'Artist',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: MyColors.blackColor,
-                                      ),
-                                      Icon(
-                                        artist == true
-                                            ? Icons.remove
-                                            : Icons.add,
-                                        size: 18,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          artist == true
-                              ? ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemCount: artistNames.length,
-                                  itemBuilder: (context, index) {
-                                    final artistName = artistNames[index];
-                                    return InkWell(
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: size.height * 0.005,
+                ),
+                Divider(color: MyColors.greyColor),
+                SizedBox(
+                  height: size.height * 0.04,
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          height: artist == true
+                              ? size.height * 0.3
+                              : size.height * 0.05,
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    InkWell(
                                       onTap: () {
                                         setState(() {
-                                          // Toggle the selection state of the artist
-                                          if (selectedArtists
-                                              .contains(artistName)) {
-                                            selectedArtists.remove(artistName);
-                                          } else {
+                                          artist = !artist;
+                                        });
+                                      },
+                                      child: SizedBox(
+                                        height: size.height * 0.05,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            TextWidget(
+                                              text: 'Artist',
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: MyColors.blackColor,
+                                            ),
+                                            Icon(
+                                              artist == true
+                                                  ? Icons.remove
+                                                  : Icons.add,
+                                              size: 18,
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                artist == true
+                                    ? ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemCount: artistNames.length,
+                                        itemBuilder: (context, index) {
+                                          final artistName = artistNames[index];
+                                          return InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                // Toggle the selection state of the artist
+                                                if (selectedArtists
+                                                    .contains(artistName)) {
+                                                  selectedArtists
+                                                      .remove(artistName);
+                                                } else {
+                                                  selectedArtists
+                                                      .add(artistName);
+                                                }
+                                              });
+                                            },
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                TextWidget(
+                                                  text: artistName,
+                                                  fontSize: 14,
+                                                  color: selectedArtists
+                                                          .contains(artistName)
+                                                      ? MyColors.blueColor
+                                                      : MyColors.blackColor,
+                                                ),
+                                                selectedArtists
+                                                        .contains(artistName)
+                                                    ? Icon(
+                                                        Icons.circle,
+                                                        color:
+                                                            MyColors.blueColor,
+                                                        size: 16,
+                                                      )
+                                                    : const Icon(
+                                                        Icons.circle_outlined,
+                                                        size: 16,
+                                                      )
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      )
+                                    : const SizedBox(),
+                                SizedBox(
+                                  height: size.height * 0.01,
+                                ),
+                                Divider(
+                                  color: MyColors.greyColor,
+                                ),
+                                // Display selected artists with checkboxes below artist section
+                                Column(
+                                  children: selectedArtists.map((artistName) {
+                                    return CheckboxListTile(
+                                      title: TextWidget(
+                                        text: artistName,
+                                        fontSize: 9,
+                                      ),
+                                      value:
+                                          selectedArtists.contains(artistName),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          if (value!) {
                                             selectedArtists.add(artistName);
-                                          }
-                                        });
-                                      },
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          TextWidget(
-                                            text: artistName,
-                                            fontSize: 14,
-                                            color: selectedArtists
-                                                    .contains(artistName)
-                                                ? MyColors.blueColor
-                                                : MyColors.blackColor,
-                                          ),
-                                          selectedArtists.contains(artistName)
-                                              ? Icon(
-                                                  Icons.circle,
-                                                  color: MyColors.blueColor,
-                                                  size: 16,
-                                                )
-                                              : const Icon(
-                                                  Icons.circle_outlined,
-                                                  size: 16,
-                                                )
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                )
-                              : const SizedBox(),
-                          SizedBox(
-                            height: size.height * 0.01,
-                          ),
-                          Divider(
-                            color: MyColors.greyColor,
-                          ),
-                          // Display selected artists with checkboxes below artist section
-                          Column(
-                            children: selectedArtists.map((artistName) {
-                              return CheckboxListTile(
-                                title: TextWidget(
-                                  text: artistName,
-                                  fontSize: 9,
-                                ),
-                                value: selectedArtists.contains(artistName),
-                                onChanged: (value) {
-                                  setState(() {
-                                    if (value!) {
-                                      selectedArtists.add(artistName);
-                                    } else {
-                                      selectedArtists.remove(artistName);
-                                    }
-                                  });
-                                },
-                              );
-                            }).toList(),
-                          ),
-                          SizedBox(
-                            height: size.height * 0.04,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.01,
-                  ),
-                  Divider(
-                    color: MyColors.greyColor,
-                  ),
-                  SizedBox(
-                    height: size.height * 0.01,
-                  ),
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    height:
-                        pages == true ? size.height * 0.3 : size.height * 0.05,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    pages = !pages;
-                                  });
-                                },
-                                child: SizedBox(
-                                  height: size.height * 0.05,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      TextWidget(
-                                        text: 'Pages',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: MyColors.blackColor,
-                                      ),
-                                      Icon(
-                                        pages == true
-                                            ? Icons.remove
-                                            : Icons.add,
-                                        size: 18,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          pages == true
-                              ? ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemCount: maxpages.length,
-                                  itemBuilder: (context, index) {
-                                    final pageno = maxpages[index];
-                                    return InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          // Toggle the selection state of the artist
-                                          // if (selectedArtists
-                                          //     .contains(artistName)) {
-                                          //   selectedArtists.remove(artistName);
-                                          // } else {
-                                          //   selectedArtists.add(artistName);
-                                          // }
-                                        });
-                                      },
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          TextWidget(
-                                            text: pageno,
-                                            fontSize: 14,
-                                            color:
-                                                selectedPages.contains(pageno)
-                                                    ? MyColors.blueColor
-                                                    : MyColors.blackColor,
-                                          ),
-                                          selectedPages.contains(pageno)
-                                              ? Icon(
-                                                  Icons.circle,
-                                                  color: MyColors.blueColor,
-                                                  size: 16,
-                                                )
-                                              : const Icon(
-                                                  Icons.circle_outlined,
-                                                  size: 16,
-                                                )
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                )
-                              : const SizedBox(),
-                          SizedBox(
-                            height: size.height * 0.01,
-                          ),
-                          Divider(
-                            color: MyColors.greyColor,
-                          ),
-                          // Display selected artists with checkboxes below artist section
-                          Column(
-                            children: selectedPages.map((pageno) {
-                              return CheckboxListTile(
-                                title: Text(pageno),
-                                value: selectedPages.contains(pageno),
-                                onChanged: (value) {
-                                  setState(() {
-                                    if (value!) {
-                                      selectedPages.add(pageno);
-                                    } else {
-                                      selectedPages.remove(pageno);
-                                    }
-                                  });
-                                },
-                              );
-                            }).toList(),
-                          ),
-                          SizedBox(
-                            height: size.height * 0.04,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.01,
-                  ),
-                  Divider(
-                    color: MyColors.greyColor,
-                  ),
-                  SizedBox(
-                    height: size.height * 0.01,
-                  ),
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    height:
-                        genre == true ? size.height * 0.2 : size.height * 0.05,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    genre = !genre;
-                                  });
-                                },
-                                child: SizedBox(
-                                  height: size.height * 0.05,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      TextWidget(
-                                        text: 'Genre',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: MyColors.blackColor,
-                                      ),
-                                      Icon(
-                                        genre == true
-                                            ? Icons.remove
-                                            : Icons.add,
-                                        size: 18,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          genre == true
-                              ? ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemCount: genreNames.length,
-                                  itemBuilder: (context, index) {
-                                    final genre = genreNames[index];
-                                    return InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          // Toggle the selection state of the artist
-                                          if (selectedGenres.contains(genre)) {
-                                            selectedGenres.remove(genre);
                                           } else {
-                                            selectedGenres.add(genre);
+                                            selectedArtists.remove(artistName);
                                           }
                                         });
                                       },
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          TextWidget(
-                                            text: genre,
-                                            fontSize: 14,
-                                            color:
-                                                selectedGenres.contains(genre)
-                                                    ? MyColors.blueColor
-                                                    : MyColors.blackColor,
-                                          ),
-                                          selectedGenres.contains(genre)
-                                              ? Icon(
-                                                  Icons.circle,
-                                                  color: MyColors.blueColor,
-                                                  size: 16,
-                                                )
-                                              : const Icon(
-                                                  Icons.circle_outlined,
-                                                  size: 16,
-                                                )
-                                        ],
-                                      ),
                                     );
-                                  },
-                                )
-                              : const SizedBox(),
-                          SizedBox(
-                            height: size.height * 0.01,
-                          ),
-                          Divider(
-                            color: MyColors.greyColor,
-                          ),
-                          // Display selected artists with checkboxes below artist section
-                          Column(
-                            children: selectedGenres.map((genre) {
-                              return CheckboxListTile(
-                                title: TextWidget(text: genre, fontSize: 9),
-                                value: selectedGenres.contains(genre),
-                                onChanged: (value) {
-                                  setState(() {
-                                    if (value!) {
-                                      selectedGenres.add(genre);
-                                    } else {
-                                      selectedGenres.remove(genre);
-                                    }
-                                  });
-                                },
-                              );
-                            }).toList(),
-                          ),
-                          SizedBox(
-                            height: size.height * 0.04,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.01,
-                  ),
-                  Divider(
-                    color: MyColors.greyColor,
-                    height: 5,
-                  ),
-                  SizedBox(
-                    height: size.height * 0.01,
-                  ),
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    height: difficulty == true
-                        ? size.height * 0.2
-                        : size.height * 0.05,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    difficulty = !difficulty;
-                                  });
-                                },
-                                child: SizedBox(
-                                  height: size.height * 0.05,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      TextWidget(
-                                        text: 'Difficulty',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: MyColors.blackColor,
-                                      ),
-                                      Icon(
-                                        difficulty == true
-                                            ? Icons.remove
-                                            : Icons.add,
-                                        size: 18,
-                                      )
-                                    ],
-                                  ),
+                                  }).toList(),
                                 ),
-                              ),
-                            ],
+                                SizedBox(
+                                  height: size.height * 0.04,
+                                ),
+                              ],
+                            ),
                           ),
-                          difficulty == true
-                              ? ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemCount: difficultylevel.length,
-                                  itemBuilder: (context, index) {
-                                    final difficulty = difficultylevel[index];
-                                    return InkWell(
+                        ),
+                        SizedBox(
+                          height: size.height * 0.01,
+                        ),
+                        Divider(
+                          color: MyColors.greyColor,
+                        ),
+                        SizedBox(
+                          height: size.height * 0.01,
+                        ),
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          height: pages == true
+                              ? size.height * 0.3
+                              : size.height * 0.05,
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    InkWell(
                                       onTap: () {
                                         setState(() {
-                                          if (selectedDifficulty
-                                              .contains(difficulty)) {
+                                          pages = !pages;
+                                        });
+                                      },
+                                      child: SizedBox(
+                                        height: size.height * 0.05,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            TextWidget(
+                                              text: 'Pages',
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: MyColors.blackColor,
+                                            ),
+                                            Icon(
+                                              pages == true
+                                                  ? Icons.remove
+                                                  : Icons.add,
+                                              size: 18,
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                pages == true
+                                    ? ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemCount: maxpages.length,
+                                        itemBuilder: (context, index) {
+                                          final pageno = maxpages[index];
+                                          return InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                // Toggle the selection state of the artist
+                                                // if (selectedArtists
+                                                //     .contains(artistName)) {
+                                                //   selectedArtists.remove(artistName);
+                                                // } else {
+                                                //   selectedArtists.add(artistName);
+                                                // }
+                                              });
+                                            },
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                TextWidget(
+                                                  text: pageno,
+                                                  fontSize: 14,
+                                                  color: selectedPages
+                                                          .contains(pageno)
+                                                      ? MyColors.blueColor
+                                                      : MyColors.blackColor,
+                                                ),
+                                                selectedPages.contains(pageno)
+                                                    ? Icon(
+                                                        Icons.circle,
+                                                        color:
+                                                            MyColors.blueColor,
+                                                        size: 16,
+                                                      )
+                                                    : const Icon(
+                                                        Icons.circle_outlined,
+                                                        size: 16,
+                                                      )
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      )
+                                    : const SizedBox(),
+                                SizedBox(
+                                  height: size.height * 0.01,
+                                ),
+                                Divider(
+                                  color: MyColors.greyColor,
+                                ),
+                                // Display selected artists with checkboxes below artist section
+                                Column(
+                                  children: selectedPages.map((pageno) {
+                                    return CheckboxListTile(
+                                      title: Text(pageno),
+                                      value: selectedPages.contains(pageno),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          if (value!) {
+                                            selectedPages.add(pageno);
+                                          } else {
+                                            selectedPages.remove(pageno);
+                                          }
+                                        });
+                                      },
+                                    );
+                                  }).toList(),
+                                ),
+                                SizedBox(
+                                  height: size.height * 0.04,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: size.height * 0.01,
+                        ),
+                        Divider(
+                          color: MyColors.greyColor,
+                        ),
+                        SizedBox(
+                          height: size.height * 0.01,
+                        ),
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          height: genre == true
+                              ? size.height * 0.2
+                              : size.height * 0.05,
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          genre = !genre;
+                                        });
+                                      },
+                                      child: SizedBox(
+                                        height: size.height * 0.05,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            TextWidget(
+                                              text: 'Genre',
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: MyColors.blackColor,
+                                            ),
+                                            Icon(
+                                              genre == true
+                                                  ? Icons.remove
+                                                  : Icons.add,
+                                              size: 18,
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                genre == true
+                                    ? ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemCount: genreNames.length,
+                                        itemBuilder: (context, index) {
+                                          final genre = genreNames[index];
+                                          return InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                // Toggle the selection state of the artist
+                                                if (selectedGenres
+                                                    .contains(genre)) {
+                                                  selectedGenres.remove(genre);
+                                                } else {
+                                                  selectedGenres.add(genre);
+                                                }
+                                              });
+                                            },
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                TextWidget(
+                                                  text: genre,
+                                                  fontSize: 14,
+                                                  color: selectedGenres
+                                                          .contains(genre)
+                                                      ? MyColors.blueColor
+                                                      : MyColors.blackColor,
+                                                ),
+                                                selectedGenres.contains(genre)
+                                                    ? Icon(
+                                                        Icons.circle,
+                                                        color:
+                                                            MyColors.blueColor,
+                                                        size: 16,
+                                                      )
+                                                    : const Icon(
+                                                        Icons.circle_outlined,
+                                                        size: 16,
+                                                      )
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      )
+                                    : const SizedBox(),
+                                SizedBox(
+                                  height: size.height * 0.01,
+                                ),
+                                Divider(
+                                  color: MyColors.greyColor,
+                                ),
+                                // Display selected artists with checkboxes below artist section
+                                Column(
+                                  children: selectedGenres.map((genre) {
+                                    return CheckboxListTile(
+                                      title:
+                                          TextWidget(text: genre, fontSize: 9),
+                                      value: selectedGenres.contains(genre),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          if (value!) {
+                                            selectedGenres.add(genre);
+                                          } else {
+                                            selectedGenres.remove(genre);
+                                          }
+                                        });
+                                      },
+                                    );
+                                  }).toList(),
+                                ),
+                                SizedBox(
+                                  height: size.height * 0.04,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: size.height * 0.01,
+                        ),
+                        Divider(
+                          color: MyColors.greyColor,
+                          height: 5,
+                        ),
+                        SizedBox(
+                          height: size.height * 0.01,
+                        ),
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          height: difficulty == true
+                              ? size.height * 0.2
+                              : size.height * 0.05,
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          difficulty = !difficulty;
+                                        });
+                                      },
+                                      child: SizedBox(
+                                        height: size.height * 0.05,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            TextWidget(
+                                              text: 'Difficulty',
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: MyColors.blackColor,
+                                            ),
+                                            Icon(
+                                              difficulty == true
+                                                  ? Icons.remove
+                                                  : Icons.add,
+                                              size: 18,
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                difficulty == true
+                                    ? ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemCount: difficultylevel.length,
+                                        itemBuilder: (context, index) {
+                                          final difficulty =
+                                              difficultylevel[index];
+                                          return InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                if (selectedDifficulty
+                                                    .contains(difficulty)) {
+                                                  selectedDifficulty
+                                                      .remove(difficulty);
+                                                } else {
+                                                  selectedDifficulty
+                                                      .add(difficulty);
+                                                }
+                                              });
+                                            },
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                TextWidget(
+                                                  text: difficulty,
+                                                  fontSize: 14,
+                                                  color: selectedDifficulty
+                                                          .contains(difficulty)
+                                                      ? MyColors.blueColor
+                                                      : MyColors.blackColor,
+                                                ),
+                                                selectedDifficulty
+                                                        .contains(difficulty)
+                                                    ? Icon(
+                                                        Icons.circle,
+                                                        color:
+                                                            MyColors.blueColor,
+                                                        size: 16,
+                                                      )
+                                                    : const Icon(
+                                                        Icons.circle_outlined,
+                                                        size: 16,
+                                                      )
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      )
+                                    : const SizedBox(),
+                                SizedBox(
+                                  height: size.height * 0.01,
+                                ),
+                                Divider(
+                                  color: MyColors.greyColor,
+                                ),
+                                // Display selected artists with checkboxes below artist section
+                                Column(
+                                  children:
+                                      selectedDifficulty.map((difficulty) {
+                                    return CheckboxListTile(
+                                      title: TextWidget(
+                                          text: difficulty, fontSize: 9),
+                                      value: selectedDifficulty
+                                          .contains(difficulty),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          if (value!) {
+                                            selectedDifficulty.add(difficulty);
+                                          } else {
                                             selectedDifficulty
                                                 .remove(difficulty);
-                                          } else {
-                                            selectedDifficulty.add(difficulty);
                                           }
                                         });
                                       },
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          TextWidget(
-                                            text: difficulty,
-                                            fontSize: 14,
-                                            color: selectedDifficulty
-                                                    .contains(difficulty)
-                                                ? MyColors.blueColor
-                                                : MyColors.blackColor,
-                                          ),
-                                          selectedDifficulty
-                                                  .contains(difficulty)
-                                              ? Icon(
-                                                  Icons.circle,
-                                                  color: MyColors.blueColor,
-                                                  size: 16,
-                                                )
-                                              : const Icon(
-                                                  Icons.circle_outlined,
-                                                  size: 16,
-                                                )
-                                        ],
-                                      ),
                                     );
-                                  },
-                                )
-                              : const SizedBox(),
-                          SizedBox(
-                            height: size.height * 0.01,
+                                  }).toList(),
+                                ),
+                                SizedBox(
+                                  height: size.height * 0.04,
+                                ),
+                              ],
+                            ),
                           ),
-                          Divider(
-                            color: MyColors.greyColor,
-                          ),
-                          // Display selected artists with checkboxes below artist section
-                          Column(
-                            children: selectedDifficulty.map((difficulty) {
-                              return CheckboxListTile(
-                                title:
-                                    TextWidget(text: difficulty, fontSize: 9),
-                                value: selectedDifficulty.contains(difficulty),
-                                onChanged: (value) {
-                                  setState(() {
-                                    if (value!) {
-                                      selectedDifficulty.add(difficulty);
-                                    } else {
-                                      selectedDifficulty.remove(difficulty);
-                                    }
-                                  });
-                                },
-                              );
-                            }).toList(),
-                          ),
-                          SizedBox(
-                            height: size.height * 0.04,
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           )
         ],

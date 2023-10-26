@@ -88,10 +88,10 @@ class HomeController extends GetxController {
     difficultySongFilter ??= [];
     genreSongFilter ??= [];
     pageSongFilter ??= [];
-    authorSongFilter!.add("All");
-    difficultySongFilter!.add("All");
-    genreSongFilter!.add("All");
-    pageSongFilter!.add("All");
+    // authorSongFilter!.add("All");
+    // difficultySongFilter!.add("All");
+    // genreSongFilter!.add("All");
+    // pageSongFilter!.add("All");
 
     for (var song in sng) {
       // Use null-aware operators to handle potentially null attributes
@@ -145,7 +145,12 @@ class HomeController extends GetxController {
       authorSongFilter!.sort();
       difficultySongFilter!.sort();
       genreSongFilter!.sort();
-      pageSongFilter!.sort();
+      pageSongFilter!.sort((a, b) {
+        final int aValue = int.tryParse(a) ?? 0;
+        final int bValue = int.tryParse(b) ?? 0;
+
+        return bValue - aValue; // Compare in descending order.
+      });
     }
   }
 /*
