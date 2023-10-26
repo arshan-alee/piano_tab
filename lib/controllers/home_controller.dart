@@ -13,16 +13,16 @@ class HomeController extends GetxController {
 
   List<Songs>? songs;
 
-    //this is setting book filters. just pull data from this dont create it seperately thats not logical .
-   List<String> authorBookFilter = List<String>();
-   List<int> pageBookFilter = List<int>();
-   List<String> genreBookFilter = List<String>();
-   List<String> difficultyBookFilter = List<String>();
-    //this is setting song filters. just pull data from this dont create it seperately thats not logical .
-   List<String> authorSongFilter = List<String>();
-   List<int> pageSongFilter = List<int>();
-   List<String> genreSongFilter = List<String>();
-   List<String> difficultySongFilter = List<String>();
+  //this is setting book filters. just pull data from this dont create it seperately thats not logical .
+  // List<String>? authorBookFilter;
+  // List<String>? pageBookFilter;
+  // List<String>? genreBookFilter;
+  // List<String>? difficultyBookFilter;
+  //this is setting song filters. just pull data from this dont create it seperately thats not logical .
+  List<String>? authorSongFilter;
+  List<String>? pageSongFilter;
+  List<String>? genreSongFilter;
+  List<String>? difficultySongFilter;
 
   Future<int> getSongs() async {
     try {
@@ -30,7 +30,6 @@ class HomeController extends GetxController {
           .get(Uri.parse('https://ktswebhub.com/ppbl/api.php?catalog'));
       if (response.statusCode == 200) {
         songs = songsFromJson(response.body);
-        createFilters();
         status.value = 0;
         update();
         return status.value;
@@ -80,56 +79,75 @@ class HomeController extends GetxController {
     return artistNames;
   }
 
-  function createFilters(){
-    
-       authorBookFilter.add("All");
-       difficultyBookFilter.add("All");
-       genreBookFilter.add("All");   
-       pageBookFilter.add("All");
-       authorSongFilter.add("All");
-       difficultySongFilter.add("All");
-       genreSongFilter.add("All");
-       pageSongFilter.add("All");
-     
-    for (var song in songs) {
-      if (song.songSKU.startsWith("BK")) {
-         if(!authorBookFilter.contains(song.artist)){
-           authorBookFilter.add(song.artist);
-         }
-        if(!difficultyBookFilter.contains(song.difficulty)){
-           difficultyBookFilter.add(song.difficulty);
-         } 
-        if(!genreBookFilter.contains(song.genre)){
-           genreBookFilter.add(song.genre);
-         }
-        if(!pageBookFilter.contains(song.pages)){
-           pageBookFilter.add(song.pages);
-         }    
-      }else{
-         if(!authorSongFilter.contains(song.artist)){
-           authorSongFilter.add(song.artist);
-         }
-        if(!difficultySongFilter.contains(song.difficulty)){
-           difficultySongFilter.add(song.difficulty);
-         } 
-        if(!genreSongFilter.contains(song.genre)){
-           genreSongFilter.add(song.genre);
-         }
-        if(!pageSongFilter.contains(song.pages)){
-           pageSongFilter.add(song.pages);
-         }        
+  void createFilters(List<Songs> sng) {
+    // authorBookFilter!.add("All");
+    // difficultyBookFilter!.add("All");
+    // genreBookFilter!.add("All");
+    // pageBookFilter!.add("All");
+    authorSongFilter ??= [];
+    difficultySongFilter ??= [];
+    genreSongFilter ??= [];
+    pageSongFilter ??= [];
+    authorSongFilter!.add("All");
+    difficultySongFilter!.add("All");
+    genreSongFilter!.add("All");
+    pageSongFilter!.add("All");
+
+    for (var song in sng) {
+      // Use null-aware operators to handle potentially null attributes
+      if (song.artist != null && !authorSongFilter!.contains(song.artist!)) {
+        authorSongFilter!.add(song.artist!);
+      }
+      if (song.difficulty != null &&
+          !difficultySongFilter!.contains(song.difficulty!)) {
+        difficultySongFilter!.add(song.difficulty!);
+      }
+      if (song.genre != null && !genreSongFilter!.contains(song.genre!)) {
+        genreSongFilter!.add(song.genre!);
+      }
+      if (song.pages != null && !pageSongFilter!.contains(song.pages!)) {
+        pageSongFilter!.add(song.pages!);
+      }
+
+      // for (var song in sng!) {
+      //   if (song.songSku!.startsWith("BK")) {
+      //     if (!authorSongFilter!.contains(song.artist)) {
+      //       authorSongFilter!.add(song.artist!);
+      //     }
+      //     if (!difficultySongFilter!.contains(song.difficulty)) {
+      //       difficultySongFilter!.add(song.difficulty!);
+      //     }
+      //     if (!genreSongFilter!.contains(song.genre)) {
+      //       genreSongFilter!.add(song.genre!);
+      //     }
+      //     if (!pageSongFilter!.contains(song.pages)) {
+      //       pageSongFilter!.add(song.pages!);
+      //     }
+      //   } else {
+      //     if (!authorSongFilter!.contains(song.artist)) {
+      //       authorSongFilter!.add(song.artist!);
+      //     }
+      //     if (!difficultySongFilter!.contains(song.difficulty)) {
+      //       difficultySongFilter!.add(song.difficulty!);
+      //     }
+      //     if (!genreSongFilter!.contains(song.genre)) {
+      //       genreSongFilter!.add(song.genre!);
+      //     }
+      //     if (!pageSongFilter!.contains(song.pages)) {
+      //       pageSongFilter!.add(song.pages!);
+      //     }
+      //   }
+
+      // authorBookFilter!.sort();
+      // difficultyBookFilter!.sort();
+      // genreBookFilter!.sort();
+      // pageBookFilter!.sort();
+      authorSongFilter!.sort();
+      difficultySongFilter!.sort();
+      genreSongFilter!.sort();
+      pageSongFilter!.sort();
     }
-      
-    authorBookFilter.sort();
-    difficultyBookFilter.sort();
-    genreBookFilter.sort();
-    pageBookFilter.sort();
-    authorSongFilter.sort();
-    difficultySongFilter.sort();
-    genreSongFilter.sort();
-    pageSongFilter.sort();
   }
-    
 /*
   List<String> getAllGenreNames(List<Songs> songs) {
     // Use a Set to store unique genre names.
@@ -164,8 +182,8 @@ class HomeController extends GetxController {
 
   static List<Songs> filterSongs(
     List<Songs> songs, {
-    double? maxPrice, 
-    int? maxPages, 
+    double? maxPrice,
+    int? maxPages,
     String? artist,
     String? difficulty,
     String? type, // Use 'book' or 'song' as values
@@ -175,9 +193,9 @@ class HomeController extends GetxController {
       // Price filter
       if (maxPrice != null && double.parse(song.price!) > maxPrice) {
         return false;
-      } 
+      }
       // Pages filter
-      if (maxPages != null && int.parse(song.pages!) > maxPages) return false; 
+      if (maxPages != null && int.parse(song.pages!) > maxPages) return false;
       // Artist filter
       if (artist != null && song.artist != artist) return false;
       // Type filter

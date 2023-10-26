@@ -666,10 +666,11 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
   void initState() {
     super.initState();
     // Initialize the unique artist and genre names from your songs list.
-    artistNames = HomeController.to.getAllArtistNames(HomeController.to.songs!);
-    genreNames = HomeController.to.getAllGenreNames(HomeController.to.songs!);
-    maxpages = ['10', '20', '30', '40', '50'];
-    difficultylevel = ['Beginner', 'Intermediate', 'Advanced', 'Various'];
+    HomeController.to.createFilters(HomeController.to.songs!);
+    artistNames = HomeController.to.authorSongFilter!;
+    genreNames = HomeController.to.genreSongFilter!;
+    maxpages = HomeController.to.pageSongFilter!;
+    difficultylevel = HomeController.to.difficultySongFilter!;
   }
 
   @override
@@ -945,16 +946,16 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                           ),
                           // Display selected artists with checkboxes below artist section
                           Column(
-                            children: selectedPages.map((maxpage) {
+                            children: selectedPages.map((pageno) {
                               return CheckboxListTile(
-                                title: Text(maxpage),
-                                value: selectedPages.contains(maxpage),
+                                title: Text(pageno),
+                                value: selectedPages.contains(pageno),
                                 onChanged: (value) {
                                   setState(() {
                                     if (value!) {
-                                      selectedArtists.add(maxpage);
+                                      selectedPages.add(pageno);
                                     } else {
-                                      selectedArtists.remove(maxpage);
+                                      selectedPages.remove(pageno);
                                     }
                                   });
                                 },
@@ -964,8 +965,6 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                           SizedBox(
                             height: size.height * 0.04,
                           ),
-                          // Display genre section...
-                          // ... (similar logic as artists)
                         ],
                       ),
                     ),
@@ -1023,17 +1022,17 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                               ? ListView.builder(
                                   shrinkWrap: true,
                                   physics: NeverScrollableScrollPhysics(),
-                                  itemCount: selectedGenres.length,
+                                  itemCount: genreNames.length,
                                   itemBuilder: (context, index) {
-                                    final genr = selectedGenres[index];
+                                    final genre = genreNames[index];
                                     return InkWell(
                                       onTap: () {
                                         setState(() {
                                           // Toggle the selection state of the artist
-                                          if (selectedGenres.contains(genr)) {
-                                            selectedGenres.remove(genr);
+                                          if (selectedGenres.contains(genre)) {
+                                            selectedGenres.remove(genre);
                                           } else {
-                                            selectedGenres.add(genr);
+                                            selectedGenres.add(genre);
                                           }
                                         });
                                       },
@@ -1042,13 +1041,14 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           TextWidget(
-                                            text: genr,
+                                            text: genre,
                                             fontSize: 14,
-                                            color: selectedGenres.contains(genr)
-                                                ? MyColors.blueColor
-                                                : MyColors.blackColor,
+                                            color:
+                                                selectedGenres.contains(genre)
+                                                    ? MyColors.blueColor
+                                                    : MyColors.blackColor,
                                           ),
-                                          selectedGenres.contains(genr)
+                                          selectedGenres.contains(genre)
                                               ? Icon(
                                                   Icons.circle,
                                                   color: MyColors.blueColor,
@@ -1070,7 +1070,27 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                           Divider(
                             color: MyColors.greyColor,
                           ),
-                          // ... Continue with your existing code for other sections
+                          // Display selected artists with checkboxes below artist section
+                          Column(
+                            children: selectedGenres.map((genre) {
+                              return CheckboxListTile(
+                                title: TextWidget(text: genre, fontSize: 9),
+                                value: selectedGenres.contains(genre),
+                                onChanged: (value) {
+                                  setState(() {
+                                    if (value!) {
+                                      selectedGenres.add(genre);
+                                    } else {
+                                      selectedGenres.remove(genre);
+                                    }
+                                  });
+                                },
+                              );
+                            }).toList(),
+                          ),
+                          SizedBox(
+                            height: size.height * 0.04,
+                          ),
                         ],
                       ),
                     ),
@@ -1130,17 +1150,18 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                               ? ListView.builder(
                                   shrinkWrap: true,
                                   physics: NeverScrollableScrollPhysics(),
-                                  itemCount: selectedDifficulty.length,
+                                  itemCount: difficultylevel.length,
                                   itemBuilder: (context, index) {
-                                    final diff = difficultylevel[index];
+                                    final difficulty = difficultylevel[index];
                                     return InkWell(
                                       onTap: () {
                                         setState(() {
                                           if (selectedDifficulty
-                                              .contains(diff)) {
-                                            selectedDifficulty.remove(diff);
+                                              .contains(difficulty)) {
+                                            selectedDifficulty
+                                                .remove(difficulty);
                                           } else {
-                                            selectedDifficulty.add(diff);
+                                            selectedDifficulty.add(difficulty);
                                           }
                                         });
                                       },
@@ -1149,14 +1170,15 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           TextWidget(
-                                            text: diff,
+                                            text: difficulty,
                                             fontSize: 14,
                                             color: selectedDifficulty
-                                                    .contains(diff)
+                                                    .contains(difficulty)
                                                 ? MyColors.blueColor
                                                 : MyColors.blackColor,
                                           ),
-                                          selectedDifficulty.contains(diff)
+                                          selectedDifficulty
+                                                  .contains(difficulty)
                                               ? Icon(
                                                   Icons.circle,
                                                   color: MyColors.blueColor,
@@ -1177,6 +1199,28 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                           ),
                           Divider(
                             color: MyColors.greyColor,
+                          ),
+                          // Display selected artists with checkboxes below artist section
+                          Column(
+                            children: selectedDifficulty.map((difficulty) {
+                              return CheckboxListTile(
+                                title:
+                                    TextWidget(text: difficulty, fontSize: 9),
+                                value: selectedDifficulty.contains(difficulty),
+                                onChanged: (value) {
+                                  setState(() {
+                                    if (value!) {
+                                      selectedDifficulty.add(difficulty);
+                                    } else {
+                                      selectedDifficulty.remove(difficulty);
+                                    }
+                                  });
+                                },
+                              );
+                            }).toList(),
+                          ),
+                          SizedBox(
+                            height: size.height * 0.04,
                           ),
                         ],
                       ),
