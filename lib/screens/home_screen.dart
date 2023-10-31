@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ? 'Piano Tab'
                                 : HomeController.to.index == 3
                                     ? 'Library'
-                                    : 'Song',
+                                    : 'Songs',
                   )),
                   Expanded(
                       flex: 10,
@@ -197,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             const Duration(milliseconds: 10),
                                         curve: Curves.fastLinearToSlowEaseIn);
                                   },
-                                  text: 'Song',
+                                  text: 'Songs',
                                   color: HomeController.to.index == 4
                                       ? MyColors.whiteColor
                                       : MyColors.transparent,

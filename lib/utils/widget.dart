@@ -270,7 +270,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TextWidget(
-                      text: 'Follow us on instagram',
+                      text: Platform.isAndroid
+                          ? 'Rate on Play Store'
+                          : 'Rate on App Store',
                       fontSize: 14,
                       color: MyColors.primaryColor,
                     ),
@@ -292,7 +294,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Icon(
-                                    Icons.check_circle,
+                                    Icons.circle_outlined,
                                     size: 18,
                                     color: MyColors.primaryColor,
                                   ),
@@ -308,7 +310,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                             Expanded(
                               flex: 2,
                               child: TextWidget(
-                                text: '23',
+                                text: '5',
                                 fontSize: 12,
                                 color: MyColors.primaryColor,
                                 fontWeight: FontWeight.w400,
@@ -589,7 +591,9 @@ class SkipButton extends StatelessWidget {
 }
 
 class FilterButton extends StatelessWidget {
-  const FilterButton({super.key});
+  final String passedVal;
+
+  const FilterButton({super.key, required this.passedVal});
 
   @override
   Widget build(BuildContext context) {
@@ -598,25 +602,27 @@ class FilterButton extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         CustomContainer(
-            onpressed: () {
-              Scaffold.of(context).openEndDrawer();
-            },
-            height: size.height * 0.045,
-            width: size.width * 0.27,
-            color: MyColors.bottomColor,
-            borderRadius: 40,
-            borderColor: MyColors.transparent,
-            borderWidth: 0,
-            widget: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                const TextWidget(text: 'Filter'),
-                Icon(
-                  Icons.filter_alt_outlined,
-                  color: MyColors.whiteColor,
-                )
-              ],
-            )),
+          onpressed: () {
+            HomeController.to.selectedPage = passedVal;
+            Scaffold.of(context).openEndDrawer();
+          },
+          height: size.height * 0.045,
+          width: size.width * 0.27,
+          color: MyColors.bottomColor,
+          borderRadius: 40,
+          borderColor: MyColors.transparent,
+          borderWidth: 0,
+          widget: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              const TextWidget(text: 'Filter'),
+              Icon(
+                Icons.filter_alt_outlined,
+                color: MyColors.whiteColor,
+              )
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -734,8 +740,7 @@ class TextWidget extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: FittedBox(
-        fit: BoxFit
-            .scaleDown, // This will scale down the text to fit in one line
+        fit: BoxFit.scaleDown,
         child: Text(
           text,
           style: TextStyle(
@@ -1124,11 +1129,13 @@ class RecentReleasedWidget extends StatelessWidget {
                         Spacer(),
                         Icon(
                           Icons.circle,
-                          color: list.color == 'red'
+                          color: list.difficulty == 'Advanced'
                               ? MyColors.red
-                              : list.color == 'yellow'
+                              : list.difficulty == 'Intermediate'
                                   ? MyColors.yellowColor
-                                  : MyColors.greenColor,
+                                  : list.difficulty == 'Beginner'
+                                      ? MyColors.greenColor
+                                      : MyColors.greyColor,
                           size: 14.h,
                         )
                       ],
@@ -1276,11 +1283,13 @@ class JazzWidget extends StatelessWidget {
                         ),
                         Icon(
                           Icons.circle,
-                          color: list.color == 'red'
+                          color: list.difficulty == 'Advanced'
                               ? MyColors.red
-                              : list.color == 'yellow'
+                              : list.difficulty == 'Intermediate'
                                   ? MyColors.yellowColor
-                                  : MyColors.transparent,
+                                  : list.difficulty == 'Beginner'
+                                      ? MyColors.greenColor
+                                      : MyColors.greyColor,
                           size: 12.h,
                         )
                       ],
@@ -1379,11 +1388,13 @@ class BookWidget extends StatelessWidget {
                         ),
                         Icon(
                           Icons.circle,
-                          color: list.color == 'red'
+                          color: list.difficulty == 'Advanced'
                               ? MyColors.red
-                              : list.color == 'yellow'
+                              : list.difficulty == 'Intermediate'
                                   ? MyColors.yellowColor
-                                  : MyColors.greenColor,
+                                  : list.difficulty == 'Beginner'
+                                      ? MyColors.greenColor
+                                      : MyColors.greyColor,
                           size: 14.h,
                         )
                       ],
@@ -1526,7 +1537,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     } else if (pages >= 76 && pages <= 100) {
       requiredTokens = pages * 0.4;
     } else if (pages >= 101 && pages <= 300) {
-      requiredTokens = pages * 0.025;
+      requiredTokens = pages * 0.25;
     }
     return '${requiredTokens.round()}'; // Round to the nearest integer
   }
@@ -1553,8 +1564,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         Get.snackbar("Failed to update library", '');
       }
     } else {
-      // Not enough points, show a generic snackbar
-      Get.snackbar("Not enough points", '');
+      Get.snackbar("Not enough tokens", '');
     }
 
     var a = OfflineLibrary.encodeOfflineLibrary(
@@ -1600,462 +1610,505 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         .userBox!.values.first.offlineLibrary
         .contains(widget.book.detail);
     bool isLoggedIn = OfflineLibraryBox.userBox!.values.first.isLoggedIn;
-    return SingleChildScrollView(
+    return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              height: size.height * 0.01,
-            ),
-            Center(
-              child: TextWidget(
-                text: widget.book.title,
-                fontSize: 15,
-                color: MyColors.blackColor,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            SizedBox(
-              height: size.height * 0.03,
-            ),
-            Row(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Container(
-                    height: size.height * 0.29,
-                    width: size.width * 0.36,
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(widget.book.imageUrl),
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                        color: MyColors.darkBlue),
-                    child: Stack(
-                      children: [
-                        hide == true
-                            ? BackdropFilter(
-                                filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
-                                child: Container(
-                                  color: Colors.black.withOpacity(0.1),
-                                ),
-                              )
-                            : const SizedBox(),
-                        Center(
-                            child: InkWell(
-                          onTap: () {
-                            _showPdfViewer(
-                                context,
-                                isOwned
-                                    ? HomeController.to.getOriginalPdfSource(
-                                        widget.book.detail)
-                                    : HomeController.to.getSamplePdfSource(
-                                        widget.book.detail));
-                          },
-                          child: Icon(
-                            CupertinoIcons.eye_fill,
-                            size: 40,
-                            color: MyColors.whiteColor,
-                          ),
-                        )),
-                      ],
-                    ),
+            CustomAppBar(
+                action: InkWell(
+                  onTap: () {
+                    Get.back();
+                  },
+                  child: Icon(
+                    Icons.arrow_back_ios_new,
+                    color: MyColors.primaryColor,
                   ),
                 ),
-                Stack(
-                  alignment: Alignment.bottomCenter,
+                title: 'Book'),
+            Expanded(
+              flex: 1,
+              child: SingleChildScrollView(
+                child: Column(
                   children: [
-                    Container(
-                      height: size.height * 0.29,
-                      width: size.width * 0.54,
-                      padding: const EdgeInsets.only(left: 15),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              CustomContainer(
-                                onpressed: () {},
-                                height: size.height * 0.04,
-                                width: size.width * 0.2,
-                                color: MyColors.primaryColor,
-                                borderRadius: 8,
-                                borderColor: MyColors.primaryColor,
-                                borderWidth: 1.5,
-                                widget: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundColor: MyColors.transparent,
-                                      backgroundImage: const AssetImage(
-                                          'assets/images/amazon.png'),
-                                      maxRadius: 8,
-                                    ),
-                                    TextWidget(
-                                      text: widget.book.price,
-                                      color: MyColors.whiteColor,
-                                      fontSize: 14,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              !isSongInLibrary
-                                  ? CustomContainer(
-                                      onpressed: () {
-                                        AddtoLibrary(context);
-                                      },
-                                      height: size.height * 0.04,
-                                      width: size.width * 0.2,
-                                      color: MyColors.whiteColor,
-                                      borderRadius: 8,
-                                      borderColor: MyColors.primaryColor,
-                                      borderWidth: 1.5,
-                                      widget: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          CircleAvatar(
-                                            backgroundColor:
-                                                MyColors.transparent,
-                                            backgroundImage: const AssetImage(
-                                                'assets/images/logo_2.png'),
-                                            maxRadius: 8,
-                                          ),
-                                          TextWidget(
-                                            text:
-                                                '${calculateRequiredTokens(int.parse(widget.book.pages))}', // Convert pages to int
-                                            color: MyColors.blueColor,
-                                            fontSize: 14,
-                                          )
-                                        ],
-                                      ),
-                                    )
-                                  : (isLoggedIn
-                                      ? SizedBox()
-                                      : TextWidget(
-                                          text: 'Redeemed',
-                                          color: MyColors.blackColor)),
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    final favorites = OfflineLibraryBox
-                                        .userBox!.values.first.favourites;
-                                    if (favorites
-                                        .contains(widget.book.detail)) {
-                                      // Remove from favorites
-                                      OfflineLibraryBox.removeFromFavorites(
-                                          widget.book.detail);
-                                      if (OfflineLibraryBox
-                                          .userBox!.values.first.isLoggedIn) {
-                                        Get.snackbar(
-                                            "Removed from favorites", "");
-                                      }
-                                    } else {
-                                      // Add to favorites
-                                      OfflineLibraryBox.addToFavorites(
-                                          widget.book.detail);
-                                      if (OfflineLibraryBox
-                                          .userBox!.values.first.isLoggedIn) {
-                                        Get.snackbar("Added to favorites", "");
-                                      }
-                                    }
-                                  });
-                                },
-                                child: Icon(
-                                  OfflineLibraryBox
-                                          .userBox!.values.first.favourites
-                                          .contains(widget.book.detail)
-                                      ? CupertinoIcons.heart_fill
-                                      : CupertinoIcons.heart,
-                                  color: MyColors.red,
-                                ),
-                              )
-                            ],
-                          ),
-                          SizedBox(
-                            height: size.height * 0.05,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TextWidget(
-                                  text: 'Artist:',
-                                  fontSize: 15,
-                                  color: MyColors.blackColor,
-                                ),
-                              ),
-                              Expanded(
-                                child: TextWidget(
-                                  text: widget.book.artist,
-                                  fontSize: 15,
-                                  color: MyColors.blackColor,
-                                ),
-                              )
-                            ],
-                          ),
-                          SizedBox(
-                            height: size.height * 0.01,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TextWidget(
-                                  text: 'Genre',
-                                  fontSize: 15,
-                                  color: MyColors.blackColor,
-                                ),
-                              ),
-                              Expanded(
-                                child: TextWidget(
-                                  text: widget.book.genre,
-                                  fontSize: 15,
-                                  color: MyColors.blackColor,
-                                  overflow: TextOverflow
-                                      .ellipsis, // Display ellipsis if the text overflows
-                                  maxLines: 1, // Limit text to a single line
-                                ),
-                              )
-                            ],
-                          ),
-                          SizedBox(
-                            height: size.height * 0.01,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TextWidget(
-                                  text: 'Difficulty:',
-                                  fontSize: 15,
-                                  color: MyColors.blackColor,
-                                ),
-                              ),
-                              Expanded(
-                                child: TextWidget(
-                                  text: widget.book.difficulty,
-                                  fontSize: 15,
-                                  color: MyColors.blackColor,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                ),
-                              )
-                            ],
-                          ),
-                          SizedBox(
-                            height: size.height * 0.01,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TextWidget(
-                                  text: 'Pages:',
-                                  fontSize: 15,
-                                  color: MyColors.blackColor,
-                                ),
-                              ),
-                              Expanded(
-                                child: TextWidget(
-                                  text: widget.book.pages,
-                                  fontSize: 15,
-                                  color: MyColors.blackColor,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                ),
-                              )
-                            ],
-                          ),
-                          SizedBox(
-                            height: size.height * 0.01,
-                          ),
-                        ],
+                    SizedBox(
+                      height: size.height * 0.01,
+                    ),
+                    Center(
+                      child: TextWidget(
+                        text: widget.book.title,
+                        fontSize: 15,
+                        color: MyColors.blackColor,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    Stack(
-                      alignment: Alignment.bottomCenter,
+                    SizedBox(
+                      height: size.height * 0.03,
+                    ),
+                    Row(
                       children: [
-                        Container(
-                          height: size.height * 0.076,
-                          width: size.width * 0.54,
-                          padding: const EdgeInsets.only(
-                            left: 10,
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: InkWell(
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Container(
+                            height: size.height * 0.29,
+                            width: size.width * 0.36,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: NetworkImage(widget.book.imageUrl),
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                                color: MyColors.darkBlue),
+                            child: Stack(
+                              children: [
+                                hide == true
+                                    ? BackdropFilter(
+                                        filter: ImageFilter.blur(
+                                            sigmaX: 2, sigmaY: 2),
+                                        child: Container(
+                                          color: Colors.black.withOpacity(0.1),
+                                        ),
+                                      )
+                                    : const SizedBox(),
+                                Center(
+                                    child: InkWell(
                                   onTap: () {
-                                    setState(() {
-                                      play = !play;
-                                      print(HomeController.to
-                                          .getMp3Source(widget.book.detail));
-                                    });
-
-                                    // Play or pause audio when the "Play" button is tapped
-                                    if (play) {
-                                      playAudioFromUrl(HomeController.to
-                                          .getMp3Source(widget.book.detail));
-                                    } else {
-                                      player.pause();
-                                    }
+                                    _showPdfViewer(
+                                        context,
+                                        isOwned
+                                            ? HomeController.to
+                                                .getOriginalPdfSource(
+                                                    widget.book.detail)
+                                            : HomeController.to
+                                                .getSamplePdfSource(
+                                                    widget.book.detail));
                                   },
                                   child: Icon(
-                                    play
-                                        ? Icons.pause_circle_outline_outlined
-                                        : Icons.play_circle_outline_outlined,
-                                    size: 28,
-                                    color: MyColors.blueColor,
+                                    CupertinoIcons.eye_fill,
+                                    size: 40,
+                                    color: MyColors.whiteColor,
                                   ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: size.width * 0.02,
-                              ),
-                              Expanded(
-                                flex: 6,
-                                child: SliderTheme(
-                                  data: const SliderThemeData(
-                                      trackHeight: 3,
-                                      trackShape: RectangularSliderTrackShape(),
-                                      overlayShape: RoundSliderOverlayShape(
-                                          overlayRadius: 8),
-                                      thumbShape: RoundSliderThumbShape(
-                                          enabledThumbRadius: 5)),
-                                  child: Slider(
-                                    min: 0,
-                                    max: maxValue,
-                                    value: value,
-                                    inactiveColor: MyColors.greyColor,
-                                    onChanged: (newValue) {
-                                      setState(() {
-                                        value = newValue;
-                                      });
-                                    },
-                                  ),
-                                ),
-                              )
-                            ],
+                                )),
+                              ],
+                            ),
                           ),
                         ),
-                        Row(
+                        Stack(
+                          alignment: Alignment.bottomCenter,
                           children: [
-                            TextWidget(
-                              text: formatTime(value.toInt()),
-                              color: MyColors.blackColor,
-                              fontSize: 12,
-                            ),
-                            SizedBox(
-                              width: size.width * 0.01,
-                            ),
                             Container(
-                              height: size.height * 0.022,
-                              width: 1,
-                              color: MyColors.greyColor,
+                              height: size.height * 0.29,
+                              width: size.width * 0.54,
+                              padding: const EdgeInsets.only(left: 15),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      CustomContainer(
+                                        onpressed: () {},
+                                        height: size.height * 0.04,
+                                        width: size.width * 0.2,
+                                        color: MyColors.primaryColor,
+                                        borderRadius: 8,
+                                        borderColor: MyColors.primaryColor,
+                                        borderWidth: 1.5,
+                                        widget: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            CircleAvatar(
+                                              backgroundColor:
+                                                  MyColors.transparent,
+                                              backgroundImage: const AssetImage(
+                                                  'assets/images/amazon.png'),
+                                              maxRadius: 8,
+                                            ),
+                                            TextWidget(
+                                              text: widget.book.price,
+                                              color: MyColors.whiteColor,
+                                              fontSize: 14,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      !isSongInLibrary
+                                          ? CustomContainer(
+                                              onpressed: () {
+                                                AddtoLibrary(context);
+                                              },
+                                              height: size.height * 0.04,
+                                              width: size.width * 0.2,
+                                              color: MyColors.whiteColor,
+                                              borderRadius: 8,
+                                              borderColor:
+                                                  MyColors.primaryColor,
+                                              borderWidth: 1.5,
+                                              widget: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                children: [
+                                                  CircleAvatar(
+                                                    backgroundColor:
+                                                        MyColors.transparent,
+                                                    backgroundImage:
+                                                        const AssetImage(
+                                                            'assets/images/logo_2.png'),
+                                                    maxRadius: 8,
+                                                  ),
+                                                  TextWidget(
+                                                    text:
+                                                        '${calculateRequiredTokens(int.parse(widget.book.pages))}', // Convert pages to int
+                                                    color: MyColors.blueColor,
+                                                    fontSize: 14,
+                                                  )
+                                                ],
+                                              ),
+                                            )
+                                          : (isLoggedIn
+                                              ? SizedBox()
+                                              : TextWidget(
+                                                  text: 'Redeemed',
+                                                  color: MyColors.blackColor)),
+                                      InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            final favorites = OfflineLibraryBox
+                                                .userBox!
+                                                .values
+                                                .first
+                                                .favourites;
+                                            if (favorites
+                                                .contains(widget.book.detail)) {
+                                              // Remove from favorites
+                                              OfflineLibraryBox
+                                                  .removeFromFavorites(
+                                                      widget.book.detail);
+                                              if (OfflineLibraryBox.userBox!
+                                                  .values.first.isLoggedIn) {
+                                                Get.snackbar(
+                                                    "Removed from favorites",
+                                                    "");
+                                              }
+                                            } else {
+                                              // Add to favorites
+                                              OfflineLibraryBox.addToFavorites(
+                                                  widget.book.detail);
+                                              if (OfflineLibraryBox.userBox!
+                                                  .values.first.isLoggedIn) {
+                                                Get.snackbar(
+                                                    "Added to favorites", "");
+                                              }
+                                            }
+                                          });
+                                        },
+                                        child: Icon(
+                                          OfflineLibraryBox.userBox!.values
+                                                  .first.favourites
+                                                  .contains(widget.book.detail)
+                                              ? CupertinoIcons.heart_fill
+                                              : CupertinoIcons.heart,
+                                          color: MyColors.red,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: size.height * 0.05,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextWidget(
+                                          text: 'Artist:',
+                                          fontSize: 15,
+                                          color: MyColors.blackColor,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: TextWidget(
+                                          text: widget.book.artist,
+                                          fontSize: 15,
+                                          color: MyColors.blackColor,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: size.height * 0.01,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextWidget(
+                                          text: 'Genre',
+                                          fontSize: 15,
+                                          color: MyColors.blackColor,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: TextWidget(
+                                          text: widget.book.genre,
+                                          fontSize: 15,
+                                          color: MyColors.blackColor,
+                                          overflow: TextOverflow
+                                              .ellipsis, // Display ellipsis if the text overflows
+                                          maxLines:
+                                              1, // Limit text to a single line
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: size.height * 0.01,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextWidget(
+                                          text: 'Difficulty:',
+                                          fontSize: 15,
+                                          color: MyColors.blackColor,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: TextWidget(
+                                          text: widget.book.difficulty,
+                                          fontSize: 15,
+                                          color: MyColors.blackColor,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: size.height * 0.01,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextWidget(
+                                          text: 'Pages:',
+                                          fontSize: 15,
+                                          color: MyColors.blackColor,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: TextWidget(
+                                          text: widget.book.pages,
+                                          fontSize: 15,
+                                          color: MyColors.blackColor,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: size.height * 0.01,
+                                  ),
+                                ],
+                              ),
                             ),
-                            SizedBox(
-                              width: size.width * 0.01,
+                            Stack(
+                              alignment: Alignment.bottomCenter,
+                              children: [
+                                Container(
+                                  height: size.height * 0.076,
+                                  width: size.width * 0.54,
+                                  padding: const EdgeInsets.only(
+                                    left: 10,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              play = !play;
+                                              print(HomeController.to
+                                                  .getMp3Source(
+                                                      widget.book.detail));
+                                            });
+
+                                            // Play or pause audio when the "Play" button is tapped
+                                            if (play) {
+                                              playAudioFromUrl(HomeController.to
+                                                  .getMp3Source(
+                                                      widget.book.detail));
+                                            } else {
+                                              player.pause();
+                                            }
+                                          },
+                                          child: Icon(
+                                            play
+                                                ? Icons
+                                                    .pause_circle_outline_outlined
+                                                : Icons
+                                                    .play_circle_outline_outlined,
+                                            size: 28,
+                                            color: MyColors.blueColor,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: size.width * 0.02,
+                                      ),
+                                      Expanded(
+                                        flex: 6,
+                                        child: SliderTheme(
+                                          data: const SliderThemeData(
+                                              trackHeight: 3,
+                                              trackShape:
+                                                  RectangularSliderTrackShape(),
+                                              overlayShape:
+                                                  RoundSliderOverlayShape(
+                                                      overlayRadius: 8),
+                                              thumbShape: RoundSliderThumbShape(
+                                                  enabledThumbRadius: 5)),
+                                          child: Slider(
+                                            min: 0,
+                                            max: maxValue,
+                                            value: value,
+                                            inactiveColor: MyColors.greyColor,
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                value = newValue;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    TextWidget(
+                                      text: formatTime(value.toInt()),
+                                      color: MyColors.blackColor,
+                                      fontSize: 12,
+                                    ),
+                                    SizedBox(
+                                      width: size.width * 0.01,
+                                    ),
+                                    Container(
+                                      height: size.height * 0.022,
+                                      width: 1,
+                                      color: MyColors.greyColor,
+                                    ),
+                                    SizedBox(
+                                      width: size.width * 0.01,
+                                    ),
+                                    TextWidget(
+                                      text: formatTime(maxValue.toInt()),
+                                      color: MyColors.blackColor,
+                                      fontSize: 12,
+                                    )
+                                  ],
+                                )
+                              ],
                             ),
-                            TextWidget(
-                              text: formatTime(maxValue.toInt()),
-                              color: MyColors.blackColor,
-                              fontSize: 12,
-                            )
                           ],
                         )
                       ],
                     ),
-                  ],
-                )
-              ],
-            ),
-            SizedBox(
-              height: size.height * 0.015,
-            ),
-            Row(
-              children: [
-                CustomContainer(
-                    onpressed: () async {
-                      final url = Uri.parse(widget.book.imageUrl);
-                      final response = await http.get(url);
-                      final bytes = response.bodyBytes;
-                      final temp = await getTemporaryDirectory();
-                      final path = '${temp.path}/image.jpg';
-                      File(path).writeAsBytesSync(bytes);
-                      final XFile xfile = XFile(path);
-                      await Share.shareXFiles([xfile],
-                          text: '${widget.book.title}');
-                    },
-                    height: size.height * 0.04,
-                    width: size.width * 0.22,
-                    color: MyColors.whiteColor,
-                    borderRadius: 10,
-                    borderColor: MyColors.primaryColor,
-                    borderWidth: 1.5,
-                    widget: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    SizedBox(
+                      height: size.height * 0.015,
+                    ),
+                    Row(
                       children: [
-                        Expanded(
-                          flex: 3,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              TextWidget(
-                                text: 'Share',
-                                fontSize: 12,
-                                color: MyColors.primaryColor,
-                                fontWeight: FontWeight.w400,
-                              ),
-                              Container(
-                                height: size.height * 0.025,
-                                width: 1,
-                                color: MyColors.primaryColor.withOpacity(0.5),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Icon(
-                            CupertinoIcons.share,
-                            size: 16,
-                            color: MyColors.primaryColor,
-                          ),
-                        )
+                        CustomContainer(
+                            onpressed: () async {
+                              final url = Uri.parse(widget.book.imageUrl);
+                              final response = await http.get(url);
+                              final bytes = response.bodyBytes;
+                              final temp = await getTemporaryDirectory();
+                              final path = '${temp.path}/image.jpg';
+                              File(path).writeAsBytesSync(bytes);
+                              final XFile xfile = XFile(path);
+                              await Share.shareXFiles([xfile],
+                                  text: '${widget.book.title}');
+                            },
+                            height: size.height * 0.04,
+                            width: size.width * 0.22,
+                            color: MyColors.whiteColor,
+                            borderRadius: 10,
+                            borderColor: MyColors.primaryColor,
+                            borderWidth: 1.5,
+                            widget: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Expanded(
+                                  flex: 3,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      TextWidget(
+                                        text: 'Share',
+                                        fontSize: 12,
+                                        color: MyColors.primaryColor,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                      Container(
+                                        height: size.height * 0.025,
+                                        width: 1,
+                                        color: MyColors.primaryColor
+                                            .withOpacity(0.5),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Icon(
+                                    CupertinoIcons.share,
+                                    size: 16,
+                                    color: MyColors.primaryColor,
+                                  ),
+                                )
+                              ],
+                            )),
+                        // SizedBox(
+                        //   width: size.width * 0.02,
+                        // ),
+                        // Icon(
+                        //   Icons.playlist_add,
+                        //   size: 32,
+                        //   color: MyColors.primaryColor,
+                        // )
                       ],
-                    )),
-                // SizedBox(
-                //   width: size.width * 0.02,
-                // ),
-                // Icon(
-                //   Icons.playlist_add,
-                //   size: 32,
-                //   color: MyColors.primaryColor,
-                // )
-              ],
-            ),
-            SizedBox(
-              height: size.height * 0.015,
-            ),
-            TextWidget(
-              text: 'Description',
-              color: MyColors.blackColor,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-            SizedBox(
-              height: size.height * 0.015,
-            ),
-            Text(widget.book.description,
-                style: TextStyle(
-                    color: MyColors.blackColor.withOpacity(0.4),
-                    fontSize: 16.sp)),
-            SizedBox(
-              height: size.height * 0.02,
-            ),
-            SizedBox(
-              height: size.height * 0.2,
+                    ),
+                    SizedBox(
+                      height: size.height * 0.015,
+                    ),
+                    TextWidget(
+                      text: 'Description',
+                      color: MyColors.blackColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    SizedBox(
+                      height: size.height * 0.015,
+                    ),
+                    Text(widget.book.description,
+                        style: TextStyle(
+                            color: MyColors.blackColor.withOpacity(0.4),
+                            fontSize: 16.sp)),
+                    SizedBox(
+                      height: size.height * 0.02,
+                    ),
+                    SizedBox(
+                      height: size.height * 0.2,
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
@@ -2088,10 +2141,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                         );
                       },
                     ),
-                    IconButton(
-                      icon: Icon(Icons.print),
-                      onPressed: () {},
-                    ),
+                    // IconButton(
+                    //   icon: Icon(Icons.print),
+                    //   onPressed: () {},
+                    // ),
                   ],
                 ),
                 Expanded(
@@ -2324,9 +2377,8 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         Get.snackbar("Create an account to add items to the library", '');
       }
     } else {
-      // Not enough points, show a generic snackbar
       if (isLoggedIn) {
-        Get.snackbar("Not enough points", '');
+        Get.snackbar("Not enough tokens", '');
       } else {
         // Prompt the user to create an account
         Get.snackbar("Create an account to add items to the library", '');
@@ -2368,481 +2420,515 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     final isSongInLibrary = OfflineLibraryBox
         .userBox!.values.first.offlineLibrary
         .contains(widget.song.detail);
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: size.height * 0.01,
-            ),
-            Center(
-              child: TextWidget(
-                text: widget.song.title,
-                fontSize: 15,
-                color: MyColors.blackColor,
-                fontWeight: FontWeight.w600,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CustomAppBar(
+              action: InkWell(
+                onTap: () {
+                  Get.back();
+                },
+                child: Icon(
+                  Icons.arrow_back_ios_new,
+                  color: MyColors.primaryColor,
+                ),
               ),
-            ),
-            SizedBox(
-              height: size.height * 0.03,
-            ),
-            Row(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Container(
-                    height: size.height * 0.29,
-                    width: size.width * 0.36,
-                    decoration: BoxDecoration(
-                        image: const DecorationImage(
-                          fit: BoxFit.cover,
-                          image: AssetImage('assets/images/background.jpeg'),
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                        color: MyColors.darkBlue),
-                    child: Stack(
-                      children: [
-                        hide == true
-                            ? BackdropFilter(
-                                filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
-                                child: Container(
-                                  color: Colors.black.withOpacity(0.1),
-                                ),
-                              )
-                            : const SizedBox(),
-                        Center(
-                          child: InkWell(
-                            onTap: () {
-                              _showPdfViewer(
-                                  context,
-                                  isOwned
-                                      ? HomeController.to.getOriginalPdfSource(
-                                          widget.song.detail)
-                                      : HomeController.to.getSamplePdfSource(
-                                          widget.song.detail));
-                            },
-                            child: Icon(
-                              CupertinoIcons.eye_fill,
-                              size: 40,
-                              color: MyColors.whiteColor,
-                            ),
-                          ),
-                        ),
-                      ],
+              title: 'Song'),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: size.height * 0.01,
+                  ),
+                  Center(
+                    child: TextWidget(
+                      text: widget.song.title,
+                      fontSize: 15,
+                      color: MyColors.blackColor,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                ),
-                Stack(
-                  alignment: Alignment.bottomCenter,
-                  children: [
-                    Container(
-                      height: size.height * 0.29,
-                      width: size.width * 0.54,
-                      padding: const EdgeInsets.only(left: 15),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Wrap(
-                            spacing: 5,
-                            runSpacing: 5,
-                            alignment: WrapAlignment.spaceBetween,
-                            children: [
-                              LayoutBuilder(
-                                builder: (context, constraints) {
-                                  final tokenText = _calculateRequiredTokens(
-                                      int.parse(widget.song.pages));
-                                  double tokenWidth =
-                                      size.width * 0.2; // Default width
-                                  double tokenTextSize =
-                                      14.0; // Default text size
-
-                                  // Check the length of tokenText and adjust width and text size accordingly
-                                  if (tokenText.length > 6) {
-                                    tokenWidth = constraints.maxWidth *
-                                        1; // Adjusted width
-                                    tokenTextSize = 10.0; // Adjusted text size
-                                  }
-
-                                  return !isSongInLibrary
-                                      ? CustomContainer(
-                                          onpressed: () {
-                                            AddtoLibrary(context);
-                                          },
-                                          height: size.height * 0.04,
-                                          width: tokenWidth,
-                                          color: MyColors.whiteColor,
-                                          borderRadius: 8,
-                                          borderColor: MyColors.primaryColor,
-                                          borderWidth: 1.5,
-                                          widget: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              CircleAvatar(
-                                                backgroundColor:
-                                                    MyColors.transparent,
-                                                backgroundImage: const AssetImage(
-                                                    'assets/images/logo_2.png'),
-                                                maxRadius: 8,
-                                              ),
-                                              TextWidget(
-                                                text:
-                                                    tokenText, // Convert pages to int
-                                                color: MyColors.blueColor,
-                                                fontSize: 14,
-                                              )
-                                            ],
-                                          ),
-                                        )
-                                      : (isLoggedIn
-                                          ? SizedBox()
-                                          : TextWidget(
-                                              text: 'Redeemed',
-                                              color: MyColors.blackColor));
-                                },
+                  SizedBox(
+                    height: size.height * 0.03,
+                  ),
+                  Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          height: size.height * 0.29,
+                          width: size.width * 0.36,
+                          decoration: BoxDecoration(
+                              image: const DecorationImage(
+                                fit: BoxFit.cover,
+                                image:
+                                    AssetImage('assets/images/background.jpeg'),
                               ),
-                              CustomContainer(
-                                onpressed: () {},
-                                height: size.height * 0.04,
-                                width: size.width * 0.2,
-                                color: MyColors.primaryColor,
-                                borderRadius: 10,
-                                borderColor: MyColors.transparent,
-                                borderWidth: 0,
-                                widget: const Center(
-                                  child: TextWidget(
-                                    text: 'Book',
-                                    fontSize: 14,
+                              borderRadius: BorderRadius.circular(10),
+                              color: MyColors.darkBlue),
+                          child: Stack(
+                            children: [
+                              hide == true
+                                  ? BackdropFilter(
+                                      filter: ImageFilter.blur(
+                                          sigmaX: 2, sigmaY: 2),
+                                      child: Container(
+                                        color: Colors.black.withOpacity(0.1),
+                                      ),
+                                    )
+                                  : const SizedBox(),
+                              Center(
+                                child: InkWell(
+                                  onTap: () {
+                                    _showPdfViewer(
+                                        context,
+                                        isOwned
+                                            ? HomeController.to
+                                                .getOriginalPdfSource(
+                                                    widget.song.detail)
+                                            : HomeController.to
+                                                .getSamplePdfSource(
+                                                    widget.song.detail));
+                                  },
+                                  child: Icon(
+                                    CupertinoIcons.eye_fill,
+                                    size: 40,
+                                    color: MyColors.whiteColor,
                                   ),
                                 ),
                               ),
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    final favorites = OfflineLibraryBox
-                                        .userBox!.values.first.favourites;
-                                    if (favorites
-                                        .contains(widget.song.detail)) {
-                                      // Remove from favorites
-                                      OfflineLibraryBox.removeFromFavorites(
-                                          widget.song.detail);
-                                      if (OfflineLibraryBox
-                                          .userBox!.values.first.isLoggedIn) {
-                                        Get.snackbar(
-                                            "Removed from favorites", "");
-                                      }
-                                    } else {
-                                      // Add to favorites
-                                      OfflineLibraryBox.addToFavorites(
-                                          widget.song.detail);
-                                      if (OfflineLibraryBox
-                                          .userBox!.values.first.isLoggedIn) {
-                                        Get.snackbar("Added to favorites", "");
-                                      }
-                                    }
-                                  });
-                                },
-                                child: Icon(
-                                  OfflineLibraryBox
-                                          .userBox!.values.first.favourites
-                                          .contains(widget.song.detail)
-                                      ? CupertinoIcons.heart_fill
-                                      : CupertinoIcons.heart,
-                                  color: MyColors.red,
-                                ),
-                              )
                             ],
                           ),
-                          Column(
+                        ),
+                      ),
+                      Stack(
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          Container(
+                            height: size.height * 0.29,
+                            width: size.width * 0.54,
+                            padding: const EdgeInsets.only(left: 15),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Wrap(
+                                  spacing: 5,
+                                  runSpacing: 5,
+                                  alignment: WrapAlignment.spaceBetween,
+                                  children: [
+                                    LayoutBuilder(
+                                      builder: (context, constraints) {
+                                        final tokenText =
+                                            _calculateRequiredTokens(
+                                                int.parse(widget.song.pages));
+                                        double tokenWidth = size.width * 0.2;
+                                        double tokenTextSize = 14.0;
+
+                                        // Check the length of tokenText and adjust width and text size accordingly
+                                        if (tokenText.length > 6) {
+                                          tokenWidth = constraints.maxWidth *
+                                              1; // Adjusted width
+                                          tokenTextSize =
+                                              10.75; // Adjusted text size
+                                        }
+
+                                        return !isSongInLibrary
+                                            ? CustomContainer(
+                                                onpressed: () {
+                                                  AddtoLibrary(context);
+                                                },
+                                                height: size.height * 0.04,
+                                                width: tokenWidth,
+                                                color: MyColors.whiteColor,
+                                                borderRadius: 8,
+                                                borderColor:
+                                                    MyColors.primaryColor,
+                                                borderWidth: 1.5,
+                                                widget: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    CircleAvatar(
+                                                      backgroundColor:
+                                                          MyColors.transparent,
+                                                      backgroundImage:
+                                                          const AssetImage(
+                                                              'assets/images/logo_2.png'),
+                                                      maxRadius: 8,
+                                                    ),
+                                                    TextWidget(
+                                                      text:
+                                                          tokenText, // Convert pages to int
+                                                      color: MyColors.blueColor,
+                                                      fontSize: tokenTextSize,
+                                                    )
+                                                  ],
+                                                ),
+                                              )
+                                            : (isLoggedIn
+                                                ? SizedBox()
+                                                : TextWidget(
+                                                    text: 'Redeemed',
+                                                    color:
+                                                        MyColors.blackColor));
+                                      },
+                                    ),
+                                    // CustomContainer(
+                                    //   onpressed: () {},
+                                    //   height: size.height * 0.04,
+                                    //   width: size.width * 0.2,
+                                    //   color: MyColors.primaryColor,
+                                    //   borderRadius: 10,
+                                    //   borderColor: MyColors.transparent,
+                                    //   borderWidth: 0,
+                                    //   widget: const Center(
+                                    //     child: TextWidget(
+                                    //       text: 'Book',
+                                    //       fontSize: 14,
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          final favorites = OfflineLibraryBox
+                                              .userBox!.values.first.favourites;
+                                          if (favorites
+                                              .contains(widget.song.detail)) {
+                                            // Remove from favorites
+                                            OfflineLibraryBox
+                                                .removeFromFavorites(
+                                                    widget.song.detail);
+                                            if (OfflineLibraryBox.userBox!
+                                                .values.first.isLoggedIn) {
+                                              Get.snackbar(
+                                                  "Removed from favorites", "");
+                                            }
+                                          } else {
+                                            // Add to favorites
+                                            OfflineLibraryBox.addToFavorites(
+                                                widget.song.detail);
+                                            if (OfflineLibraryBox.userBox!
+                                                .values.first.isLoggedIn) {
+                                              Get.snackbar(
+                                                  "Added to favorites", "");
+                                            }
+                                          }
+                                        });
+                                      },
+                                      child: Icon(
+                                        OfflineLibraryBox.userBox!.values.first
+                                                .favourites
+                                                .contains(widget.song.detail)
+                                            ? CupertinoIcons.heart_fill
+                                            : CupertinoIcons.heart,
+                                        color: MyColors.red,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                Column(
+                                  children: [
+                                    SizedBox(
+                                      height: size.height * 0.03,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextWidget(
+                                            text: 'Artist:',
+                                            fontSize: 15,
+                                            color: MyColors.blackColor,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: TextWidget(
+                                            text: widget.song.artist,
+                                            fontSize: 15,
+                                            color: MyColors.blackColor,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: size.height * 0.01,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextWidget(
+                                            text: 'Genre',
+                                            fontSize: 15,
+                                            color: MyColors.blackColor,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: TextWidget(
+                                            text: widget.song.genre,
+                                            fontSize: 15,
+                                            color: MyColors.blackColor,
+                                            overflow: TextOverflow
+                                                .ellipsis, // Display ellipsis if the text overflows
+                                            maxLines:
+                                                1, // Limit text to a single line
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: size.height * 0.01,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextWidget(
+                                            text: 'Difficulty:',
+                                            fontSize: 15,
+                                            color: MyColors.blackColor,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: TextWidget(
+                                            text: widget.song.difficulty,
+                                            fontSize: 14,
+                                            color: MyColors.blackColor,
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: size.height * 0.01,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextWidget(
+                                            text: 'Pages:',
+                                            fontSize: 15,
+                                            color: MyColors.blackColor,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: TextWidget(
+                                            text: widget.song.pages,
+                                            fontSize: 15,
+                                            color: MyColors.blackColor,
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: size.height * 0.01,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          Stack(
+                            alignment: Alignment.bottomCenter,
                             children: [
-                              SizedBox(
-                                height: size.height * 0.03,
-                              ),
+                              Container(
+                                  height: size.height * 0.076,
+                                  width: size.width * 0.54,
+                                  padding: const EdgeInsets.only(
+                                    left: 15,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              play = !play;
+                                              print(HomeController.to
+                                                  .getMp3Source(
+                                                      widget.song.detail));
+                                            });
+
+                                            // Play or pause audio when the "Play" button is tapped
+                                            if (play) {
+                                              playAudioFromUrl(HomeController.to
+                                                  .getMp3Source(
+                                                      widget.song.detail));
+                                            } else {
+                                              player.pause();
+                                            }
+                                          },
+                                          child: Icon(
+                                            play
+                                                ? Icons
+                                                    .pause_circle_outline_outlined
+                                                : Icons
+                                                    .play_circle_outline_outlined,
+                                            size: 28,
+                                            color: MyColors.blueColor,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: size.width * 0.02,
+                                      ),
+                                      Expanded(
+                                        flex: 6,
+                                        child: SliderTheme(
+                                          data: const SliderThemeData(
+                                              trackHeight: 3,
+                                              trackShape:
+                                                  RectangularSliderTrackShape(),
+                                              overlayShape:
+                                                  RoundSliderOverlayShape(
+                                                      overlayRadius: 8),
+                                              thumbShape: RoundSliderThumbShape(
+                                                  enabledThumbRadius: 5)),
+                                          child: Slider(
+                                            min: 0,
+                                            max: maxValue,
+                                            value: value,
+                                            inactiveColor: MyColors.greyColor,
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                value = newValue;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  )),
                               Row(
                                 children: [
-                                  Expanded(
-                                    child: TextWidget(
-                                      text: 'Artist:',
-                                      fontSize: 15,
-                                      color: MyColors.blackColor,
-                                    ),
+                                  TextWidget(
+                                    text: formatTime(value.toInt()),
+                                    color: MyColors.blackColor,
+                                    fontSize: 12,
                                   ),
-                                  Expanded(
-                                    child: TextWidget(
-                                      text: widget.song.artist,
-                                      fontSize: 15,
-                                      color: MyColors.blackColor,
-                                    ),
+                                  SizedBox(
+                                    width: size.width * 0.01,
+                                  ),
+                                  Container(
+                                    height: size.height * 0.022,
+                                    width: 1,
+                                    color: MyColors.greyColor,
+                                  ),
+                                  SizedBox(
+                                    width: size.width * 0.01,
+                                  ),
+                                  TextWidget(
+                                    text: formatTime(maxValue.toInt()),
+                                    color: MyColors.blackColor,
+                                    fontSize: 12,
                                   )
                                 ],
-                              ),
-                              SizedBox(
-                                height: size.height * 0.01,
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: TextWidget(
-                                      text: 'Genre',
-                                      fontSize: 15,
-                                      color: MyColors.blackColor,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: TextWidget(
-                                      text: widget.song.genre,
-                                      fontSize: 15,
-                                      color: MyColors.blackColor,
-                                      overflow: TextOverflow
-                                          .ellipsis, // Display ellipsis if the text overflows
-                                      maxLines:
-                                          1, // Limit text to a single line
-                                    ),
-                                  )
-                                ],
-                              ),
-                              SizedBox(
-                                height: size.height * 0.01,
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: TextWidget(
-                                      text: 'Difficulty:',
-                                      fontSize: 15,
-                                      color: MyColors.blackColor,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: TextWidget(
-                                      text: widget.song.difficulty,
-                                      fontSize: 14,
-                                      color: MyColors.blackColor,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                    ),
-                                  )
-                                ],
-                              ),
-                              SizedBox(
-                                height: size.height * 0.01,
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: TextWidget(
-                                      text: 'Pages:',
-                                      fontSize: 15,
-                                      color: MyColors.blackColor,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: TextWidget(
-                                      text: widget.song.pages,
-                                      fontSize: 15,
-                                      color: MyColors.blackColor,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                    ),
-                                  )
-                                ],
-                              ),
-                              SizedBox(
-                                height: size.height * 0.01,
-                              ),
+                              )
                             ],
                           ),
                         ],
-                      ),
-                    ),
-                    Stack(
-                      alignment: Alignment.bottomCenter,
-                      children: [
-                        Container(
-                            height: size.height * 0.076,
-                            width: size.width * 0.54,
-                            padding: const EdgeInsets.only(
-                              left: 15,
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        play = !play;
-                                        print(HomeController.to
-                                            .getMp3Source(widget.song.detail));
-                                      });
-
-                                      // Play or pause audio when the "Play" button is tapped
-                                      if (play) {
-                                        playAudioFromUrl(HomeController.to
-                                            .getMp3Source(widget.song.detail));
-                                      } else {
-                                        player.pause();
-                                      }
-                                    },
-                                    child: Icon(
-                                      play
-                                          ? Icons.pause_circle_outline_outlined
-                                          : Icons.play_circle_outline_outlined,
-                                      size: 28,
-                                      color: MyColors.blueColor,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: size.width * 0.02,
-                                ),
-                                Expanded(
-                                  flex: 6,
-                                  child: SliderTheme(
-                                    data: const SliderThemeData(
-                                        trackHeight: 3,
-                                        trackShape:
-                                            RectangularSliderTrackShape(),
-                                        overlayShape: RoundSliderOverlayShape(
-                                            overlayRadius: 8),
-                                        thumbShape: RoundSliderThumbShape(
-                                            enabledThumbRadius: 5)),
-                                    child: Slider(
-                                      min: 0,
-                                      max: maxValue,
-                                      value: value,
-                                      inactiveColor: MyColors.greyColor,
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          value = newValue;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                )
-                              ],
-                            )),
-                        Row(
-                          children: [
-                            TextWidget(
-                              text: formatTime(value.toInt()),
-                              color: MyColors.blackColor,
-                              fontSize: 12,
-                            ),
-                            SizedBox(
-                              width: size.width * 0.01,
-                            ),
-                            Container(
-                              height: size.height * 0.022,
-                              width: 1,
-                              color: MyColors.greyColor,
-                            ),
-                            SizedBox(
-                              width: size.width * 0.01,
-                            ),
-                            TextWidget(
-                              text: formatTime(maxValue.toInt()),
-                              color: MyColors.blackColor,
-                              fontSize: 12,
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                  ],
-                )
-              ],
-            ),
-            SizedBox(
-              height: size.height * 0.015,
-            ),
-            Row(
-              children: [
-                CustomContainer(
-                    onpressed: () async {
-                      final url = Uri.parse(widget.song.imageUrl);
-                      final response = await http.get(url);
-                      final bytes = response.bodyBytes;
-                      final temp = await getTemporaryDirectory();
-                      final path = '${temp.path}/image.jpg';
-                      File(path).writeAsBytesSync(bytes);
-                      final XFile xfile = XFile(path);
-                      await Share.shareXFiles([xfile],
-                          text: '${widget.song.title}');
-                    },
-                    height: size.height * 0.04,
-                    width: size.width * 0.22,
-                    color: MyColors.whiteColor,
-                    borderRadius: 10,
-                    borderColor: MyColors.primaryColor,
-                    borderWidth: 1.5,
-                    widget: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          flex: 3,
-                          child: Row(
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: size.height * 0.015,
+                  ),
+                  Row(
+                    children: [
+                      CustomContainer(
+                          onpressed: () async {
+                            final url = Uri.parse(widget.song.imageUrl);
+                            final response = await http.get(url);
+                            final bytes = response.bodyBytes;
+                            final temp = await getTemporaryDirectory();
+                            final path = '${temp.path}/image.jpg';
+                            File(path).writeAsBytesSync(bytes);
+                            final XFile xfile = XFile(path);
+                            await Share.shareXFiles([xfile],
+                                text: '${widget.song.title}');
+                          },
+                          height: size.height * 0.04,
+                          width: size.width * 0.22,
+                          color: MyColors.whiteColor,
+                          borderRadius: 10,
+                          borderColor: MyColors.primaryColor,
+                          borderWidth: 1.5,
+                          widget: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              TextWidget(
-                                text: 'Share',
-                                fontSize: 12,
-                                color: MyColors.primaryColor,
-                                fontWeight: FontWeight.w400,
+                              Expanded(
+                                flex: 3,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    TextWidget(
+                                      text: 'Share',
+                                      fontSize: 12,
+                                      color: MyColors.primaryColor,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    Container(
+                                      height: size.height * 0.025,
+                                      width: 1,
+                                      color: MyColors.primaryColor
+                                          .withOpacity(0.5),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              Container(
-                                height: size.height * 0.025,
-                                width: 1,
-                                color: MyColors.primaryColor.withOpacity(0.5),
-                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Icon(
+                                  CupertinoIcons.share,
+                                  size: 16,
+                                  color: MyColors.primaryColor,
+                                ),
+                              )
                             ],
-                          ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Icon(
-                            CupertinoIcons.share,
-                            size: 16,
-                            color: MyColors.primaryColor,
-                          ),
-                        )
-                      ],
-                    )),
-                // SizedBox(
-                //   width: size.width * 0.02,
-                // ),
-                // Icon(
-                //   Icons.playlist_add,
-                //   size: 32,
-                //   color: MyColors.primaryColor,
-                // )
-              ],
+                          )),
+                      // SizedBox(
+                      //   width: size.width * 0.02,
+                      // ),
+                      // Icon(
+                      //   Icons.playlist_add,
+                      //   size: 32,
+                      //   color: MyColors.primaryColor,
+                      // )
+                    ],
+                  ),
+                  SizedBox(
+                    height: size.height * 0.015,
+                  ),
+                  TextWidget(
+                    text: 'Description',
+                    color: MyColors.blackColor,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  SizedBox(
+                    height: size.height * 0.01,
+                  ),
+                  Text(widget.song.description,
+                      style: TextStyle(
+                          color: MyColors.blackColor.withOpacity(0.4),
+                          fontSize: 16.sp)),
+                  SizedBox(
+                    height: size.height * 0.02,
+                  ),
+                  SizedBox(
+                    height: size.height * 0.1,
+                  ),
+                ],
+              ),
             ),
-            SizedBox(
-              height: size.height * 0.015,
-            ),
-            TextWidget(
-              text: 'Description',
-              color: MyColors.blackColor,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-            SizedBox(
-              height: size.height * 0.01,
-            ),
-            Text(widget.song.description,
-                style: TextStyle(
-                    color: MyColors.blackColor.withOpacity(0.4),
-                    fontSize: 16.sp)),
-            SizedBox(
-              height: size.height * 0.02,
-            ),
-            SizedBox(
-              height: size.height * 0.1,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -2872,10 +2958,10 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                         );
                       },
                     ),
-                    IconButton(
-                      icon: Icon(Icons.print),
-                      onPressed: () {},
-                    ),
+                    // IconButton(
+                    //   icon: Icon(Icons.print),
+                    //   onPressed: () {},
+                    // ),
                   ],
                 ),
                 Expanded(

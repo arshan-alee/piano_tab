@@ -6,6 +6,7 @@ import 'package:paino_tab/screens/home_screen.dart';
 import 'package:paino_tab/utils/widget.dart';
 
 import '../controllers/home_controller.dart';
+import '../models/songs_model.dart';
 import '../screens/setting_screen.dart';
 import 'colors.dart';
 
@@ -165,6 +166,14 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                             ),
                                             InkWell(
                                               onTap: () {
+                                                HomeController
+                                                    .to.selectedArtists = "All";
+                                                HomeController
+                                                    .to.selectedPages = "All";
+                                                HomeController
+                                                    .to.selectedGenres = "All";
+                                                HomeController.to
+                                                    .selectedDifficulty = "All";
                                                 setState(() {
                                                   index = 1;
                                                 });
@@ -174,7 +183,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                               },
                                               child: Container(
                                                 height: size.height * 0.063,
-                                                width: size.width * 0.53,
+                                                width: size.width * 0.5,
                                                 decoration: BoxDecoration(
                                                   color: MyColors.whiteColor,
                                                   border: Border.all(
@@ -237,7 +246,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                               },
                                               child: Container(
                                                 height: size.height * 0.063,
-                                                width: size.width * 0.53,
+                                                width: size.width * 0.5,
                                                 decoration: BoxDecoration(
                                                   color: MyColors.whiteColor,
                                                   border: Border.all(
@@ -267,7 +276,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                         width: 10,
                                                       ),
                                                       TextWidget(
-                                                        text: 'Song',
+                                                        text: 'Songs',
                                                         color: index == 2
                                                             ? MyColors.blueColor
                                                             : color,
@@ -280,6 +289,14 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                             ),
                                             InkWell(
                                               onTap: () {
+                                                HomeController
+                                                    .to.selectedArtists = "All";
+                                                HomeController
+                                                    .to.selectedPages = "All";
+                                                HomeController
+                                                    .to.selectedGenres = "All";
+                                                HomeController.to
+                                                    .selectedDifficulty = "All";
                                                 setState(() {
                                                   index = 3;
                                                 });
@@ -289,7 +306,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                               },
                                               child: Container(
                                                 height: size.height * 0.063,
-                                                width: size.width * 0.53,
+                                                width: size.width * 0.5,
                                                 decoration: BoxDecoration(
                                                   color: MyColors.whiteColor,
                                                   border: Border.all(
@@ -641,36 +658,32 @@ class CustomEndDrawer extends StatefulWidget {
 }
 
 class _CustomEndDrawerState extends State<CustomEndDrawer> {
-  bool beethoven = false;
-  bool aerosmith = false;
-  bool greatBigWorld = false;
-  bool alanWalker = false;
-
-  bool american = false;
-  bool banjo = false;
   bool artist = false;
   bool pages = false;
   bool genre = false;
   bool difficulty = false;
 
-  List<String> selectedArtists = [];
-  List<String> selectedPages = [];
-  List<String> selectedGenres = [];
-  List<String> selectedDifficulty = [];
   List<String> artistNames = [];
   List<String> genreNames = [];
   List<String> maxpages = [];
   List<String> difficultylevel = [];
 
+  late String passedVal;
+
   @override
   void initState() {
     super.initState();
-    // Initialize the unique artist and genre names from your songs list.
-    HomeController.to.createFilters(HomeController.to.songs!);
-    artistNames = HomeController.to.authorSongFilter!;
-    genreNames = HomeController.to.genreSongFilter!;
-    maxpages = HomeController.to.pageSongFilter!;
-    difficultylevel = HomeController.to.difficultySongFilter!;
+    if (HomeController.to.selectedPage == "song") {
+      artistNames = HomeController.to.authorSongFilter;
+      genreNames = HomeController.to.genreSongFilter;
+      maxpages = HomeController.to.pageSongFilter;
+      difficultylevel = HomeController.to.difficultySongFilter;
+    } else {
+      artistNames = HomeController.to.authorBookFilter;
+      genreNames = HomeController.to.genreBookFilter;
+      maxpages = HomeController.to.pageBookFilter;
+      difficultylevel = HomeController.to.difficultyBookFilter;
+    }
   }
 
   @override
@@ -775,15 +788,10 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                           return InkWell(
                                             onTap: () {
                                               setState(() {
-                                                // Toggle the selection state of the artist
-                                                if (selectedArtists
-                                                    .contains(artistName)) {
-                                                  selectedArtists
-                                                      .remove(artistName);
-                                                } else {
-                                                  selectedArtists
-                                                      .add(artistName);
-                                                }
+                                                HomeController
+                                                        .to.selectedArtists =
+                                                    artistName;
+                                                filterList();
                                               });
                                             },
                                             child: Row(
@@ -794,13 +802,15 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                                 TextWidget(
                                                   text: artistName,
                                                   fontSize: 14,
-                                                  color: selectedArtists
-                                                          .contains(artistName)
+                                                  color: HomeController.to
+                                                              .selectedArtists ==
+                                                          artistName
                                                       ? MyColors.blueColor
                                                       : MyColors.blackColor,
                                                 ),
-                                                selectedArtists
-                                                        .contains(artistName)
+                                                HomeController.to
+                                                            .selectedArtists ==
+                                                        artistName
                                                     ? Icon(
                                                         Icons.circle,
                                                         color:
@@ -822,31 +832,6 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                 ),
                                 Divider(
                                   color: MyColors.greyColor,
-                                ),
-                                // Display selected artists with checkboxes below artist section
-                                Column(
-                                  children: selectedArtists.map((artistName) {
-                                    return CheckboxListTile(
-                                      title: TextWidget(
-                                        text: artistName,
-                                        fontSize: 9,
-                                      ),
-                                      value:
-                                          selectedArtists.contains(artistName),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          if (value!) {
-                                            selectedArtists.add(artistName);
-                                          } else {
-                                            selectedArtists.remove(artistName);
-                                          }
-                                        });
-                                      },
-                                    );
-                                  }).toList(),
-                                ),
-                                SizedBox(
-                                  height: size.height * 0.04,
                                 ),
                               ],
                             ),
@@ -912,13 +897,9 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                           return InkWell(
                                             onTap: () {
                                               setState(() {
-                                                // Toggle the selection state of the artist
-                                                // if (selectedArtists
-                                                //     .contains(artistName)) {
-                                                //   selectedArtists.remove(artistName);
-                                                // } else {
-                                                //   selectedArtists.add(artistName);
-                                                // }
+                                                HomeController
+                                                    .to.selectedPages = pageno;
+                                                filterList();
                                               });
                                             },
                                             child: Row(
@@ -929,12 +910,15 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                                 TextWidget(
                                                   text: pageno,
                                                   fontSize: 14,
-                                                  color: selectedPages
-                                                          .contains(pageno)
+                                                  color: HomeController.to
+                                                              .selectedPages ==
+                                                          pageno
                                                       ? MyColors.blueColor
                                                       : MyColors.blackColor,
                                                 ),
-                                                selectedPages.contains(pageno)
+                                                HomeController
+                                                            .to.selectedPages ==
+                                                        pageno
                                                     ? Icon(
                                                         Icons.circle,
                                                         color:
@@ -956,27 +940,6 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                 ),
                                 Divider(
                                   color: MyColors.greyColor,
-                                ),
-                                // Display selected artists with checkboxes below artist section
-                                Column(
-                                  children: selectedPages.map((pageno) {
-                                    return CheckboxListTile(
-                                      title: Text(pageno),
-                                      value: selectedPages.contains(pageno),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          if (value!) {
-                                            selectedPages.add(pageno);
-                                          } else {
-                                            selectedPages.remove(pageno);
-                                          }
-                                        });
-                                      },
-                                    );
-                                  }).toList(),
-                                ),
-                                SizedBox(
-                                  height: size.height * 0.04,
                                 ),
                               ],
                             ),
@@ -1042,13 +1005,9 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                           return InkWell(
                                             onTap: () {
                                               setState(() {
-                                                // Toggle the selection state of the artist
-                                                if (selectedGenres
-                                                    .contains(genre)) {
-                                                  selectedGenres.remove(genre);
-                                                } else {
-                                                  selectedGenres.add(genre);
-                                                }
+                                                HomeController
+                                                    .to.selectedGenres = genre;
+                                                filterList();
                                               });
                                             },
                                             child: Row(
@@ -1059,12 +1018,15 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                                 TextWidget(
                                                   text: genre,
                                                   fontSize: 14,
-                                                  color: selectedGenres
-                                                          .contains(genre)
+                                                  color: HomeController.to
+                                                              .selectedGenres ==
+                                                          genre
                                                       ? MyColors.blueColor
                                                       : MyColors.blackColor,
                                                 ),
-                                                selectedGenres.contains(genre)
+                                                HomeController.to
+                                                            .selectedGenres ==
+                                                        genre
                                                     ? Icon(
                                                         Icons.circle,
                                                         color:
@@ -1086,28 +1048,6 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                 ),
                                 Divider(
                                   color: MyColors.greyColor,
-                                ),
-                                // Display selected artists with checkboxes below artist section
-                                Column(
-                                  children: selectedGenres.map((genre) {
-                                    return CheckboxListTile(
-                                      title:
-                                          TextWidget(text: genre, fontSize: 9),
-                                      value: selectedGenres.contains(genre),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          if (value!) {
-                                            selectedGenres.add(genre);
-                                          } else {
-                                            selectedGenres.remove(genre);
-                                          }
-                                        });
-                                      },
-                                    );
-                                  }).toList(),
-                                ),
-                                SizedBox(
-                                  height: size.height * 0.04,
                                 ),
                               ],
                             ),
@@ -1175,14 +1115,10 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                           return InkWell(
                                             onTap: () {
                                               setState(() {
-                                                if (selectedDifficulty
-                                                    .contains(difficulty)) {
-                                                  selectedDifficulty
-                                                      .remove(difficulty);
-                                                } else {
-                                                  selectedDifficulty
-                                                      .add(difficulty);
-                                                }
+                                                HomeController
+                                                        .to.selectedDifficulty =
+                                                    difficulty;
+                                                filterList();
                                               });
                                             },
                                             child: Row(
@@ -1193,13 +1129,15 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                                 TextWidget(
                                                   text: difficulty,
                                                   fontSize: 14,
-                                                  color: selectedDifficulty
-                                                          .contains(difficulty)
+                                                  color: HomeController.to
+                                                              .selectedDifficulty ==
+                                                          difficulty
                                                       ? MyColors.blueColor
                                                       : MyColors.blackColor,
                                                 ),
-                                                selectedDifficulty
-                                                        .contains(difficulty)
+                                                HomeController.to
+                                                            .selectedDifficulty ==
+                                                        difficulty
                                                     ? Icon(
                                                         Icons.circle,
                                                         color:
@@ -1222,31 +1160,6 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                 Divider(
                                   color: MyColors.greyColor,
                                 ),
-                                // Display selected artists with checkboxes below artist section
-                                Column(
-                                  children:
-                                      selectedDifficulty.map((difficulty) {
-                                    return CheckboxListTile(
-                                      title: TextWidget(
-                                          text: difficulty, fontSize: 9),
-                                      value: selectedDifficulty
-                                          .contains(difficulty),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          if (value!) {
-                                            selectedDifficulty.add(difficulty);
-                                          } else {
-                                            selectedDifficulty
-                                                .remove(difficulty);
-                                          }
-                                        });
-                                      },
-                                    );
-                                  }).toList(),
-                                ),
-                                SizedBox(
-                                  height: size.height * 0.04,
-                                ),
                               ],
                             ),
                           ),
@@ -1261,5 +1174,49 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
         ],
       ),
     );
+  }
+
+  void filterList() {
+    if (HomeController.to.selectedPage == "song") {
+      print(HomeController.to.selectedPages);
+      List<Songs> sng = HomeController.filterSongs(
+        HomeController.to.song,
+        type: 'song',
+        artist: HomeController.to.selectedArtists != "All"
+            ? HomeController.to.selectedArtists
+            : null,
+        genre: HomeController.to.selectedGenres != "All"
+            ? HomeController.to.selectedGenres
+            : null,
+        difficulty: HomeController.to.selectedDifficulty != "All"
+            ? HomeController.to.selectedDifficulty
+            : null,
+        pages: HomeController.to.selectedPages != "All"
+            ? int.parse(HomeController.to.selectedPages)
+            : null,
+      );
+      HomeController.to.filteredSng.value =
+          HomeController.to.itemModellList(songs: sng);
+    } else if (HomeController.to.selectedPage == "book") {
+      List<Songs> bk = HomeController.filterSongs(
+        HomeController.to.book,
+        type: 'book',
+        artist: HomeController.to.selectedArtists != "All"
+            ? HomeController.to.selectedArtists
+            : null,
+        genre: HomeController.to.selectedGenres != "All"
+            ? HomeController.to.selectedGenres
+            : null,
+        difficulty: HomeController.to.selectedDifficulty != "All"
+            ? HomeController.to.selectedDifficulty
+            : null,
+        pages: HomeController.to.selectedPages != "All"
+            ? int.parse(HomeController.to.selectedPages)
+            : null,
+      );
+
+      HomeController.to.filteredBk.value =
+          HomeController.to.itemModellList(songs: bk);
+    }
   }
 }

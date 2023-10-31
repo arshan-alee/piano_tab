@@ -177,7 +177,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             TextWidget(
-                              text: 'Owned song/books',
+                              text: 'Owned Songs & Books',
                               color: MyColors.blackColor,
                               fontSize: 22,
                             ),

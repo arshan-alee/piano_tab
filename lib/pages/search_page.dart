@@ -86,7 +86,7 @@ class _SearchPageState extends State<SearchPage> {
                   child: searchResults.isEmpty
                       ? Center(
                           child: TextWidget(
-                            text: "No Search Available",
+                            text: "No Book/Song Found...",
                             fontSize: 18,
                           ),
                         )

@@ -20,6 +20,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<ListItemModel> albumList = [];
   List<ListItemModel> beginner = [];
   List<ListItemModel> twentyonepilot = [];
   List<ListItemModel> pop = [];
@@ -28,7 +29,6 @@ class _HomePageState extends State<HomePage> {
   List<ListItemModel> tvfilm = [];
   bool isLoggedIn = OfflineLibraryBox.userBox!.values.first.isLoggedIn;
   int selectedSongIndex = -1;
-  bool detailScreen = false;
   bool bgnritem = false;
   bool twpitem = false;
   bool popitem = false;
@@ -43,580 +43,533 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> loadData() async {
-    List<Songs> ez = HomeController.filterSongs(HomeController.to.songs!,
-        difficulty: 'Beginner');
-    List<Songs> twentyone = HomeController.filterSongs(HomeController.to.songs!,
-        artist: 'Twenty One Pilots');
-    List<Songs> contemp = HomeController.filterSongs(HomeController.to.songs!,
-        genre: 'Contemporary');
-    List<Songs> popsng =
-        HomeController.filterSongs(HomeController.to.songs!, genre: 'Pop');
-    List<Songs> clsscal = HomeController.filterSongs(HomeController.to.songs!,
-        genre: 'Classical');
-    List<Songs> tvflm = HomeController.filterSongs(HomeController.to.songs!,
-        genre: 'TV / Film');
-
     setState(() {
-      beginner = HomeController.to.itemModellList(songs: ez);
-      twentyonepilot = HomeController.to.itemModellList(songs: twentyone);
-      pop = HomeController.to.itemModellList(songs: popsng);
-      contemporary = HomeController.to.itemModellList(songs: contemp);
-      classical = HomeController.to.itemModellList(songs: clsscal);
-      tvfilm = HomeController.to.itemModellList(songs: tvflm);
+      albumList =
+          HomeController.to.itemModellList(songs: HomeController.to.recentList);
+      beginner = HomeController.to.itemModellList(songs: HomeController.to.ez);
+      twentyonepilot =
+          HomeController.to.itemModellList(songs: HomeController.to.twentyone);
+      pop = HomeController.to.itemModellList(songs: HomeController.to.popsng);
+      contemporary =
+          HomeController.to.itemModellList(songs: HomeController.to.contemp);
+      classical =
+          HomeController.to.itemModellList(songs: HomeController.to.clsscal);
+      tvfilm = HomeController.to.itemModellList(songs: HomeController.to.tvflm);
     });
+  }
+
+  Future<void> showDetailScreen(
+      BuildContext context, int selectedSongIndex) async {
+    bool isBook = false;
+
+    dynamic selectedItem;
+
+    if (bgnritem) {
+      isBook = beginner[selectedSongIndex].detail.startsWith("BK");
+      selectedItem = beginner[selectedSongIndex];
+    } else if (twpitem) {
+      isBook = twentyonepilot[selectedSongIndex].detail.startsWith("BK");
+      selectedItem = twentyonepilot[selectedSongIndex];
+    } else if (popitem) {
+      isBook = pop[selectedSongIndex].detail.startsWith("BK");
+      selectedItem = pop[selectedSongIndex];
+    } else if (contempitem) {
+      isBook = contemporary[selectedSongIndex].detail.startsWith("BK");
+      selectedItem = contemporary[selectedSongIndex];
+    } else if (classicalitem) {
+      isBook = classical[selectedSongIndex].detail.startsWith("BK");
+      selectedItem = classical[selectedSongIndex];
+    } else if (tvfilmitem) {
+      isBook = tvfilm[selectedSongIndex].detail.startsWith("BK");
+      selectedItem = tvfilm[selectedSongIndex];
+    }
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext bc) {
+        if (isBook) {
+          return BookDetailScreen(book: selectedItem);
+        } else {
+          return SongDetailScreen(song: selectedItem);
+        }
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
-    return WillPopScope(
-        onWillPop: () async {
-          if (detailScreen == false) {
-            SystemNavigator.pop();
-          } else {
-            setState(() {
-              detailScreen = false;
-            });
-          }
-          return false;
-        },
-        child: detailScreen
-            ? (bgnritem
-                ? (beginner[selectedSongIndex].detail.startsWith("BK")
-                    ? BookDetailScreen(book: beginner[selectedSongIndex])
-                    : SongDetailScreen(song: beginner[selectedSongIndex]))
-                : (twpitem
-                    ? (twentyonepilot[selectedSongIndex].detail.startsWith("BK")
-                        ? BookDetailScreen(
-                            book: twentyonepilot[selectedSongIndex])
-                        : SongDetailScreen(
-                            song: twentyonepilot[selectedSongIndex]))
-                    : (popitem
-                        ? (pop[selectedSongIndex].detail.startsWith("BK")
-                            ? BookDetailScreen(book: pop[selectedSongIndex])
-                            : SongDetailScreen(song: pop[selectedSongIndex]))
-                        : (contempitem
-                            ? (contemporary[selectedSongIndex]
-                                    .detail
-                                    .startsWith("BK")
-                                ? BookDetailScreen(
-                                    book: contemporary[selectedSongIndex])
-                                : SongDetailScreen(
-                                    song: contemporary[selectedSongIndex]))
-                            : (classicalitem
-                                ? (classical[selectedSongIndex]
-                                        .detail
-                                        .startsWith("BK")
-                                    ? BookDetailScreen(
-                                        book: classical[selectedSongIndex])
-                                    : SongDetailScreen(
-                                        song: classical[selectedSongIndex]))
-                                : (tvfilmitem
-                                    ? (tvfilm[selectedSongIndex]
-                                            .detail
-                                            .startsWith("BK")
-                                        ? BookDetailScreen(
-                                            book: tvfilm[selectedSongIndex])
-                                        : SongDetailScreen(
-                                            song: tvfilm[selectedSongIndex]))
-                                    : const SizedBox()))))))
-            : SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 15.w),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: size.height * 0.025,
-                          ),
-                          TextWidget(
-                            text: 'Recent released',
-                            color: MyColors.blackColor,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          const Divider(
-                            height: 6,
-                            thickness: 1.5,
-                          ),
-                          SizedBox(
-                            height: size.height * 0.02,
-                          ),
-                          SizedBox(
-                            height: 250.h,
-                            width: size.width,
-                            child: ListView.separated(
-                              separatorBuilder: (context, index) => SizedBox(
-                                width: size.width * 0.035,
-                              ),
-                              scrollDirection: Axis.horizontal,
-                              itemCount: albumList.length,
-                              itemBuilder: (context, index) =>
-                                  RecentReleasedWidget(list: albumList[index]),
-                            ),
-                          ),
-                          SizedBox(
-                            height: size.height * 0.03,
-                          ),
-                          TextWidget(
-                            text: 'Beginner Songs',
-                            color: MyColors.blackColor,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          const Divider(
-                            height: 6,
-                            thickness: 1.5,
-                          ),
-                          SizedBox(
-                            height: size.height * 0.02,
-                          ),
-                          SizedBox(
-                            height: 250.h,
-                            width: size.width,
-                            child: ListView.separated(
-                              separatorBuilder: (context, index) => SizedBox(
-                                width: size.width * 0.035,
-                              ),
-                              scrollDirection: Axis.horizontal,
-                              itemCount: 9,
-                              itemBuilder: (context, index) {
-                                if (index == 8) {
-                                  return GestureDetector(
-                                      onTap: () {
-                                        Get.offAll(HomeScreen(
-                                            isLoggedIn: isLoggedIn,
-                                            initialIndex: 4));
-                                      },
-                                      child: Container(
-                                        width:
-                                            150, // Adjust the width as needed
-                                        height: 250.h,
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: MyColors.darkBlue),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            TextWidget(
-                                              text: 'Browse',
-                                              color: MyColors.whiteColor,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                            Icon(
-                                              Icons.arrow_forward,
-                                              color: MyColors.whiteColor,
-                                            ),
-                                          ],
-                                        ),
-                                      ));
-                                } else {
-                                  return InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          detailScreen = true;
-                                          selectedSongIndex = index;
-                                          bgnritem = true;
-                                        });
-                                      },
-                                      child: RecentReleasedWidget(
-                                          list: beginner[index]));
-                                }
-                              },
-                            ),
-                          ),
-                          SizedBox(
-                            height: size.height * 0.03,
-                          ),
-                          TextWidget(
-                            text: 'Twenty One Pilots',
-                            color: MyColors.blackColor,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          const Divider(
-                            height: 6,
-                            thickness: 1.5,
-                          ),
-                          SizedBox(
-                            height: size.height * 0.02,
-                          ),
-                          SizedBox(
-                            height: 250.h,
-                            width: size.width,
-                            child: ListView.separated(
-                              separatorBuilder: (context, index) => SizedBox(
-                                width: size.width * 0.035,
-                              ),
-                              scrollDirection: Axis.horizontal,
-                              itemCount: 9,
-                              itemBuilder: (context, index) {
-                                if (index == 8) {
-                                  return GestureDetector(
-                                      onTap: () {
-                                        Get.offAll(HomeScreen(
-                                            isLoggedIn: isLoggedIn,
-                                            initialIndex: 4));
-                                      },
-                                      child: Container(
-                                        width:
-                                            150, // Adjust the width as needed
-                                        height: 250.h,
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: MyColors.darkBlue),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            TextWidget(
-                                              text: 'Browse',
-                                              color: MyColors.whiteColor,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                            Icon(
-                                              Icons.arrow_forward,
-                                              color: MyColors.whiteColor,
-                                            ),
-                                          ],
-                                        ),
-                                      ));
-                                } else {
-                                  return InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          detailScreen = true;
-                                          selectedSongIndex = index;
-                                          twpitem = true;
-                                        });
-                                      },
-                                      child: RecentReleasedWidget(
-                                          list: twentyonepilot[index]));
-                                }
-                              },
-                            ),
-                          ),
-                          SizedBox(
-                            height: size.height * 0.03,
-                          ),
-                          TextWidget(
-                            text: 'Pop Songs',
-                            color: MyColors.blackColor,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          const Divider(
-                            height: 6,
-                            thickness: 1.5,
-                          ),
-                          SizedBox(
-                            height: size.height * 0.02,
-                          ),
-                          SizedBox(
-                            height: 250.h,
-                            width: size.width,
-                            child: ListView.separated(
-                              separatorBuilder: (context, index) => SizedBox(
-                                width: size.width * 0.035,
-                              ),
-                              scrollDirection: Axis.horizontal,
-                              itemCount: 9,
-                              itemBuilder: (context, index) {
-                                if (index == 8) {
-                                  return GestureDetector(
-                                      onTap: () {
-                                        Get.offAll(HomeScreen(
-                                            isLoggedIn: isLoggedIn,
-                                            initialIndex: 4));
-                                      },
-                                      child: Container(
-                                        width:
-                                            150, // Adjust the width as needed
-                                        height: 250.h,
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: MyColors.darkBlue),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            TextWidget(
-                                              text: 'Browse',
-                                              color: MyColors.whiteColor,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                            Icon(
-                                              Icons.arrow_forward,
-                                              color: MyColors.whiteColor,
-                                            ),
-                                          ],
-                                        ),
-                                      ));
-                                } else {
-                                  // Display your regular items from the 'tvfilm' list
-                                  return InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          detailScreen = true;
-                                          selectedSongIndex = index;
-                                          popitem = true;
-                                        });
-                                      },
-                                      child: RecentReleasedWidget(
-                                          list: pop[index]));
-                                }
-                              },
-                            ),
-                          ),
-                          SizedBox(
-                            height: size.height * 0.03,
-                          ),
-                          TextWidget(
-                            text: 'Contemporary Songs',
-                            color: MyColors.blackColor,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          const Divider(
-                            height: 6,
-                            thickness: 1.5,
-                          ),
-                          SizedBox(
-                            height: size.height * 0.02,
-                          ),
-                          SizedBox(
-                            height: 250.h,
-                            width: size.width,
-                            child: ListView.separated(
-                              separatorBuilder: (context, index) => SizedBox(
-                                width: size.width * 0.035,
-                              ),
-                              scrollDirection: Axis.horizontal,
-                              itemCount: 9,
-                              itemBuilder: (context, index) {
-                                if (index == 8) {
-                                  // This is the last item, display the "Browse" button
-                                  return GestureDetector(
-                                      onTap: () {
-                                        Get.offAll(HomeScreen(
-                                            isLoggedIn: isLoggedIn,
-                                            initialIndex: 4));
-                                      },
-                                      child: Container(
-                                        width:
-                                            150, // Adjust the width as needed
-                                        height: 250.h,
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: MyColors.darkBlue),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            TextWidget(
-                                              text: 'Browse',
-                                              color: MyColors.whiteColor,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                            Icon(
-                                              Icons.arrow_forward,
-                                              color: MyColors.whiteColor,
-                                            ),
-                                          ],
-                                        ),
-                                      ));
-                                } else {
-                                  // Display your regular items from the 'tvfilm' list
-                                  return InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          detailScreen = true;
-                                          selectedSongIndex = index;
-                                          contempitem = true;
-                                        });
-                                      },
-                                      child: RecentReleasedWidget(
-                                          list: contemporary[index]));
-                                }
-                              },
-                            ),
-                          ),
-                          SizedBox(
-                            height: size.height * 0.03,
-                          ),
-                          TextWidget(
-                            text: 'Classical Songs',
-                            color: MyColors.blackColor,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          const Divider(
-                            height: 6,
-                            thickness: 1.5,
-                          ),
-                          SizedBox(
-                            height: size.height * 0.02,
-                          ),
-                          SizedBox(
-                            height: 250.h,
-                            width: size.width,
-                            child: ListView.separated(
-                              separatorBuilder: (context, index) => SizedBox(
-                                width: size.width * 0.035,
-                              ),
-                              scrollDirection: Axis.horizontal,
-                              itemCount: 9,
-                              itemBuilder: (context, index) {
-                                if (index == 8) {
-                                  // This is the last item, display the "Browse" button
-                                  return GestureDetector(
-                                      onTap: () {
-                                        Get.offAll(HomeScreen(
-                                            isLoggedIn: isLoggedIn,
-                                            initialIndex: 4));
-                                      },
-                                      child: Container(
-                                        width:
-                                            150, // Adjust the width as needed
-                                        height: 250.h,
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: MyColors.darkBlue),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            TextWidget(
-                                              text: 'Browse',
-                                              color: MyColors.whiteColor,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                            Icon(
-                                              Icons.arrow_forward,
-                                              color: MyColors.whiteColor,
-                                            ),
-                                          ],
-                                        ),
-                                      ));
-                                } else {
-                                  // Display your regular items from the 'tvfilm' list
-                                  return InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          detailScreen = true;
-                                          selectedSongIndex = index;
-                                          classicalitem = true;
-                                        });
-                                      },
-                                      child: RecentReleasedWidget(
-                                          list: classical[index]));
-                                }
-                              },
-                            ),
-                          ),
-                          SizedBox(
-                            height: size.height * 0.03,
-                          ),
-                          TextWidget(
-                            text: 'TV / Film',
-                            color: MyColors.blackColor,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          const Divider(
-                            height: 6,
-                            thickness: 1.5,
-                          ),
-                          SizedBox(
-                            height: size.height * 0.02,
-                          ),
-                          SizedBox(
-                            height: 250.h,
-                            width: size.width,
-                            child: ListView.separated(
-                              separatorBuilder: (context, index) => SizedBox(
-                                width: size.width * 0.035,
-                              ),
-                              scrollDirection: Axis.horizontal,
-                              itemCount: 9,
-                              itemBuilder: (context, index) {
-                                if (index == 8) {
-                                  // This is the last item, display the "Browse" button
-                                  return GestureDetector(
-                                      onTap: () {
-                                        Get.offAll(HomeScreen(
-                                            isLoggedIn: isLoggedIn,
-                                            initialIndex: 4));
-                                      },
-                                      child: Container(
-                                        width:
-                                            150, // Adjust the width as needed
-                                        height: 250.h,
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: MyColors.darkBlue),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            TextWidget(
-                                              text: 'Browse',
-                                              color: MyColors.whiteColor,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                            Icon(
-                                              Icons.arrow_forward,
-                                              color: MyColors.whiteColor,
-                                            ),
-                                          ],
-                                        ),
-                                      ));
-                                } else {
-                                  // Display your regular items from the 'tvfilm' list
-                                  return InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          detailScreen = true;
-                                          selectedSongIndex = index;
-                                          tvfilmitem = true;
-                                        });
-                                      },
-                                      child: RecentReleasedWidget(
-                                          list: tvfilm[index]));
-                                }
-                              },
-                            ),
-                          ),
-                          SizedBox(
-                            height: size.height * 0.13,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: size.height * 0.025,
                 ),
-              ));
+                TextWidget(
+                  text: 'New Releases',
+                  color: MyColors.blackColor,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+                const Divider(
+                  height: 6,
+                  thickness: 1.5,
+                ),
+                SizedBox(
+                  height: size.height * 0.02,
+                ),
+                SizedBox(
+                  height: 250.h,
+                  width: size.width,
+                  child: ListView.separated(
+                    separatorBuilder: (context, index) => SizedBox(
+                      width: size.width * 0.035,
+                    ),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: albumList.length,
+                    itemBuilder: (context, index) =>
+                        RecentReleasedWidget(list: albumList[index]),
+                  ),
+                ),
+                SizedBox(
+                  height: size.height * 0.03,
+                ),
+                TextWidget(
+                  text: 'Beginner Songs',
+                  color: MyColors.blackColor,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+                const Divider(
+                  height: 6,
+                  thickness: 1.5,
+                ),
+                SizedBox(
+                  height: size.height * 0.02,
+                ),
+                SizedBox(
+                  height: 250.h,
+                  width: size.width,
+                  child: ListView.separated(
+                    separatorBuilder: (context, index) => SizedBox(
+                      width: size.width * 0.035,
+                    ),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 9,
+                    itemBuilder: (context, index) {
+                      if (index == 8) {
+                        return GestureDetector(
+                            onTap: () {
+                              Get.offAll(HomeScreen(
+                                  isLoggedIn: isLoggedIn, initialIndex: 4));
+                            },
+                            child: Container(
+                              width: 150, // Adjust the width as needed
+                              height: 250.h,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: MyColors.darkBlue),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextWidget(
+                                    text: 'Browse',
+                                    color: MyColors.whiteColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    color: MyColors.whiteColor,
+                                  ),
+                                ],
+                              ),
+                            ));
+                      } else {
+                        return InkWell(
+                            onTap: () {
+                              setState(() {
+                                selectedSongIndex = index;
+                                bgnritem = true;
+                              });
+                              showDetailScreen(context, selectedSongIndex);
+                            },
+                            child: RecentReleasedWidget(list: beginner[index]));
+                      }
+                    },
+                  ),
+                ),
+                SizedBox(
+                  height: size.height * 0.03,
+                ),
+                TextWidget(
+                  text: 'Twenty One Pilots',
+                  color: MyColors.blackColor,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+                const Divider(
+                  height: 6,
+                  thickness: 1.5,
+                ),
+                SizedBox(
+                  height: size.height * 0.02,
+                ),
+                SizedBox(
+                  height: 250.h,
+                  width: size.width,
+                  child: ListView.separated(
+                    separatorBuilder: (context, index) => SizedBox(
+                      width: size.width * 0.035,
+                    ),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 9,
+                    itemBuilder: (context, index) {
+                      if (index == 8) {
+                        return GestureDetector(
+                            onTap: () {
+                              Get.offAll(HomeScreen(
+                                  isLoggedIn: isLoggedIn, initialIndex: 4));
+                            },
+                            child: Container(
+                              width: 150, // Adjust the width as needed
+                              height: 250.h,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: MyColors.darkBlue),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextWidget(
+                                    text: 'Browse',
+                                    color: MyColors.whiteColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    color: MyColors.whiteColor,
+                                  ),
+                                ],
+                              ),
+                            ));
+                      } else {
+                        return InkWell(
+                            onTap: () {
+                              setState(() {
+                                selectedSongIndex = index;
+                                twpitem = true;
+                              });
+                              showDetailScreen(context, selectedSongIndex);
+                            },
+                            child: RecentReleasedWidget(
+                                list: twentyonepilot[index]));
+                      }
+                    },
+                  ),
+                ),
+                SizedBox(
+                  height: size.height * 0.03,
+                ),
+                TextWidget(
+                  text: 'Pop Songs',
+                  color: MyColors.blackColor,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+                const Divider(
+                  height: 6,
+                  thickness: 1.5,
+                ),
+                SizedBox(
+                  height: size.height * 0.02,
+                ),
+                SizedBox(
+                  height: 250.h,
+                  width: size.width,
+                  child: ListView.separated(
+                    separatorBuilder: (context, index) => SizedBox(
+                      width: size.width * 0.035,
+                    ),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 9,
+                    itemBuilder: (context, index) {
+                      if (index == 8) {
+                        return GestureDetector(
+                            onTap: () {
+                              Get.offAll(HomeScreen(
+                                  isLoggedIn: isLoggedIn, initialIndex: 4));
+                            },
+                            child: Container(
+                              width: 150, // Adjust the width as needed
+                              height: 250.h,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: MyColors.darkBlue),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextWidget(
+                                    text: 'Browse',
+                                    color: MyColors.whiteColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    color: MyColors.whiteColor,
+                                  ),
+                                ],
+                              ),
+                            ));
+                      } else {
+                        // Display your regular items from the 'tvfilm' list
+                        return InkWell(
+                            onTap: () {
+                              setState(() {
+                                selectedSongIndex = index;
+                                popitem = true;
+                              });
+                              showDetailScreen(context, selectedSongIndex);
+                            },
+                            child: RecentReleasedWidget(list: pop[index]));
+                      }
+                    },
+                  ),
+                ),
+                SizedBox(
+                  height: size.height * 0.03,
+                ),
+                TextWidget(
+                  text: 'Contemporary Songs',
+                  color: MyColors.blackColor,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+                const Divider(
+                  height: 6,
+                  thickness: 1.5,
+                ),
+                SizedBox(
+                  height: size.height * 0.02,
+                ),
+                SizedBox(
+                  height: 250.h,
+                  width: size.width,
+                  child: ListView.separated(
+                    separatorBuilder: (context, index) => SizedBox(
+                      width: size.width * 0.035,
+                    ),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 9,
+                    itemBuilder: (context, index) {
+                      if (index == 8) {
+                        // This is the last item, display the "Browse" button
+                        return GestureDetector(
+                            onTap: () {
+                              Get.offAll(HomeScreen(
+                                  isLoggedIn: isLoggedIn, initialIndex: 4));
+                            },
+                            child: Container(
+                              width: 150, // Adjust the width as needed
+                              height: 250.h,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: MyColors.darkBlue),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextWidget(
+                                    text: 'Browse',
+                                    color: MyColors.whiteColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    color: MyColors.whiteColor,
+                                  ),
+                                ],
+                              ),
+                            ));
+                      } else {
+                        // Display your regular items from the 'tvfilm' list
+                        return InkWell(
+                            onTap: () {
+                              setState(() {
+                                selectedSongIndex = index;
+                                contempitem = true;
+                              });
+                              showDetailScreen(context, selectedSongIndex);
+                            },
+                            child: RecentReleasedWidget(
+                                list: contemporary[index]));
+                      }
+                    },
+                  ),
+                ),
+                SizedBox(
+                  height: size.height * 0.03,
+                ),
+                TextWidget(
+                  text: 'Classical Songs',
+                  color: MyColors.blackColor,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+                const Divider(
+                  height: 6,
+                  thickness: 1.5,
+                ),
+                SizedBox(
+                  height: size.height * 0.02,
+                ),
+                SizedBox(
+                  height: 250.h,
+                  width: size.width,
+                  child: ListView.separated(
+                    separatorBuilder: (context, index) => SizedBox(
+                      width: size.width * 0.035,
+                    ),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 9,
+                    itemBuilder: (context, index) {
+                      if (index == 8) {
+                        // This is the last item, display the "Browse" button
+                        return GestureDetector(
+                            onTap: () {
+                              Get.offAll(HomeScreen(
+                                  isLoggedIn: isLoggedIn, initialIndex: 4));
+                            },
+                            child: Container(
+                              width: 150, // Adjust the width as needed
+                              height: 250.h,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: MyColors.darkBlue),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextWidget(
+                                    text: 'Browse',
+                                    color: MyColors.whiteColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    color: MyColors.whiteColor,
+                                  ),
+                                ],
+                              ),
+                            ));
+                      } else {
+                        // Display your regular items from the 'tvfilm' list
+                        return InkWell(
+                            onTap: () {
+                              setState(() {
+                                selectedSongIndex = index;
+                                classicalitem = true;
+                              });
+                              showDetailScreen(context, selectedSongIndex);
+                            },
+                            child:
+                                RecentReleasedWidget(list: classical[index]));
+                      }
+                    },
+                  ),
+                ),
+                SizedBox(
+                  height: size.height * 0.03,
+                ),
+                TextWidget(
+                  text: 'TV / Film',
+                  color: MyColors.blackColor,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+                const Divider(
+                  height: 6,
+                  thickness: 1.5,
+                ),
+                SizedBox(
+                  height: size.height * 0.02,
+                ),
+                SizedBox(
+                  height: 250.h,
+                  width: size.width,
+                  child: ListView.separated(
+                    separatorBuilder: (context, index) => SizedBox(
+                      width: size.width * 0.035,
+                    ),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 9,
+                    itemBuilder: (context, index) {
+                      if (index == 8) {
+                        // This is the last item, display the "Browse" button
+                        return GestureDetector(
+                            onTap: () {
+                              Get.offAll(HomeScreen(
+                                  isLoggedIn: isLoggedIn, initialIndex: 4));
+                            },
+                            child: Container(
+                              width: 150, // Adjust the width as needed
+                              height: 250.h,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: MyColors.darkBlue),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextWidget(
+                                    text: 'Browse',
+                                    color: MyColors.whiteColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    color: MyColors.whiteColor,
+                                  ),
+                                ],
+                              ),
+                            ));
+                      } else {
+                        // Display your regular items from the 'tvfilm' list
+                        return InkWell(
+                            onTap: () {
+                              setState(() {
+                                selectedSongIndex = index;
+                                tvfilmitem = true;
+                              });
+                              showDetailScreen(context, selectedSongIndex);
+                            },
+                            child: RecentReleasedWidget(list: tvfilm[index]));
+                      }
+                    },
+                  ),
+                ),
+                SizedBox(
+                  height: size.height * 0.13,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
