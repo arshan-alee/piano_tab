@@ -19,6 +19,7 @@ class _SearchPageState extends State<SearchPage> {
   List<Songs> searchitem = [];
   List<ListItemModel> searchResults = [];
   String query = '';
+  int selectedSongIndex = -1;
 
   List<Songs> searchItems(List<Songs> songs, String searchTerm) {
     searchTerm = searchTerm.toLowerCase();
@@ -40,6 +41,22 @@ class _SearchPageState extends State<SearchPage> {
     // setState(() {
     //   query = newQuery;
     // });
+  }
+
+  Future<void> showDetailScreen(BuildContext context, dynamic item) async {
+    bool isBook = item.detail.startsWith("BK");
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext bc) {
+        if (isBook) {
+          return BookDetailScreen(book: item);
+        } else {
+          return SongDetailScreen(song: item);
+        }
+      },
+    );
   }
 
   @override
@@ -102,7 +119,13 @@ class _SearchPageState extends State<SearchPage> {
                                   childAspectRatio: 1.h),
                           itemCount: searchResults.length,
                           itemBuilder: (context, index) => InkWell(
-                              onTap: () {},
+                              onTap: () {
+                                setState(() {
+                                  selectedSongIndex = index;
+                                });
+                                showDetailScreen(
+                                    context, searchResults[selectedSongIndex]);
+                              },
                               child: RecentReleasedWidget(
                                   list: searchResults[index])),
                         ),

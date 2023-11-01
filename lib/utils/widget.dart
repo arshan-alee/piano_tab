@@ -1185,7 +1185,7 @@ class RecentReleasedWidget extends StatelessWidget {
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
                                     TextWidget(
-                                      text: ' \$ ${list.price}',
+                                      text: ' \$ ${list.amazonPrice}',
                                       color: MyColors.blackColor,
                                       fontSize: 12.sp,
                                     ),
@@ -1217,8 +1217,8 @@ class RecentReleasedWidget extends StatelessWidget {
   }
 }
 
-class JazzWidget extends StatelessWidget {
-  const JazzWidget({super.key, required this.list});
+class NewReleasesWidget extends StatelessWidget {
+  const NewReleasesWidget({super.key, required this.list});
   final ListItemModel list;
   @override
   Widget build(BuildContext context) {
@@ -1226,104 +1226,35 @@ class JazzWidget extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.r),
       child: Container(
-        height: 200.h,
-        width: 120.w,
+        height: 120.h,
+        width: 200.w,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10.r),
-            color: MyColors.darkBlue),
-        child: Stack(
-          alignment: Alignment.bottomCenter,
+            border: Border.all(
+              color: MyColors.darkBlue, // Border color
+            ),
+            color: MyColors.whiteColor),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  height: 132.h,
-                  decoration: const BoxDecoration(
-                      image: DecorationImage(
-                          image: AssetImage('assets/images/background.jpeg'),
-                          fit: BoxFit.fill)),
+            Container(
+              height: 110.h,
+              decoration: const BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage('assets/images/background.jpeg'),
+                      fit: BoxFit.fill)),
+              child: Center(
+                child: CircleAvatar(
+                  maxRadius: 35,
+                  backgroundColor: MyColors.whiteColor,
                   child: Center(
-                    child: CircleAvatar(
-                      maxRadius: 35,
-                      backgroundColor: MyColors.whiteColor,
-                      child: Center(
-                        child: Image.asset(
-                          'assets/images/new_logo.png',
-                        ),
-                      ),
+                    child: Image.asset(
+                      'assets/images/new_logo.png',
                     ),
                   ),
                 ),
-              ],
-            ),
-            Container(
-              height: 68.h,
-              width: 145.w,
-              color: MyColors.darkBlue,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextWidget(
-                      text: list.title,
-                      fontSize: 12.sp,
-                    ),
-                    SizedBox(
-                      height: size.height * 0.005,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextWidget(
-                          text: list.detail,
-                          fontSize: 8.sp,
-                          color: MyColors.lightGrey,
-                        ),
-                        Icon(
-                          Icons.circle,
-                          color: list.difficulty == 'Advanced'
-                              ? MyColors.red
-                              : list.difficulty == 'Intermediate'
-                                  ? MyColors.yellowColor
-                                  : list.difficulty == 'Beginner'
-                                      ? MyColors.greenColor
-                                      : MyColors.greyColor,
-                          size: 12.h,
-                        )
-                      ],
-                    ),
-                    Divider(
-                      thickness: 0.8,
-                      color: MyColors.lightGrey,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.star,
-                              color: MyColors.yellowColor,
-                              size: 12.h,
-                            ),
-                            TextWidget(
-                              text: list.rating,
-                              fontSize: 10.sp,
-                            )
-                          ],
-                        ),
-                        TextWidget(
-                          text: 'Pages: ${list.pages}',
-                          fontSize: 10.sp,
-                        )
-                      ],
-                    )
-                  ],
-                ),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -1612,21 +1543,24 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     bool isLoggedIn = OfflineLibraryBox.userBox!.values.first.isLoggedIn;
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+        padding: const EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CustomAppBar(
-                action: InkWell(
-                  onTap: () {
-                    Get.back();
-                  },
-                  child: Icon(
-                    Icons.arrow_back_ios_new,
-                    color: MyColors.primaryColor,
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: CustomAppBar(
+                  action: InkWell(
+                    onTap: () {
+                      Get.back();
+                    },
+                    child: Icon(
+                      Icons.arrow_back_ios_new,
+                      color: MyColors.primaryColor,
+                    ),
                   ),
-                ),
-                title: 'Book'),
+                  title: 'Book'),
+            ),
             Expanded(
               flex: 1,
               child: SingleChildScrollView(
@@ -1727,7 +1661,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                               maxRadius: 8,
                                             ),
                                             TextWidget(
-                                              text: widget.book.price,
+                                              text: widget.book.amazonPrice,
                                               color: MyColors.whiteColor,
                                               fontSize: 14,
                                             ),
@@ -2289,6 +2223,8 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         });
       }
     });
+
+    checkOwnershipStatus();
   }
 
   void createRewardedAd() {
@@ -2421,21 +2357,24 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         .userBox!.values.first.offlineLibrary
         .contains(widget.song.detail);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+      padding: const EdgeInsets.all(15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CustomAppBar(
-              action: InkWell(
-                onTap: () {
-                  Get.back();
-                },
-                child: Icon(
-                  Icons.arrow_back_ios_new,
-                  color: MyColors.primaryColor,
+          Padding(
+            padding: const EdgeInsets.only(top: 20),
+            child: CustomAppBar(
+                action: InkWell(
+                  onTap: () {
+                    Get.back();
+                  },
+                  child: Icon(
+                    Icons.arrow_back_ios_new,
+                    color: MyColors.primaryColor,
+                  ),
                 ),
-              ),
-              title: 'Song'),
+                title: 'Song'),
+          ),
           Expanded(
             child: SingleChildScrollView(
               child: Column(

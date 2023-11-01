@@ -4,6 +4,7 @@ import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
 import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/screens/home_screen.dart';
 import 'package:paino_tab/utils/widget.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import '../controllers/home_controller.dart';
 import '../models/songs_model.dart';
@@ -24,6 +25,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
   int index = 0;
   Color color = MyColors.darkGrey;
   bool isLoggedIn = OfflineLibraryBox.userBox!.values.first.isLoggedIn;
+  late PdfViewerController _pdfViewController;
 
   @override
   void initState() {
@@ -31,6 +33,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
     var userBox = LoginBox.userBox!.values.first;
     email = userBox.email;
 
+    _pdfViewController = PdfViewerController();
     // HomeController.to.getUserName().then((value) {
     //   if (value != null) {
     //     setState(() {
@@ -461,6 +464,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                             ? MyColors.blueColor
                                                             : color,
                                                         fontSize: 18,
+                                                        onTap: () {
+                                                          _showPdfViewer(
+                                                              context);
+                                                        },
                                                       ),
                                                     ],
                                                   ),
@@ -567,6 +574,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                       color:
                                                           MyColors.blackColor,
                                                       fontSize: 18,
+                                                      onTap: () {},
                                                     ),
                                                   ],
                                                 ),
@@ -646,6 +654,34 @@ class _CustomDrawerState extends State<CustomDrawer> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showPdfViewer(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext bc) {
+        return FractionallySizedBox(
+          heightFactor: 1, // Occupies full screen height
+          child: Container(
+            child: Column(
+              children: [
+                AppBar(
+                  title: TextWidget(text: 'Guide'),
+                  centerTitle: true,
+                ),
+                Expanded(
+                  child: SfPdfViewer.network(
+                    'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', // Use the passed PDF path here
+                    controller: _pdfViewController,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

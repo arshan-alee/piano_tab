@@ -5,6 +5,7 @@ class ListItemModel {
   final String rating;
   final String pages;
   final String price;
+  final String amazonPrice;
   final String artist;
   final String genre;
   final String difficulty;
@@ -17,6 +18,7 @@ class ListItemModel {
     this.color,
     this.rating,
     this.pages,
+    this.amazonPrice,
     this.price,
     this.artist,
     this.genre,
