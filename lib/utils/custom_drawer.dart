@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
 import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/screens/home_screen.dart';
+import 'package:paino_tab/services/ad_mob_service.dart';
 import 'package:paino_tab/utils/widget.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
@@ -26,6 +28,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
   Color color = MyColors.darkGrey;
   bool isLoggedIn = OfflineLibraryBox.userBox!.values.first.isLoggedIn;
   late PdfViewerController _pdfViewController;
+  RewardedAd? _rewardedAd;
 
   @override
   void initState() {
@@ -34,6 +37,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
     email = userBox.email;
 
     _pdfViewController = PdfViewerController();
+
+    createRewardedAd();
     // HomeController.to.getUserName().then((value) {
     //   if (value != null) {
     //     setState(() {
@@ -49,6 +54,46 @@ class _CustomDrawerState extends State<CustomDrawer> {
     //   }
     // });
     super.initState();
+  }
+
+  void createRewardedAd() {
+    RewardedAd.load(
+      adUnitId: AdMobService.rewardedAdUnitId!,
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (ad) {
+          setState(() {
+            _rewardedAd = ad;
+          });
+        },
+        onAdFailedToLoad: (error) {
+          setState(() {
+            _rewardedAd = null;
+          });
+        },
+      ),
+    );
+  }
+
+  void showRewardedAd() {
+    if (_rewardedAd != null) {
+      _rewardedAd!.fullScreenContentCallback =
+          FullScreenContentCallback(onAdDismissedFullScreenContent: ((ad) {
+        ad.dispose();
+        createRewardedAd();
+      }), onAdFailedToShowFullScreenContent: (((ad, error) {
+        ad.dispose();
+        createRewardedAd();
+      })));
+
+      _rewardedAd!.show(
+        onUserEarnedReward: (ad, reward) {
+          print("You earned a reward");
+
+          // Your code to update points and user data
+        },
+      );
+    }
   }
 
   @override
@@ -574,7 +619,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                       color:
                                                           MyColors.blackColor,
                                                       fontSize: 18,
-                                                      onTap: () {},
+                                                      onTap: () {
+                                                        showRewardedAd();
+                                                      },
                                                     ),
                                                   ],
                                                 ),
