@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
 import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
+import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
 import 'package:paino_tab/screens/home_screen.dart';
 import 'package:paino_tab/services/ad_mob_service.dart';
 import 'package:paino_tab/utils/widget.dart';
@@ -29,6 +30,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
   bool isLoggedIn = OfflineLibraryBox.userBox!.values.first.isLoggedIn;
   late PdfViewerController _pdfViewController;
   RewardedAd? _rewardedAd;
+  int userPoints = int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
+  int offlineUserPoints =
+      int.tryParse(OfflineLibraryBox.userBox!.values.first.points) ?? 0;
 
   @override
   void initState() {
@@ -87,10 +91,27 @@ class _CustomDrawerState extends State<CustomDrawer> {
       })));
 
       _rewardedAd!.show(
-        onUserEarnedReward: (ad, reward) {
+        onUserEarnedReward: (ad, reward) async {
           print("You earned a reward");
 
           // Your code to update points and user data
+
+          if (isLoggedIn == true) {
+            int newPoints = userPoints + 1;
+            await HomeController.to
+                .updatePoints(
+                    LoginBox.userBox!.values.first.authToken, newPoints)
+                .then((pointsUpdated) async {
+              var userdata = await HomeController.to
+                  .getuserData(LoginBox.userBox!.values.first.authToken);
+              print('Points updated in logged In mode');
+              // Perform additional actions with userdata
+            });
+          } else {
+            int newPoints = offlineUserPoints + 1;
+            await OfflineLibraryBox.updatePoints(newPoints.toString());
+            print('Points updated in logged off mode');
+          }
         },
       );
     }
@@ -929,114 +950,132 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                         SizedBox(
                           height: size.height * 0.01,
                         ),
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          height: pages == true
-                              ? size.height * 0.3
-                              : size.height * 0.05,
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          pages = !pages;
-                                        });
-                                      },
-                                      child: SizedBox(
-                                        height: size.height * 0.05,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            TextWidget(
-                                              text: 'Pages',
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              color: MyColors.blackColor,
-                                            ),
-                                            Icon(
-                                              pages == true
-                                                  ? Icons.remove
-                                                  : Icons.add,
-                                              size: 18,
-                                            )
-                                          ],
-                                        ),
+                        HomeController.to.index == 4
+                            ? Column(
+                                children: [
+                                  AnimatedContainer(
+                                    duration: const Duration(milliseconds: 300),
+                                    height: pages == true
+                                        ? size.height * 0.3
+                                        : size.height * 0.05,
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        children: [
+                                          Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              InkWell(
+                                                onTap: () {
+                                                  setState(() {
+                                                    pages = !pages;
+                                                  });
+                                                },
+                                                child: SizedBox(
+                                                  height: size.height * 0.05,
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      TextWidget(
+                                                        text: 'Pages',
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color:
+                                                            MyColors.blackColor,
+                                                      ),
+                                                      Icon(
+                                                        pages == true
+                                                            ? Icons.remove
+                                                            : Icons.add,
+                                                        size: 18,
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          pages == true
+                                              ? ListView.builder(
+                                                  shrinkWrap: true,
+                                                  physics:
+                                                      NeverScrollableScrollPhysics(),
+                                                  itemCount: maxpages.length,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    final pageno =
+                                                        maxpages[index];
+                                                    return InkWell(
+                                                      onTap: () {
+                                                        setState(() {
+                                                          HomeController.to
+                                                                  .selectedPages =
+                                                              pageno;
+                                                          filterList();
+                                                        });
+                                                      },
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          TextWidget(
+                                                            text: pageno,
+                                                            fontSize: 14,
+                                                            color: HomeController
+                                                                        .to
+                                                                        .selectedPages ==
+                                                                    pageno
+                                                                ? MyColors
+                                                                    .blueColor
+                                                                : MyColors
+                                                                    .blackColor,
+                                                          ),
+                                                          HomeController.to
+                                                                      .selectedPages ==
+                                                                  pageno
+                                                              ? Icon(
+                                                                  Icons.circle,
+                                                                  color: MyColors
+                                                                      .blueColor,
+                                                                  size: 16,
+                                                                )
+                                                              : const Icon(
+                                                                  Icons
+                                                                      .circle_outlined,
+                                                                  size: 16,
+                                                                )
+                                                        ],
+                                                      ),
+                                                    );
+                                                  },
+                                                )
+                                              : const SizedBox(),
+                                          SizedBox(
+                                            height: size.height * 0.01,
+                                          ),
+                                          Divider(
+                                            color: MyColors.greyColor,
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
-                                pages == true
-                                    ? ListView.builder(
-                                        shrinkWrap: true,
-                                        physics: NeverScrollableScrollPhysics(),
-                                        itemCount: maxpages.length,
-                                        itemBuilder: (context, index) {
-                                          final pageno = maxpages[index];
-                                          return InkWell(
-                                            onTap: () {
-                                              setState(() {
-                                                HomeController
-                                                    .to.selectedPages = pageno;
-                                                filterList();
-                                              });
-                                            },
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                TextWidget(
-                                                  text: pageno,
-                                                  fontSize: 14,
-                                                  color: HomeController.to
-                                                              .selectedPages ==
-                                                          pageno
-                                                      ? MyColors.blueColor
-                                                      : MyColors.blackColor,
-                                                ),
-                                                HomeController
-                                                            .to.selectedPages ==
-                                                        pageno
-                                                    ? Icon(
-                                                        Icons.circle,
-                                                        color:
-                                                            MyColors.blueColor,
-                                                        size: 16,
-                                                      )
-                                                    : const Icon(
-                                                        Icons.circle_outlined,
-                                                        size: 16,
-                                                      )
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                      )
-                                    : const SizedBox(),
-                                SizedBox(
-                                  height: size.height * 0.01,
-                                ),
-                                Divider(
-                                  color: MyColors.greyColor,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: size.height * 0.01,
-                        ),
-                        Divider(
-                          color: MyColors.greyColor,
-                        ),
-                        SizedBox(
-                          height: size.height * 0.01,
-                        ),
+                                  ),
+                                  SizedBox(
+                                    height: size.height * 0.01,
+                                  ),
+                                  Divider(
+                                    color: MyColors.greyColor,
+                                  ),
+                                  SizedBox(
+                                    height: size.height * 0.01,
+                                  ),
+                                ],
+                              )
+                            : SizedBox(),
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
                           height: genre == true

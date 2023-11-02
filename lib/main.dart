@@ -25,8 +25,12 @@ void main() async {
   LoginBox.init();
   UserDataBox.init();
   OfflineLibraryBox.init();
-  runApp(const MyApp());
+  List<String> testDeviceIds = ['8C02E8645CDC75745523EA92A4D2B10C'];
+  RequestConfiguration configuration =
+      RequestConfiguration(testDeviceIds: testDeviceIds);
+  MobileAds.instance.updateRequestConfiguration(configuration);
   MobileAds.instance.initialize();
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {

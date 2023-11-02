@@ -54,6 +54,7 @@ dependencies:
   build_runner:
   flutter_rating_bar:
   share_plus:
+  flutter_windowmanager:
   
 
 

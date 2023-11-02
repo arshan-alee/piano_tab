@@ -105,7 +105,7 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         children: [
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15.w),
+            padding: EdgeInsets.symmetric(horizontal: 12.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -126,7 +126,7 @@ class _HomePageState extends State<HomePage> {
                   height: size.height * 0.02,
                 ),
                 SizedBox(
-                  height: 250.h,
+                  height: 200.h,
                   width: size.width,
                   child: ListView.separated(
                     separatorBuilder: (context, index) => SizedBox(
@@ -135,7 +135,7 @@ class _HomePageState extends State<HomePage> {
                     scrollDirection: Axis.horizontal,
                     itemCount: albumList.length,
                     itemBuilder: (context, index) =>
-                        RecentReleasedWidget(list: albumList[index]),
+                        NewReleasesWidget(list: albumList[index]),
                   ),
                 ),
                 SizedBox(
@@ -199,6 +199,11 @@ class _HomePageState extends State<HomePage> {
                               setState(() {
                                 selectedSongIndex = index;
                                 bgnritem = true;
+                                twpitem = false;
+                                popitem = false;
+                                contempitem = false;
+                                classicalitem = false;
+                                tvfilmitem = false;
                               });
                               showDetailScreen(context, selectedSongIndex);
                             },
@@ -268,6 +273,11 @@ class _HomePageState extends State<HomePage> {
                               setState(() {
                                 selectedSongIndex = index;
                                 twpitem = true;
+                                bgnritem = false;
+                                popitem = false;
+                                contempitem = false;
+                                classicalitem = false;
+                                tvfilmitem = false;
                               });
                               showDetailScreen(context, selectedSongIndex);
                             },
@@ -301,7 +311,7 @@ class _HomePageState extends State<HomePage> {
                       width: size.width * 0.035,
                     ),
                     scrollDirection: Axis.horizontal,
-                    itemCount: 9,
+                    itemCount: pop.length < 9 ? pop.length : 9,
                     itemBuilder: (context, index) {
                       if (index == 8) {
                         return GestureDetector(
@@ -339,6 +349,11 @@ class _HomePageState extends State<HomePage> {
                               setState(() {
                                 selectedSongIndex = index;
                                 popitem = true;
+                                twpitem = false;
+                                bgnritem = false;
+                                contempitem = false;
+                                classicalitem = false;
+                                tvfilmitem = false;
                               });
                               showDetailScreen(context, selectedSongIndex);
                             },
@@ -409,7 +424,12 @@ class _HomePageState extends State<HomePage> {
                             onTap: () {
                               setState(() {
                                 selectedSongIndex = index;
+                                popitem = false;
+                                twpitem = false;
+                                bgnritem = false;
                                 contempitem = true;
+                                classicalitem = false;
+                                tvfilmitem = false;
                               });
                               showDetailScreen(context, selectedSongIndex);
                             },
@@ -481,7 +501,12 @@ class _HomePageState extends State<HomePage> {
                             onTap: () {
                               setState(() {
                                 selectedSongIndex = index;
+                                popitem = false;
+                                twpitem = false;
+                                bgnritem = false;
+                                contempitem = false;
                                 classicalitem = true;
+                                tvfilmitem = false;
                               });
                               showDetailScreen(context, selectedSongIndex);
                             },
@@ -554,6 +579,11 @@ class _HomePageState extends State<HomePage> {
                               setState(() {
                                 selectedSongIndex = index;
                                 tvfilmitem = true;
+                                popitem = false;
+                                twpitem = false;
+                                bgnritem = false;
+                                contempitem = false;
+                                classicalitem = false;
                               });
                               showDetailScreen(context, selectedSongIndex);
                             },

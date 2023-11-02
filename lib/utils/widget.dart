@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:http/http.dart' as http;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:dio/dio.dart';
@@ -40,8 +41,11 @@ class CustomAppBar extends StatefulWidget {
 
 class _CustomAppBarState extends State<CustomAppBar> {
   RewardedAd? _rewardedAd;
-  final int userPoints =
-      int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
+  int userPoints = int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
+  int offlineUserPoints =
+      int.tryParse(OfflineLibraryBox.userBox!.values.first.points) ?? 0;
+  bool isLoggedIn = OfflineLibraryBox.userBox!.values.first.isLoggedIn;
+
   @override
   void initState() {
     super.initState();
@@ -79,19 +83,27 @@ class _CustomAppBarState extends State<CustomAppBar> {
       })));
 
       _rewardedAd!.show(
-        onUserEarnedReward: (ad, reward) {
+        onUserEarnedReward: (ad, reward) async {
           print("You earned a reward");
 
           // Your code to update points and user data
-          int newPoints = userPoints + 1;
 
-          HomeController.to
-              .updatePoints(LoginBox.userBox!.values.first.authToken, newPoints)
-              .then((pointsUpdated) async {
-            var userdata = await HomeController.to
-                .getuserData(LoginBox.userBox!.values.first.authToken);
-            // Perform additional actions with userdata
-          });
+          if (isLoggedIn == true) {
+            int newPoints = userPoints + 1;
+            await HomeController.to
+                .updatePoints(
+                    LoginBox.userBox!.values.first.authToken, newPoints)
+                .then((pointsUpdated) async {
+              var userdata = await HomeController.to
+                  .getuserData(LoginBox.userBox!.values.first.authToken);
+              print('Points updated in logged In mode');
+              // Perform additional actions with userdata
+            });
+          } else {
+            int newPoints = offlineUserPoints++;
+            await OfflineLibraryBox.updatePoints(newPoints.toString());
+            print('Points updated in logged off mode');
+          }
         },
       );
     }
@@ -159,7 +171,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
                     Expanded(
                       flex: 2,
                       child: TextWidget(
-                        text: UserDataBox.userBox!.values.first.points,
+                        text: isLoggedIn
+                            ? UserDataBox.userBox!.values.first.points
+                            : OfflineLibraryBox.userBox!.values.first.points,
                         fontSize: 12,
                         color: MyColors.primaryColor,
                         fontWeight: FontWeight.w400,
@@ -218,7 +232,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
                       Padding(
                         padding: const EdgeInsets.only(left: 4),
                         child: TextWidget(
-                          text: '23',
+                          text: isLoggedIn
+                              ? UserDataBox.userBox!.values.first.points
+                              : OfflineLibraryBox.userBox!.values.first.points,
                           color: MyColors.blackColor,
                           fontWeight: FontWeight.w500,
                           fontSize: 12,
@@ -235,8 +251,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 ),
                 CustomContainer(
                     onpressed: () {
-                      showRewardedAd;
-                      int newpoints = userPoints + 1;
+                      showRewardedAd();
+                      // int newpoints = userPoints + 1;
                     },
                     height: size.height * 0.038,
                     width: size.width * 0.25,
@@ -1047,7 +1063,7 @@ class RecentReleasedWidget extends StatelessWidget {
       } else if (pages >= 76 && pages <= 100) {
         requiredTokens = pages * 0.4;
       } else if (pages >= 101 && pages <= 300) {
-        requiredTokens = pages * 0.025;
+        requiredTokens = pages * 0.25;
       }
       return '${requiredTokens.round()}'; // Round to the nearest integer
     } else {
@@ -1218,44 +1234,271 @@ class RecentReleasedWidget extends StatelessWidget {
 }
 
 class NewReleasesWidget extends StatelessWidget {
-  const NewReleasesWidget({super.key, required this.list});
+  const NewReleasesWidget({Key? key, required this.list}) : super(key: key);
   final ListItemModel list;
+
+  String calculateRequiredTokens(int pages, bool isBook) {
+    if (isBook) {
+      double requiredTokens = 0;
+      if (pages >= 24 && pages <= 75) {
+        requiredTokens = pages * 0.5;
+      } else if (pages >= 76 && pages <= 100) {
+        requiredTokens = pages * 0.4;
+      } else if (pages >= 101 && pages <= 300) {
+        requiredTokens = pages * 0.25;
+      }
+      return '${requiredTokens.round()}'; // Round to the nearest integer
+    } else {
+      if (pages == 1) {
+        return '1';
+      } else if (pages >= 2 && pages <= 5) {
+        return '${(pages * 3).round()}';
+      } else {
+        return '${(pages * 2).round()}';
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    final bool isBook = list.detail.startsWith('BK');
+    final String tokenText =
+        calculateRequiredTokens(int.parse(list.pages), isBook);
+
     return ClipRRect(
-      borderRadius: BorderRadius.circular(10.r),
-      child: Container(
-        height: 120.h,
-        width: 200.w,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10.r),
+      borderRadius: BorderRadius.circular(20.r),
+      child: SizedBox(
+        child: Container(
+          width: 300, // Set the fixed width
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20.r),
             border: Border.all(
-              color: MyColors.darkBlue, // Border color
+              color: MyColors.blueColor,
+              width: 4, // Border color
             ),
-            color: MyColors.whiteColor),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              height: 110.h,
-              decoration: const BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage('assets/images/background.jpeg'),
-                      fit: BoxFit.fill)),
-              child: Center(
-                child: CircleAvatar(
-                  maxRadius: 35,
-                  backgroundColor: MyColors.whiteColor,
-                  child: Center(
-                    child: Image.asset(
-                      'assets/images/new_logo.png',
+            color: MyColors.whiteColor,
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: Container(
+                    height: size.height * 0.29,
+                    width: size.width * 0.30,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: isBook
+                            ? NetworkImage(list.imageUrl)
+                            : AssetImage('assets/images/background.jpeg')
+                                as ImageProvider,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                      color: MyColors.darkBlue,
                     ),
                   ),
+                ), // Add your content here
+
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 13),
+                  child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      Container(
+                        height: size.height * 0.25,
+                        width: size.width * 0.37,
+                        child: Column(
+                          // mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            TextWidget(
+                              text: list.title,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              color: MyColors.blackColor,
+                            ),
+                            SizedBox(
+                              height: size.height * 0.02,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                CustomContainer(
+                                  onpressed: () {},
+                                  height: size.height * 0.032,
+                                  width: size.width * 0.18,
+                                  color: MyColors.primaryColor,
+                                  borderRadius: 8,
+                                  borderColor: MyColors.primaryColor,
+                                  borderWidth: 1.5,
+                                  widget: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor: MyColors.transparent,
+                                        backgroundImage: const AssetImage(
+                                            'assets/images/amazon.png'),
+                                        maxRadius: 8,
+                                      ),
+                                      TextWidget(
+                                        text: list.amazonPrice,
+                                        color: MyColors.whiteColor,
+                                        fontSize: 12,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                CustomContainer(
+                                  onpressed: () {},
+                                  height: size.height * 0.032,
+                                  width: size.width * 0.18,
+                                  color: MyColors.whiteColor,
+                                  borderRadius: 8,
+                                  borderColor: MyColors.primaryColor,
+                                  borderWidth: 1.5,
+                                  widget: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor: MyColors.transparent,
+                                        backgroundImage: const AssetImage(
+                                            'assets/images/logo_2.png'),
+                                        maxRadius: 8,
+                                      ),
+                                      TextWidget(
+                                        text: tokenText, // Convert pages to int
+                                        color: MyColors.blueColor,
+                                        fontSize: 12,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: size.height * 0.02,
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextWidget(
+                                    text: 'Artist: ',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    color: MyColors.blackColor,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: TextWidget(
+                                    text: list.artist,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    color: MyColors.blackColor,
+                                  ),
+                                )
+                              ],
+                            ),
+                            SizedBox(
+                              height: size.height * 0.01,
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextWidget(
+                                    text: 'Genre: ',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    color: MyColors.blackColor,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: TextWidget(
+                                    text: list.genre,
+                                    fontSize: 12,
+                                    color: MyColors.blackColor,
+                                    fontWeight: FontWeight.w500,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
+                                )
+                              ],
+                            ),
+                            SizedBox(
+                              height: size.height * 0.01,
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextWidget(
+                                    text: 'Difficulty: ',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    color: MyColors.blackColor,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: TextWidget(
+                                    text: list.difficulty,
+                                    fontSize: 12,
+                                    color: MyColors.blackColor,
+                                    fontWeight: FontWeight.w500,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
+                                )
+                              ],
+                            ),
+                            SizedBox(
+                              height: size.height * 0.01,
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextWidget(
+                                    text: 'Pages:',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    color: MyColors.blackColor,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: TextWidget(
+                                    text: list.pages,
+                                    fontSize: 12,
+                                    color: MyColors.blackColor,
+                                    fontWeight: FontWeight.w500,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -1420,11 +1663,16 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   double value = 0.0;
   double maxValue = 180.0;
   bool isOwned = false;
+  bool earnToken = false;
+  bool earnReward = false;
   final player = AudioPlayer();
   late Timer timer;
   late PdfViewerController _pdfViewController;
-  final int userPoints =
-      int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
+  RewardedAd? _rewardedAd;
+  int userPoints = int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
+  int offlineUserPoints =
+      int.tryParse(OfflineLibraryBox.userBox!.values.first.points) ?? 0;
+  bool isLoggedIn = OfflineLibraryBox.userBox!.values.first.isLoggedIn;
 
   String formatTime(int seconds) {
     return '${(Duration(seconds: seconds))}'.split('.')[0].padLeft(8);
@@ -1445,6 +1693,68 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
       }
     });
     checkOwnershipStatus();
+    createRewardedAd();
+    _preventSS();
+  }
+
+  Future<void> _preventSS() async {
+    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+  }
+
+  void createRewardedAd() {
+    RewardedAd.load(
+      adUnitId: AdMobService.rewardedAdUnitId!,
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (ad) {
+          setState(() {
+            _rewardedAd = ad;
+          });
+        },
+        onAdFailedToLoad: (error) {
+          setState(() {
+            _rewardedAd = null;
+          });
+        },
+      ),
+    );
+  }
+
+  Future<void> showRewardedAd() async {
+    if (_rewardedAd != null) {
+      _rewardedAd!.fullScreenContentCallback =
+          FullScreenContentCallback(onAdDismissedFullScreenContent: ((ad) {
+        ad.dispose();
+        createRewardedAd();
+      }), onAdFailedToShowFullScreenContent: (((ad, error) {
+        ad.dispose();
+        createRewardedAd();
+      })));
+
+      await _rewardedAd!.show(onUserEarnedReward: (ad, reward) async {
+        if (earnReward) {
+          await OfflineLibraryBox.updateLibrary(widget.book.detail);
+          print("You earned a reward");
+        } else if (earnToken) {
+          if (isLoggedIn == true) {
+            int newPoints = userPoints + 1;
+            await HomeController.to
+                .updatePoints(
+                    LoginBox.userBox!.values.first.authToken, newPoints)
+                .then((pointsUpdated) async {
+              var userdata = await HomeController.to
+                  .getuserData(LoginBox.userBox!.values.first.authToken);
+              print('Points updated in logged In mode');
+              // Perform additional actions with userdata
+            });
+          } else {
+            int newPoints = offlineUserPoints++;
+            await OfflineLibraryBox.updatePoints(newPoints.toString());
+            print('Points updated in logged off mode');
+          }
+        }
+      });
+    }
   }
 
   Future<void> playAudioFromUrl(String url) async {
@@ -1495,7 +1805,37 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         Get.snackbar("Failed to update library", '');
       }
     } else {
-      Get.snackbar("Not enough tokens", '');
+      bool userWantsToWatchVideo = await showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title: Text('Not Enough Tokens'),
+            content: Text('Watch a video to earn a token?'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('No'),
+                onPressed: () {
+                  Navigator.of(dialogContext)
+                      .pop(false); // User declined to watch the video
+                },
+              ),
+              TextButton(
+                child: Text('Yes'),
+                onPressed: () {
+                  setState(() {
+                    earnToken = true;
+                  });
+                  Navigator.of(dialogContext)
+                      .pop(true); // User wants to watch the video
+                },
+              ),
+            ],
+          );
+        },
+      );
+      if (userWantsToWatchVideo) {
+        showRewardedAd();
+      }
     }
 
     var a = OfflineLibrary.encodeOfflineLibrary(
@@ -1778,7 +2118,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                     children: [
                                       Expanded(
                                         child: TextWidget(
-                                          text: 'Genre',
+                                          text: 'Genre: ',
                                           fontSize: 15,
                                           color: MyColors.blackColor,
                                         ),
@@ -2189,9 +2529,13 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   bool isOwned = false;
   RewardedAd? _rewardedAd;
   late PdfViewerController _pdfViewController;
+  bool earnToken = false;
+  bool earnReward = false;
+  bool earnRewardOpenPDF = false;
   bool isLoggedIn = OfflineLibraryBox.userBox!.values.first.isLoggedIn;
-  final int userPoints =
-      int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
+  int userPoints = int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
+  int offlineUserPoints =
+      int.tryParse(OfflineLibraryBox.userBox!.values.first.points) ?? 0;
 
   String formatTime(int seconds) {
     return '${(Duration(seconds: seconds))}'.split('.')[0].padLeft(8);
@@ -2223,8 +2567,12 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         });
       }
     });
-
+    _preventSS();
     checkOwnershipStatus();
+  }
+
+  Future<void> _preventSS() async {
+    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
   }
 
   void createRewardedAd() {
@@ -2257,8 +2605,38 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         createRewardedAd();
       })));
 
-      await _rewardedAd!.show(
-          onUserEarnedReward: ((ad, reward) => {print("You earned a reward")}));
+      await _rewardedAd!.show(onUserEarnedReward: (ad, reward) async {
+        if (earnReward) {
+          await OfflineLibraryBox.updateLibrary(widget.song.detail);
+          print("You earned a reward");
+        } else if (earnRewardOpenPDF) {
+          await OfflineLibraryBox.updateLibrary(widget.song.detail);
+          _showPdfViewer(
+            context,
+            HomeController.to.getOriginalPdfSource(widget.song.detail),
+          );
+        } else if (earnToken) {
+          if (isLoggedIn == true) {
+            int newPoints = userPoints + 1;
+            await HomeController.to
+                .updatePoints(
+                    LoginBox.userBox!.values.first.authToken, newPoints)
+                .then((pointsUpdated) async {
+              var userdata = await HomeController.to
+                  .getuserData(LoginBox.userBox!.values.first.authToken);
+              print('Points updated in logged In mode');
+
+              Get.snackbar("${widget.song.title} is added to the library", '');
+              // Perform additional actions with userdata
+            });
+          } else {
+            int newPoints = offlineUserPoints++;
+            await OfflineLibraryBox.updatePoints(newPoints.toString());
+            print('Points updated in logged off mode');
+            Get.snackbar("${widget.song.title} is Redeemed for 24 hours", '');
+          }
+        }
+      });
     }
   }
 
@@ -2297,10 +2675,37 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         Get.snackbar("Already in the library", '');
       }
     } else if (tokenText == 'Watch video and redeem') {
-      await OfflineLibraryBox.updateLibrary(widget.song.detail);
-      showRewardedAd();
-      if (isLoggedIn) {
-        Get.snackbar("Create an account to add items to the library", '');
+      bool userWantsToWatchVideo = await showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title: Text('Watch a Video'),
+            content: Text('Watch a video to earn a reward?'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('No'),
+                onPressed: () {
+                  Navigator.of(dialogContext)
+                      .pop(false); // User declined to watch the video
+                },
+              ),
+              TextButton(
+                child: Text('Yes'),
+                onPressed: () {
+                  setState(() {
+                    earnReward = true;
+                    earnToken = false;
+                  });
+                  Navigator.of(dialogContext)
+                      .pop(true); // User wants to watch the video
+                },
+              ),
+            ],
+          );
+        },
+      );
+      if (userWantsToWatchVideo) {
+        showRewardedAd();
       }
     } else if (requiredTokens <= userPoints) {
       var _ = await OfflineLibraryBox.updateLibrary(widget.song.detail);
@@ -2313,11 +2718,37 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         Get.snackbar("Create an account to add items to the library", '');
       }
     } else {
-      if (isLoggedIn) {
-        Get.snackbar("Not enough tokens", '');
-      } else {
-        // Prompt the user to create an account
-        Get.snackbar("Create an account to add items to the library", '');
+      bool userWantsToWatchVideo = await showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title: Text('Not Enough Tokens'),
+            content: Text('Watch a video to earn a reward?'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('No'),
+                onPressed: () {
+                  Navigator.of(dialogContext)
+                      .pop(false); // User declined to watch the video
+                },
+              ),
+              TextButton(
+                child: Text('Yes'),
+                onPressed: () {
+                  setState(() {
+                    earnToken = true;
+                    earnReward = false;
+                  });
+                  Navigator.of(dialogContext)
+                      .pop(true); // User wants to watch the video
+                },
+              ),
+            ],
+          );
+        },
+      );
+      if (userWantsToWatchVideo) {
+        showRewardedAd();
       }
     }
 
@@ -2398,50 +2829,83 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Container(
-                          height: size.height * 0.29,
-                          width: size.width * 0.36,
-                          decoration: BoxDecoration(
-                              image: const DecorationImage(
-                                fit: BoxFit.cover,
-                                image:
-                                    AssetImage('assets/images/background.jpeg'),
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                              color: MyColors.darkBlue),
-                          child: Stack(
-                            children: [
-                              hide == true
-                                  ? BackdropFilter(
-                                      filter: ImageFilter.blur(
-                                          sigmaX: 2, sigmaY: 2),
-                                      child: Container(
-                                        color: Colors.black.withOpacity(0.1),
-                                      ),
-                                    )
-                                  : const SizedBox(),
-                              Center(
-                                child: InkWell(
-                                  onTap: () {
-                                    _showPdfViewer(
-                                        context,
-                                        isOwned
-                                            ? HomeController.to
-                                                .getOriginalPdfSource(
-                                                    widget.song.detail)
-                                            : HomeController.to
-                                                .getSamplePdfSource(
-                                                    widget.song.detail));
-                                  },
-                                  child: Icon(
-                                    CupertinoIcons.eye_fill,
-                                    size: 40,
-                                    color: MyColors.whiteColor,
+                            height: size.height * 0.29,
+                            width: size.width * 0.36,
+                            decoration: BoxDecoration(
+                                image: const DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: AssetImage(
+                                      'assets/images/background.jpeg'),
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                                color: MyColors.darkBlue),
+                            child: Stack(
+                              children: [
+                                hide == true
+                                    ? BackdropFilter(
+                                        filter: ImageFilter.blur(
+                                            sigmaX: 2, sigmaY: 2),
+                                        child: Container(
+                                          color: Colors.black.withOpacity(0.1),
+                                        ),
+                                      )
+                                    : const SizedBox(),
+                                Center(
+                                  child: InkWell(
+                                    onTap: () {
+                                      if (!isOwned &&
+                                          int.parse(widget.song.pages) == 1) {
+                                        showDialog(
+                                          context: context,
+                                          builder:
+                                              (BuildContext dialogContext) {
+                                            return AlertDialog(
+                                              title: Text('Watch a Video'),
+                                              content: Text(
+                                                  'Watch a video to earn a reward?'),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  child: Text('No'),
+                                                  onPressed: () {
+                                                    Navigator.of(dialogContext)
+                                                        .pop();
+                                                  },
+                                                ),
+                                                TextButton(
+                                                  child: Text('Yes'),
+                                                  onPressed: () {
+                                                    earnRewardOpenPDF = true;
+                                                    showRewardedAd();
+                                                    Navigator.of(dialogContext)
+                                                        .pop();
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      } else {
+                                        _showPdfViewer(
+                                          context,
+                                          isOwned
+                                              ? HomeController.to
+                                                  .getOriginalPdfSource(
+                                                      widget.song.detail)
+                                              : HomeController.to
+                                                  .getSamplePdfSource(
+                                                      widget.song.detail),
+                                        );
+                                      }
+                                    },
+                                    child: Icon(
+                                      CupertinoIcons.eye_fill,
+                                      size: 40,
+                                      color: MyColors.whiteColor,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
+                              ],
+                            )),
                       ),
                       Stack(
                         alignment: Alignment.bottomCenter,
