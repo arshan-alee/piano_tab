@@ -130,7 +130,7 @@ class _HomePageState extends State<HomePage> {
                   height: size.height * 0.02,
                 ),
                 SizedBox(
-                  height: 195.h,
+                  height: size.height * 0.25,
                   width: size.width,
                   child: ListView.separated(
                     separatorBuilder: (context, index) => SizedBox(

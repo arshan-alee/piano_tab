@@ -55,6 +55,7 @@ dependencies:
   flutter_rating_bar:
   share_plus:
   flutter_windowmanager:
+  url_launcher:
   
 
 

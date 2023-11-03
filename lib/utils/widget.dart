@@ -21,6 +21,7 @@ import 'package:paino_tab/services/auth_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../controllers/home_controller.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'colors.dart';
@@ -1275,7 +1276,7 @@ class NewReleasesWidget extends StatelessWidget {
       borderRadius: BorderRadius.circular(20.r),
       child: SizedBox(
         child: Container(
-          width: 330, // Set the fixed width
+          width: size.width * 0.92, // Set the fixed width
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20.r),
             border: Border.all(
@@ -1294,7 +1295,7 @@ class NewReleasesWidget extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.all(10),
                     child: Container(
-                      width: size.width * 0.25,
+                      width: size.width * 0.3,
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           fit: BoxFit.cover,
@@ -1311,12 +1312,12 @@ class NewReleasesWidget extends StatelessWidget {
                 ), // Add your content here
 
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 13, vertical: 4),
+                  padding: EdgeInsets.symmetric(horizontal: 13),
                   child: Stack(
                     alignment: Alignment.bottomCenter,
                     children: [
                       Container(
-                        height: size.height * 0.25,
+                        height: size.height * 0.28,
                         width: size.width * 0.37,
                         child: Column(
                           // mainAxisAlignment: MainAxisAlignment.start,
@@ -1976,7 +1977,18 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       CustomContainer(
-                                        onpressed: () {},
+                                        onpressed: () async {
+                                          print(widget.book.amazonLink);
+                                          if (await canLaunchUrl(Uri.parse(
+                                              widget.book.amazonLink))) {
+                                            await launchUrl(
+                                              Uri.parse(widget.book.amazonLink),
+                                            );
+                                          } else {
+                                            throw Exception(
+                                                'Could not launch ${widget.book.amazonLink}');
+                                          }
+                                        },
                                         height: size.height * 0.04,
                                         width: size.width * 0.2,
                                         color: MyColors.primaryColor,
@@ -2094,6 +2106,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                           text: 'Artist:',
                                           fontSize: 15,
                                           color: MyColors.blackColor,
+                                          onTap: () {
+                                            print(widget.book);
+                                          },
                                         ),
                                       ),
                                       Expanded(
@@ -2476,37 +2491,42 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
     // Apply the secure flag when building the screen
     _preventSS();
 
-    return Container(
-      child: Column(
-        children: [
-          AppBar(
-            title: TextWidget(text: widget.title),
-            centerTitle: true,
-            actions: [
-              IconButton(
-                icon: Icon(Icons.file_download),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => DownloadingDialog(
-                      pdfPath: widget.pdfPath,
-                    ),
-                  );
-                },
+    return SafeArea(
+      child: FractionallySizedBox(
+        heightFactor: 0.95,
+        child: Container(
+          child: Column(
+            children: [
+              AppBar(
+                title: TextWidget(text: widget.title),
+                centerTitle: true,
+                actions: [
+                  IconButton(
+                    icon: Icon(Icons.file_download),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => DownloadingDialog(
+                          pdfPath: widget.pdfPath,
+                        ),
+                      );
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.print),
+                    onPressed: () {},
+                  ),
+                ],
               ),
-              IconButton(
-                icon: Icon(Icons.print),
-                onPressed: () {},
+              Expanded(
+                child: SfPdfViewer.network(
+                  widget.pdfPath,
+                  controller: _pdfViewController,
+                ),
               ),
             ],
           ),
-          Expanded(
-            child: SfPdfViewer.network(
-              widget.pdfPath,
-              controller: _pdfViewController,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -2643,12 +2663,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         });
       }
     });
-    _preventSS();
     checkOwnershipStatus();
-  }
-
-  Future<void> _preventSS() async {
-    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
   }
 
   void createRewardedAd() {
@@ -2849,9 +2864,9 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
 
   void checkOwnershipStatus() {
     final userLibrary = UserDataBox.userBox!.values.first.userDataLibrary;
-    final bookDetail = widget.song.detail;
+    final songDetail = widget.song.detail;
 
-    if (userLibrary.contains(bookDetail)) {
+    if (userLibrary.contains(songDetail)) {
       setState(() {
         isOwned = true;
       });
@@ -2868,6 +2883,13 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     final isSongInLibrary = OfflineLibraryBox
         .userBox!.values.first.offlineLibrary
         .contains(widget.song.detail);
+
+    final tokenText = _calculateRequiredTokens(int.parse(widget.song.pages));
+    double tokenWidth = size.width * 0.2;
+    double tokenTextSize = 14.0;
+
+    // Check the length of tokenText and adjust width and text size accordingly
+
     return Padding(
       padding: const EdgeInsets.all(15),
       child: Column(
@@ -2993,126 +3015,235 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Wrap(
-                                  spacing: 5,
-                                  runSpacing: 5,
-                                  alignment: WrapAlignment.spaceBetween,
-                                  children: [
-                                    LayoutBuilder(
-                                      builder: (context, constraints) {
-                                        final tokenText =
-                                            _calculateRequiredTokens(
-                                                int.parse(widget.song.pages));
-                                        double tokenWidth = size.width * 0.2;
-                                        double tokenTextSize = 14.0;
-
-                                        // Check the length of tokenText and adjust width and text size accordingly
-                                        if (tokenText.length > 6) {
-                                          tokenWidth = constraints.maxWidth *
-                                              1; // Adjusted width
-                                          tokenTextSize =
-                                              10.75; // Adjusted text size
-                                        }
-
-                                        return !isSongInLibrary
-                                            ? CustomContainer(
-                                                onpressed: () {
-                                                  AddtoLibrary(context);
-                                                },
-                                                height: size.height * 0.04,
-                                                width: tokenWidth,
-                                                color: MyColors.whiteColor,
-                                                borderRadius: 8,
-                                                borderColor:
-                                                    MyColors.primaryColor,
-                                                borderWidth: 1.5,
-                                                widget: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: [
-                                                    CircleAvatar(
-                                                      backgroundColor:
-                                                          MyColors.transparent,
-                                                      backgroundImage:
-                                                          const AssetImage(
-                                                              'assets/images/logo_2.png'),
-                                                      maxRadius: 8,
+                                !isSongInLibrary
+                                    ? Wrap(
+                                        children: [
+                                          LayoutBuilder(
+                                            builder: (context, constraints) {
+                                              if (tokenText.length > 6) {
+                                                tokenWidth =
+                                                    constraints.maxWidth *
+                                                        0.8; // Adjusted width
+                                                tokenTextSize =
+                                                    8.5; // Adjusted text size
+                                              }
+                                              return Wrap(
+                                                spacing: 5,
+                                                runSpacing: 5,
+                                                alignment:
+                                                    WrapAlignment.spaceBetween,
+                                                children: [
+                                                  CustomContainer(
+                                                    onpressed: () {
+                                                      AddtoLibrary(context);
+                                                    },
+                                                    height: size.height * 0.04,
+                                                    width: tokenWidth,
+                                                    color: MyColors.whiteColor,
+                                                    borderRadius: 8,
+                                                    borderColor:
+                                                        MyColors.primaryColor,
+                                                    borderWidth: 1.5,
+                                                    widget: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceEvenly,
+                                                      children: [
+                                                        CircleAvatar(
+                                                          backgroundColor:
+                                                              MyColors
+                                                                  .transparent,
+                                                          backgroundImage:
+                                                              const AssetImage(
+                                                                  'assets/images/logo_2.png'),
+                                                          maxRadius: 8,
+                                                        ),
+                                                        TextWidget(
+                                                          text:
+                                                              tokenText, // Convert pages to int
+                                                          color: MyColors
+                                                              .blueColor,
+                                                          fontSize:
+                                                              tokenTextSize,
+                                                        )
+                                                      ],
                                                     ),
-                                                    TextWidget(
-                                                      text:
-                                                          tokenText, // Convert pages to int
-                                                      color: MyColors.blueColor,
-                                                      fontSize: tokenTextSize,
-                                                    )
-                                                  ],
-                                                ),
-                                              )
-                                            : (isLoggedIn
-                                                ? SizedBox()
-                                                : TextWidget(
-                                                    text: 'Redeemed',
-                                                    color:
-                                                        MyColors.blackColor));
-                                      },
-                                    ),
-                                    // CustomContainer(
-                                    //   onpressed: () {},
-                                    //   height: size.height * 0.04,
-                                    //   width: size.width * 0.2,
-                                    //   color: MyColors.primaryColor,
-                                    //   borderRadius: 10,
-                                    //   borderColor: MyColors.transparent,
-                                    //   borderWidth: 0,
-                                    //   widget: const Center(
-                                    //     child: TextWidget(
-                                    //       text: 'Book',
-                                    //       fontSize: 14,
-                                    //     ),
-                                    //   ),
-                                    // ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          final favorites = OfflineLibraryBox
-                                              .userBox!.values.first.favourites;
-                                          if (favorites
-                                              .contains(widget.song.detail)) {
-                                            // Remove from favorites
-                                            OfflineLibraryBox
-                                                .removeFromFavorites(
-                                                    widget.song.detail);
-                                            if (OfflineLibraryBox.userBox!
-                                                .values.first.isLoggedIn) {
-                                              Get.snackbar(
-                                                  "Removed from favorites", "");
-                                            }
-                                          } else {
-                                            // Add to favorites
-                                            OfflineLibraryBox.addToFavorites(
-                                                widget.song.detail);
-                                            if (OfflineLibraryBox.userBox!
-                                                .values.first.isLoggedIn) {
-                                              Get.snackbar(
-                                                  "Added to favorites", "");
-                                            }
-                                          }
-                                        });
-                                      },
-                                      child: Icon(
-                                        OfflineLibraryBox.userBox!.values.first
-                                                .favourites
-                                                .contains(widget.song.detail)
-                                            ? CupertinoIcons.heart_fill
-                                            : CupertinoIcons.heart,
-                                        color: MyColors.red,
+                                                  ),
+                                                  InkWell(
+                                                    onTap: () {
+                                                      setState(() {
+                                                        final favorites =
+                                                            OfflineLibraryBox
+                                                                .userBox!
+                                                                .values
+                                                                .first
+                                                                .favourites;
+                                                        if (favorites.contains(
+                                                            widget
+                                                                .song.detail)) {
+                                                          // Remove from favorites
+                                                          OfflineLibraryBox
+                                                              .removeFromFavorites(
+                                                                  widget.song
+                                                                      .detail);
+                                                          if (OfflineLibraryBox
+                                                              .userBox!
+                                                              .values
+                                                              .first
+                                                              .isLoggedIn) {
+                                                            Get.snackbar(
+                                                                "Removed from favorites",
+                                                                "");
+                                                          }
+                                                        } else {
+                                                          // Add to favorites
+                                                          OfflineLibraryBox
+                                                              .addToFavorites(
+                                                                  widget.song
+                                                                      .detail);
+                                                          if (OfflineLibraryBox
+                                                              .userBox!
+                                                              .values
+                                                              .first
+                                                              .isLoggedIn) {
+                                                            Get.snackbar(
+                                                                "Added to favorites",
+                                                                "");
+                                                          }
+                                                        }
+                                                      });
+                                                    },
+                                                    child: Icon(
+                                                      OfflineLibraryBox
+                                                              .userBox!
+                                                              .values
+                                                              .first
+                                                              .favourites
+                                                              .contains(widget
+                                                                  .song.detail)
+                                                          ? CupertinoIcons
+                                                              .heart_fill
+                                                          : CupertinoIcons
+                                                              .heart,
+                                                      color: MyColors.red,
+                                                    ),
+                                                  )
+                                                ],
+                                              );
+                                            },
+                                          ),
+                                          // CustomContainer(
+                                          //   onpressed: () {},
+                                          //   height: size.height * 0.04,
+                                          //   width: size.width * 0.2,
+                                          //   color: MyColors.primaryColor,
+                                          //   borderRadius: 10,
+                                          //   borderColor: MyColors.transparent,
+                                          //   borderWidth: 0,
+                                          //   widget: const Center(
+                                          //     child: TextWidget(
+                                          //       text: 'Book',
+                                          //       fontSize: 14,
+                                          //     ),
+                                          //   ),
+                                          // ),
+                                          // SizedBox(
+                                          //   width: 5,
+                                          // ),
+                                          // InkWell(
+                                          //   onTap: () {
+                                          //     setState(() {
+                                          //       final favorites = OfflineLibraryBox
+                                          //           .userBox!.values.first.favourites;
+                                          //       if (favorites
+                                          //           .contains(widget.song.detail)) {
+                                          //         // Remove from favorites
+                                          //         OfflineLibraryBox
+                                          //             .removeFromFavorites(
+                                          //                 widget.song.detail);
+                                          //         if (OfflineLibraryBox.userBox!
+                                          //             .values.first.isLoggedIn) {
+                                          //           Get.snackbar(
+                                          //               "Removed from favorites", "");
+                                          //         }
+                                          //       } else {
+                                          //         // Add to favorites
+                                          //         OfflineLibraryBox.addToFavorites(
+                                          //             widget.song.detail);
+                                          //         if (OfflineLibraryBox.userBox!
+                                          //             .values.first.isLoggedIn) {
+                                          //           Get.snackbar(
+                                          //               "Added to favorites", "");
+                                          //         }
+                                          //       }
+                                          //     });
+                                          //   },
+                                          //   child: Icon(
+                                          //     OfflineLibraryBox.userBox!.values.first
+                                          //             .favourites
+                                          //             .contains(widget.song.detail)
+                                          //         ? CupertinoIcons.heart_fill
+                                          //         : CupertinoIcons.heart,
+                                          //     color: MyColors.red,
+                                          //   ),
+                                          // )
+                                        ],
+                                      )
+                                    : Row(
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                final favorites =
+                                                    OfflineLibraryBox
+                                                        .userBox!
+                                                        .values
+                                                        .first
+                                                        .favourites;
+                                                if (favorites.contains(
+                                                    widget.song.detail)) {
+                                                  // Remove from favorites
+                                                  OfflineLibraryBox
+                                                      .removeFromFavorites(
+                                                          widget.song.detail);
+                                                  if (OfflineLibraryBox
+                                                      .userBox!
+                                                      .values
+                                                      .first
+                                                      .isLoggedIn) {
+                                                    Get.snackbar(
+                                                        "Removed from favorites",
+                                                        "");
+                                                  }
+                                                } else {
+                                                  // Add to favorites
+                                                  OfflineLibraryBox
+                                                      .addToFavorites(
+                                                          widget.song.detail);
+                                                  if (OfflineLibraryBox
+                                                      .userBox!
+                                                      .values
+                                                      .first
+                                                      .isLoggedIn) {
+                                                    Get.snackbar(
+                                                        "Added to favorites",
+                                                        "");
+                                                  }
+                                                }
+                                              });
+                                            },
+                                            child: Icon(
+                                              OfflineLibraryBox.userBox!.values
+                                                      .first.favourites
+                                                      .contains(
+                                                          widget.song.detail)
+                                                  ? CupertinoIcons.heart_fill
+                                                  : CupertinoIcons.heart,
+                                              color: MyColors.red,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    )
-                                  ],
-                                ),
                                 Column(
                                   children: [
                                     SizedBox(

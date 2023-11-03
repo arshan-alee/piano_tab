@@ -8,6 +8,7 @@ import 'package:paino_tab/screens/home_screen.dart';
 import 'package:paino_tab/services/ad_mob_service.dart';
 import 'package:paino_tab/utils/widget.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../controllers/home_controller.dart';
 import '../models/songs_model.dart';
@@ -441,10 +442,20 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                         Column(
                                           children: [
                                             InkWell(
-                                              onTap: () {
+                                              onTap: () async {
                                                 setState(() {
                                                   index = 4;
                                                 });
+                                                if (await canLaunchUrl(Uri.parse(
+                                                    'https://www.amazon.com/'))) {
+                                                  await launchUrl(
+                                                    Uri.parse(
+                                                        'https://www.amazon.com/'),
+                                                  );
+                                                } else {
+                                                  throw Exception(
+                                                      'Could not launch https://www.amazon.com/');
+                                                }
                                               },
                                               child: Container(
                                                 height: size.height * 0.063,
@@ -531,8 +542,19 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                             : color,
                                                         fontSize: 18,
                                                         onTap: () {
-                                                          _showPdfViewer(
-                                                              context);
+                                                          showModalBottomSheet(
+                                                              context: context,
+                                                              isScrollControlled:
+                                                                  true,
+                                                              builder:
+                                                                  (BuildContext
+                                                                      bc) {
+                                                                return PdfViewerScreen(
+                                                                    pdfPath:
+                                                                        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                                                                    title:
+                                                                        "Guide");
+                                                              });
                                                         },
                                                       ),
                                                     ],
@@ -725,33 +747,33 @@ class _CustomDrawerState extends State<CustomDrawer> {
     );
   }
 
-  void _showPdfViewer(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (BuildContext bc) {
-        return FractionallySizedBox(
-          heightFactor: 1, // Occupies full screen height
-          child: Container(
-            child: Column(
-              children: [
-                AppBar(
-                  title: TextWidget(text: 'Guide'),
-                  centerTitle: true,
-                ),
-                Expanded(
-                  child: SfPdfViewer.network(
-                    'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', // Use the passed PDF path here
-                    controller: _pdfViewController,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+  // void _showPdfViewer(BuildContext context) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     builder: (BuildContext bc) {
+  //       return FractionallySizedBox(
+  //         heightFactor: 1, // Occupies full screen height
+  //         child: Container(
+  //           child: Column(
+  //             children: [
+  //               AppBar(
+  //                 title: TextWidget(text: 'Guide'),
+  //                 centerTitle: true,
+  //               ),
+  //               Expanded(
+  //                 child: SfPdfViewer.network(
+  //                   'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', // Use the passed PDF path here
+  //                   controller: _pdfViewController,
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 }
 
 class CustomEndDrawer extends StatefulWidget {
