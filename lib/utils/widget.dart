@@ -131,10 +131,15 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 ),
             Padding(
               padding: const EdgeInsets.only(left: 15),
-              child: TextWidget(
-                text: widget.title,
-                color: MyColors.blackColor,
-                fontWeight: FontWeight.w500,
+              child: Container(
+                width: MediaQuery.of(context).size.width - 150,
+                child: TextWidget(
+                  text: widget.title,
+                  color: MyColors.blackColor,
+                  fontWeight: FontWeight.w500,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
               ),
             ),
             CustomContainer(
@@ -1270,7 +1275,7 @@ class NewReleasesWidget extends StatelessWidget {
       borderRadius: BorderRadius.circular(20.r),
       child: SizedBox(
         child: Container(
-          width: 300, // Set the fixed width
+          width: 330, // Set the fixed width
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20.r),
             border: Border.all(
@@ -1282,23 +1287,25 @@ class NewReleasesWidget extends StatelessWidget {
           child: Padding(
             padding: EdgeInsets.all(10),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
-                  child: Container(
-                    height: size.height * 0.29,
-                    width: size.width * 0.30,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: isBook
-                            ? NetworkImage(list.imageUrl)
-                            : AssetImage('assets/images/background.jpeg')
-                                as ImageProvider,
+                  borderRadius: BorderRadius.circular(20),
+                  child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Container(
+                      width: size.width * 0.25,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: isBook
+                              ? NetworkImage(list.imageUrl)
+                              : AssetImage('assets/images/background.jpeg')
+                                  as ImageProvider,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                        color: MyColors.darkBlue,
                       ),
-                      borderRadius: BorderRadius.circular(10),
-                      color: MyColors.darkBlue,
                     ),
                   ),
                 ), // Add your content here
@@ -1667,7 +1674,6 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   bool earnReward = false;
   final player = AudioPlayer();
   late Timer timer;
-  late PdfViewerController _pdfViewController;
   RewardedAd? _rewardedAd;
   int userPoints = int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
   int offlineUserPoints =
@@ -1680,7 +1686,6 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 
   void initState() {
     super.initState();
-    _pdfViewController = PdfViewerController();
     timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (play) {
         player.getCurrentPosition().then((position) {
@@ -1694,11 +1699,6 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     });
     checkOwnershipStatus();
     createRewardedAd();
-    _preventSS();
-  }
-
-  Future<void> _preventSS() async {
-    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
   }
 
   void createRewardedAd() {
@@ -1899,24 +1899,13 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       color: MyColors.primaryColor,
                     ),
                   ),
-                  title: 'Book'),
+                  title: widget.book.title),
             ),
             Expanded(
               flex: 1,
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    SizedBox(
-                      height: size.height * 0.01,
-                    ),
-                    Center(
-                      child: TextWidget(
-                        text: widget.book.title,
-                        fontSize: 15,
-                        color: MyColors.blackColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
                     SizedBox(
                       height: size.height * 0.03,
                     ),
@@ -1948,15 +1937,20 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                 Center(
                                     child: InkWell(
                                   onTap: () {
-                                    _showPdfViewer(
-                                        context,
-                                        isOwned
-                                            ? HomeController.to
-                                                .getOriginalPdfSource(
-                                                    widget.book.detail)
-                                            : HomeController.to
-                                                .getSamplePdfSource(
-                                                    widget.book.detail));
+                                    showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        builder: (BuildContext bc) {
+                                          return PdfViewerScreen(
+                                              pdfPath: isOwned
+                                                  ? HomeController.to
+                                                      .getOriginalPdfSource(
+                                                          widget.book.detail)
+                                                  : HomeController.to
+                                                      .getSamplePdfSource(
+                                                          widget.book.detail),
+                                              title: widget.book.title);
+                                        });
                                   },
                                   child: Icon(
                                     CupertinoIcons.eye_fill,
@@ -2390,48 +2384,130 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     );
   }
 
-  void _showPdfViewer(BuildContext context, String pdfPath) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (BuildContext bc) {
-        return FractionallySizedBox(
-          heightFactor: 0.95, // Occupies full screen height
-          child: Container(
-            child: Column(
-              children: [
-                AppBar(
-                  title: TextWidget(text: widget.book.title),
-                  centerTitle: true,
-                  actions: [
-                    IconButton(
-                      icon: Icon(Icons.file_download),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => DownloadingDialog(
-                            pdfPath: pdfPath, // Pass the PDF path to the dialog
-                          ),
-                        );
-                      },
+  // void _showPdfViewer(BuildContext context, String pdfPath) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     builder: (BuildContext bc) {
+  //       return FractionallySizedBox(
+  //         heightFactor: 0.95, // Occupies full screen height
+  //         child: Container(
+  //           child: Column(
+  //             children: [
+  //               AppBar(
+  //                 title: TextWidget(text: widget.book.title),
+  //                 centerTitle: true,
+  //                 actions: [
+  //                   IconButton(
+  //                     icon: Icon(Icons.file_download),
+  //                     onPressed: () {
+  //                       showDialog(
+  //                         context: context,
+  //                         builder: (context) => DownloadingDialog(
+  //                           pdfPath: pdfPath, // Pass the PDF path to the dialog
+  //                         ),
+  //                       );
+  //                     },
+  //                   ),
+  //                   IconButton(
+  //                     icon: Icon(Icons.print),
+  //                     onPressed: () {},
+  //                   ),
+  //                 ],
+  //               ),
+  //               Expanded(
+  //                 child: SfPdfViewer.network(
+  //                   pdfPath, // Use the passed PDF path here
+  //                   controller: _pdfViewController,
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+}
+
+class PdfViewerScreen extends StatefulWidget {
+  final String pdfPath;
+  final String title;
+
+  PdfViewerScreen({
+    required this.pdfPath,
+    required this.title,
+  });
+
+  @override
+  _PdfViewerScreenState createState() => _PdfViewerScreenState();
+}
+
+class _PdfViewerScreenState extends State<PdfViewerScreen> {
+  final GlobalKey<SfPdfViewerState> _pdfViewerKey = GlobalKey();
+  late PdfViewerController _pdfViewController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pdfViewController = PdfViewerController();
+
+    _preventSS();
+  }
+
+  @override
+  void dispose() {
+    // Remove the secure flag when the screen is disposed
+    _allowSS();
+    super.dispose();
+  }
+
+  Future<void> _preventSS() async {
+    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+  }
+
+  void _allowSS() {
+    // Remove the secure flag
+    FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Apply the secure flag when building the screen
+    _preventSS();
+
+    return Container(
+      child: Column(
+        children: [
+          AppBar(
+            title: TextWidget(text: widget.title),
+            centerTitle: true,
+            actions: [
+              IconButton(
+                icon: Icon(Icons.file_download),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => DownloadingDialog(
+                      pdfPath: widget.pdfPath,
                     ),
-                    // IconButton(
-                    //   icon: Icon(Icons.print),
-                    //   onPressed: () {},
-                    // ),
-                  ],
-                ),
-                Expanded(
-                  child: SfPdfViewer.network(
-                    pdfPath, // Use the passed PDF path here
-                    controller: _pdfViewController,
-                  ),
-                ),
-              ],
+                  );
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.print),
+                onPressed: () {},
+              ),
+            ],
+          ),
+          Expanded(
+            child: SfPdfViewer.network(
+              widget.pdfPath,
+              controller: _pdfViewController,
             ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }
@@ -2528,7 +2604,6 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   late Timer timer;
   bool isOwned = false;
   RewardedAd? _rewardedAd;
-  late PdfViewerController _pdfViewController;
   bool earnToken = false;
   bool earnReward = false;
   bool earnRewardOpenPDF = false;
@@ -2536,6 +2611,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   int userPoints = int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
   int offlineUserPoints =
       int.tryParse(OfflineLibraryBox.userBox!.values.first.points) ?? 0;
+  late PdfViewerController _pdfViewController;
 
   String formatTime(int seconds) {
     return '${(Duration(seconds: seconds))}'.split('.')[0].padLeft(8);
@@ -2611,10 +2687,15 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
           print("You earned a reward");
         } else if (earnRewardOpenPDF) {
           await OfflineLibraryBox.updateLibrary(widget.song.detail);
-          _showPdfViewer(
-            context,
-            HomeController.to.getOriginalPdfSource(widget.song.detail),
-          );
+          showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              builder: (BuildContext bc) {
+                return PdfViewerScreen(
+                    pdfPath: HomeController.to
+                        .getOriginalPdfSource(widget.song.detail),
+                    title: widget.song.title);
+              });
         } else if (earnToken) {
           if (isLoggedIn == true) {
             int newPoints = userPoints + 1;
@@ -2804,23 +2885,12 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                     color: MyColors.primaryColor,
                   ),
                 ),
-                title: 'Song'),
+                title: widget.song.title),
           ),
           Expanded(
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  SizedBox(
-                    height: size.height * 0.01,
-                  ),
-                  Center(
-                    child: TextWidget(
-                      text: widget.song.title,
-                      fontSize: 15,
-                      color: MyColors.blackColor,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
                   SizedBox(
                     height: size.height * 0.03,
                   ),
@@ -2885,16 +2955,22 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                           },
                                         );
                                       } else {
-                                        _showPdfViewer(
-                                          context,
-                                          isOwned
-                                              ? HomeController.to
-                                                  .getOriginalPdfSource(
-                                                      widget.song.detail)
-                                              : HomeController.to
-                                                  .getSamplePdfSource(
-                                                      widget.song.detail),
-                                        );
+                                        showModalBottomSheet(
+                                            context: context,
+                                            isScrollControlled: true,
+                                            builder: (BuildContext bc) {
+                                              return PdfViewerScreen(
+                                                  pdfPath: isOwned
+                                                      ? HomeController.to
+                                                          .getOriginalPdfSource(
+                                                              widget
+                                                                  .song.detail)
+                                                      : HomeController.to
+                                                          .getSamplePdfSource(
+                                                              widget
+                                                                  .song.detail),
+                                                  title: widget.song.title);
+                                            });
                                       }
                                     },
                                     child: Icon(
@@ -2917,10 +2993,8 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Wrap(
-                                  spacing: 5,
-                                  runSpacing: 5,
-                                  alignment: WrapAlignment.spaceBetween,
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     LayoutBuilder(
                                       builder: (context, constraints) {
@@ -2995,6 +3069,9 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                     //     ),
                                     //   ),
                                     // ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
                                     InkWell(
                                       onTap: () {
                                         setState(() {
@@ -3361,10 +3438,10 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                         );
                       },
                     ),
-                    // IconButton(
-                    //   icon: Icon(Icons.print),
-                    //   onPressed: () {},
-                    // ),
+                    IconButton(
+                      icon: Icon(Icons.print),
+                      onPressed: () {},
+                    ),
                   ],
                 ),
                 Expanded(
