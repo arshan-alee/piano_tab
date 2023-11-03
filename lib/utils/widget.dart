@@ -1311,7 +1311,7 @@ class NewReleasesWidget extends StatelessWidget {
                 ), // Add your content here
 
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 13),
+                  padding: EdgeInsets.symmetric(horizontal: 13, vertical: 4),
                   child: Stack(
                     alignment: Alignment.bottomCenter,
                     children: [
