@@ -2993,8 +2993,10 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
+                                Wrap(
+                                  spacing: 5,
+                                  runSpacing: 5,
+                                  alignment: WrapAlignment.spaceBetween,
                                   children: [
                                     LayoutBuilder(
                                       builder: (context, constraints) {

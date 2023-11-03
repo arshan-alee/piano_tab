@@ -29,6 +29,7 @@ class _HomePageState extends State<HomePage> {
   List<ListItemModel> tvfilm = [];
   bool isLoggedIn = OfflineLibraryBox.userBox!.values.first.isLoggedIn;
   int selectedSongIndex = -1;
+  bool albumItem = false;
   bool bgnritem = false;
   bool twpitem = false;
   bool popitem = false;
@@ -82,6 +83,9 @@ class _HomePageState extends State<HomePage> {
     } else if (tvfilmitem) {
       isBook = tvfilm[selectedSongIndex].detail.startsWith("BK");
       selectedItem = tvfilm[selectedSongIndex];
+    } else if (albumItem) {
+      isBook = albumList[selectedSongIndex].detail.startsWith("BK");
+      selectedItem = albumList[selectedSongIndex];
     }
 
     await showModalBottomSheet(
@@ -134,8 +138,21 @@ class _HomePageState extends State<HomePage> {
                     ),
                     scrollDirection: Axis.horizontal,
                     itemCount: albumList.length,
-                    itemBuilder: (context, index) =>
-                        NewReleasesWidget(list: albumList[index]),
+                    itemBuilder: (context, index) => InkWell(
+                        onTap: () {
+                          setState(() {
+                            selectedSongIndex = index;
+                            bgnritem = false;
+                            twpitem = false;
+                            popitem = false;
+                            contempitem = false;
+                            classicalitem = false;
+                            tvfilmitem = false;
+                            albumItem = true;
+                          });
+                          showDetailScreen(context, selectedSongIndex);
+                        },
+                        child: NewReleasesWidget(list: albumList[index])),
                   ),
                 ),
                 SizedBox(
@@ -204,6 +221,7 @@ class _HomePageState extends State<HomePage> {
                                 contempitem = false;
                                 classicalitem = false;
                                 tvfilmitem = false;
+                                albumItem = false;
                               });
                               showDetailScreen(context, selectedSongIndex);
                             },
@@ -278,6 +296,7 @@ class _HomePageState extends State<HomePage> {
                                 contempitem = false;
                                 classicalitem = false;
                                 tvfilmitem = false;
+                                albumItem = false;
                               });
                               showDetailScreen(context, selectedSongIndex);
                             },
@@ -354,6 +373,7 @@ class _HomePageState extends State<HomePage> {
                                 contempitem = false;
                                 classicalitem = false;
                                 tvfilmitem = false;
+                                albumItem = false;
                               });
                               showDetailScreen(context, selectedSongIndex);
                             },
@@ -430,6 +450,7 @@ class _HomePageState extends State<HomePage> {
                                 contempitem = true;
                                 classicalitem = false;
                                 tvfilmitem = false;
+                                albumItem = false;
                               });
                               showDetailScreen(context, selectedSongIndex);
                             },
@@ -507,6 +528,7 @@ class _HomePageState extends State<HomePage> {
                                 contempitem = false;
                                 classicalitem = true;
                                 tvfilmitem = false;
+                                albumItem = false;
                               });
                               showDetailScreen(context, selectedSongIndex);
                             },
@@ -584,6 +606,7 @@ class _HomePageState extends State<HomePage> {
                                 bgnritem = false;
                                 contempitem = false;
                                 classicalitem = false;
+                                albumItem = false;
                               });
                               showDetailScreen(context, selectedSongIndex);
                             },
