@@ -130,7 +130,7 @@ class _HomePageState extends State<HomePage> {
                   height: size.height * 0.02,
                 ),
                 SizedBox(
-                  height: size.height * 0.25,
+                  height: size.height * 0.27,
                   width: size.width,
                   child: ListView.separated(
                     separatorBuilder: (context, index) => SizedBox(
@@ -179,54 +179,23 @@ class _HomePageState extends State<HomePage> {
                       width: size.width * 0.035,
                     ),
                     scrollDirection: Axis.horizontal,
-                    itemCount: 9,
+                    itemCount: beginner.length < 8 ? beginner.length : 8,
                     itemBuilder: (context, index) {
-                      if (index == 8) {
-                        return GestureDetector(
-                            onTap: () {
-                              Get.offAll(HomeScreen(
-                                  isLoggedIn: isLoggedIn, initialIndex: 4));
-                            },
-                            child: Container(
-                              width: 150, // Adjust the width as needed
-                              height: 250.h,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: MyColors.darkBlue),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  TextWidget(
-                                    text: 'Browse',
-                                    color: MyColors.whiteColor,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  Icon(
-                                    Icons.arrow_forward,
-                                    color: MyColors.whiteColor,
-                                  ),
-                                ],
-                              ),
-                            ));
-                      } else {
-                        return InkWell(
-                            onTap: () {
-                              setState(() {
-                                selectedSongIndex = index;
-                                bgnritem = true;
-                                twpitem = false;
-                                popitem = false;
-                                contempitem = false;
-                                classicalitem = false;
-                                tvfilmitem = false;
-                                albumItem = false;
-                              });
-                              showDetailScreen(context, selectedSongIndex);
-                            },
-                            child: RecentReleasedWidget(list: beginner[index]));
-                      }
+                      return InkWell(
+                          onTap: () {
+                            setState(() {
+                              selectedSongIndex = index;
+                              bgnritem = true;
+                              twpitem = false;
+                              popitem = false;
+                              contempitem = false;
+                              classicalitem = false;
+                              tvfilmitem = false;
+                              albumItem = false;
+                            });
+                            showDetailScreen(context, selectedSongIndex);
+                          },
+                          child: RecentReleasedWidget(list: beginner[index]));
                     },
                   ),
                 ),
@@ -254,55 +223,25 @@ class _HomePageState extends State<HomePage> {
                       width: size.width * 0.035,
                     ),
                     scrollDirection: Axis.horizontal,
-                    itemCount: 9,
+                    itemCount:
+                        twentyonepilot.length < 8 ? twentyonepilot.length : 8,
                     itemBuilder: (context, index) {
-                      if (index == 8) {
-                        return GestureDetector(
-                            onTap: () {
-                              Get.offAll(HomeScreen(
-                                  isLoggedIn: isLoggedIn, initialIndex: 4));
-                            },
-                            child: Container(
-                              width: 150, // Adjust the width as needed
-                              height: 250.h,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: MyColors.darkBlue),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  TextWidget(
-                                    text: 'Browse',
-                                    color: MyColors.whiteColor,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  Icon(
-                                    Icons.arrow_forward,
-                                    color: MyColors.whiteColor,
-                                  ),
-                                ],
-                              ),
-                            ));
-                      } else {
-                        return InkWell(
-                            onTap: () {
-                              setState(() {
-                                selectedSongIndex = index;
-                                twpitem = true;
-                                bgnritem = false;
-                                popitem = false;
-                                contempitem = false;
-                                classicalitem = false;
-                                tvfilmitem = false;
-                                albumItem = false;
-                              });
-                              showDetailScreen(context, selectedSongIndex);
-                            },
-                            child: RecentReleasedWidget(
-                                list: twentyonepilot[index]));
-                      }
+                      return InkWell(
+                          onTap: () {
+                            setState(() {
+                              selectedSongIndex = index;
+                              twpitem = true;
+                              bgnritem = false;
+                              popitem = false;
+                              contempitem = false;
+                              classicalitem = false;
+                              tvfilmitem = false;
+                              albumItem = false;
+                            });
+                            showDetailScreen(context, selectedSongIndex);
+                          },
+                          child: RecentReleasedWidget(
+                              list: twentyonepilot[index]));
                     },
                   ),
                 ),
@@ -330,55 +269,24 @@ class _HomePageState extends State<HomePage> {
                       width: size.width * 0.035,
                     ),
                     scrollDirection: Axis.horizontal,
-                    itemCount: pop.length < 9 ? pop.length : 9,
+                    itemCount: pop.length < 8 ? pop.length : 8,
                     itemBuilder: (context, index) {
-                      if (index == 8) {
-                        return GestureDetector(
-                            onTap: () {
-                              Get.offAll(HomeScreen(
-                                  isLoggedIn: isLoggedIn, initialIndex: 4));
-                            },
-                            child: Container(
-                              width: 150, // Adjust the width as needed
-                              height: 250.h,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: MyColors.darkBlue),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  TextWidget(
-                                    text: 'Browse',
-                                    color: MyColors.whiteColor,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  Icon(
-                                    Icons.arrow_forward,
-                                    color: MyColors.whiteColor,
-                                  ),
-                                ],
-                              ),
-                            ));
-                      } else {
-                        // Display your regular items from the 'tvfilm' list
-                        return InkWell(
-                            onTap: () {
-                              setState(() {
-                                selectedSongIndex = index;
-                                popitem = true;
-                                twpitem = false;
-                                bgnritem = false;
-                                contempitem = false;
-                                classicalitem = false;
-                                tvfilmitem = false;
-                                albumItem = false;
-                              });
-                              showDetailScreen(context, selectedSongIndex);
-                            },
-                            child: RecentReleasedWidget(list: pop[index]));
-                      }
+                      // Display your regular items from the 'tvfilm' list
+                      return InkWell(
+                          onTap: () {
+                            setState(() {
+                              selectedSongIndex = index;
+                              popitem = true;
+                              twpitem = false;
+                              bgnritem = false;
+                              contempitem = false;
+                              classicalitem = false;
+                              tvfilmitem = false;
+                              albumItem = false;
+                            });
+                            showDetailScreen(context, selectedSongIndex);
+                          },
+                          child: RecentReleasedWidget(list: pop[index]));
                     },
                   ),
                 ),
@@ -406,57 +314,25 @@ class _HomePageState extends State<HomePage> {
                       width: size.width * 0.035,
                     ),
                     scrollDirection: Axis.horizontal,
-                    itemCount: 9,
+                    itemCount:
+                        contemporary.length < 8 ? contemporary.length : 8,
                     itemBuilder: (context, index) {
-                      if (index == 8) {
-                        // This is the last item, display the "Browse" button
-                        return GestureDetector(
-                            onTap: () {
-                              Get.offAll(HomeScreen(
-                                  isLoggedIn: isLoggedIn, initialIndex: 4));
-                            },
-                            child: Container(
-                              width: 150, // Adjust the width as needed
-                              height: 250.h,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: MyColors.darkBlue),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  TextWidget(
-                                    text: 'Browse',
-                                    color: MyColors.whiteColor,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  Icon(
-                                    Icons.arrow_forward,
-                                    color: MyColors.whiteColor,
-                                  ),
-                                ],
-                              ),
-                            ));
-                      } else {
-                        // Display your regular items from the 'tvfilm' list
-                        return InkWell(
-                            onTap: () {
-                              setState(() {
-                                selectedSongIndex = index;
-                                popitem = false;
-                                twpitem = false;
-                                bgnritem = false;
-                                contempitem = true;
-                                classicalitem = false;
-                                tvfilmitem = false;
-                                albumItem = false;
-                              });
-                              showDetailScreen(context, selectedSongIndex);
-                            },
-                            child: RecentReleasedWidget(
-                                list: contemporary[index]));
-                      }
+                      return InkWell(
+                          onTap: () {
+                            setState(() {
+                              selectedSongIndex = index;
+                              popitem = false;
+                              twpitem = false;
+                              bgnritem = false;
+                              contempitem = true;
+                              classicalitem = false;
+                              tvfilmitem = false;
+                              albumItem = false;
+                            });
+                            showDetailScreen(context, selectedSongIndex);
+                          },
+                          child:
+                              RecentReleasedWidget(list: contemporary[index]));
                     },
                   ),
                 ),
@@ -484,57 +360,23 @@ class _HomePageState extends State<HomePage> {
                       width: size.width * 0.035,
                     ),
                     scrollDirection: Axis.horizontal,
-                    itemCount: 9,
+                    itemCount: classical.length < 8 ? classical.length : 8,
                     itemBuilder: (context, index) {
-                      if (index == 8) {
-                        // This is the last item, display the "Browse" button
-                        return GestureDetector(
-                            onTap: () {
-                              Get.offAll(HomeScreen(
-                                  isLoggedIn: isLoggedIn, initialIndex: 4));
-                            },
-                            child: Container(
-                              width: 150, // Adjust the width as needed
-                              height: 250.h,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: MyColors.darkBlue),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  TextWidget(
-                                    text: 'Browse',
-                                    color: MyColors.whiteColor,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  Icon(
-                                    Icons.arrow_forward,
-                                    color: MyColors.whiteColor,
-                                  ),
-                                ],
-                              ),
-                            ));
-                      } else {
-                        // Display your regular items from the 'tvfilm' list
-                        return InkWell(
-                            onTap: () {
-                              setState(() {
-                                selectedSongIndex = index;
-                                popitem = false;
-                                twpitem = false;
-                                bgnritem = false;
-                                contempitem = false;
-                                classicalitem = true;
-                                tvfilmitem = false;
-                                albumItem = false;
-                              });
-                              showDetailScreen(context, selectedSongIndex);
-                            },
-                            child:
-                                RecentReleasedWidget(list: classical[index]));
-                      }
+                      return InkWell(
+                          onTap: () {
+                            setState(() {
+                              selectedSongIndex = index;
+                              popitem = false;
+                              twpitem = false;
+                              bgnritem = false;
+                              contempitem = false;
+                              classicalitem = true;
+                              tvfilmitem = false;
+                              albumItem = false;
+                            });
+                            showDetailScreen(context, selectedSongIndex);
+                          },
+                          child: RecentReleasedWidget(list: classical[index]));
                     },
                   ),
                 ),
@@ -562,56 +404,23 @@ class _HomePageState extends State<HomePage> {
                       width: size.width * 0.035,
                     ),
                     scrollDirection: Axis.horizontal,
-                    itemCount: 9,
+                    itemCount: tvfilm.length < 8 ? tvfilm.length : 8,
                     itemBuilder: (context, index) {
-                      if (index == 8) {
-                        // This is the last item, display the "Browse" button
-                        return GestureDetector(
-                            onTap: () {
-                              Get.offAll(HomeScreen(
-                                  isLoggedIn: isLoggedIn, initialIndex: 4));
-                            },
-                            child: Container(
-                              width: 150, // Adjust the width as needed
-                              height: 250.h,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: MyColors.darkBlue),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  TextWidget(
-                                    text: 'Browse',
-                                    color: MyColors.whiteColor,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  Icon(
-                                    Icons.arrow_forward,
-                                    color: MyColors.whiteColor,
-                                  ),
-                                ],
-                              ),
-                            ));
-                      } else {
-                        // Display your regular items from the 'tvfilm' list
-                        return InkWell(
-                            onTap: () {
-                              setState(() {
-                                selectedSongIndex = index;
-                                tvfilmitem = true;
-                                popitem = false;
-                                twpitem = false;
-                                bgnritem = false;
-                                contempitem = false;
-                                classicalitem = false;
-                                albumItem = false;
-                              });
-                              showDetailScreen(context, selectedSongIndex);
-                            },
-                            child: RecentReleasedWidget(list: tvfilm[index]));
-                      }
+                      return InkWell(
+                          onTap: () {
+                            setState(() {
+                              selectedSongIndex = index;
+                              tvfilmitem = true;
+                              popitem = false;
+                              twpitem = false;
+                              bgnritem = false;
+                              contempitem = false;
+                              classicalitem = false;
+                              albumItem = false;
+                            });
+                            showDetailScreen(context, selectedSongIndex);
+                          },
+                          child: RecentReleasedWidget(list: tvfilm[index]));
                     },
                   ),
                 ),

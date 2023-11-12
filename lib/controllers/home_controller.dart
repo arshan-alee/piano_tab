@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:paino_tab/api/api.dart';
+import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/utils/model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,6 +16,9 @@ class HomeController extends GetxController {
   List<Songs>? songs;
   List<Songs> book = [];
   List<Songs> song = [];
+
+  List<ListItemModel> cartItems = [];
+
   RxList<ListItemModel> filteredBk = <ListItemModel>[].obs;
   RxList<ListItemModel> filteredSng = <ListItemModel>[].obs;
 
@@ -74,8 +78,12 @@ class HomeController extends GetxController {
     return 'https://www.ktswebhub.com/ppbl/resources/samples/$Sku.pdf';
   }
 
-  String getOriginalPdfSource(String Sku) {
+  String getOriginalbookPdfSource(String Sku) {
     return 'https://www.ktswebhub.com/ppbl/resources/tablatures/books/$Sku.pdf';
+  }
+
+  String getOriginalsongPdfSource(String Sku) {
+    return 'https://www.ktswebhub.com/ppbl/resources/tablatures/$Sku.pdf';
   }
 
   String getMp3Source(String Sku) {

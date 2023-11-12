@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:paino_tab/models/OfflineLibrary.dart';
+import 'package:paino_tab/utils/model.dart';
 
 class OfflineLibraryBox {
   static Box<OfflineLibrary>? box;
@@ -95,6 +96,42 @@ class OfflineLibraryBox {
     }
   }
 
+  static Future<bool> addToCart(ListItemModel cartItem) async {
+    final box = await Hive.openBox<OfflineLibrary>(boxName);
+    final offlineLibrary = box.get(boxName);
+
+    if (offlineLibrary != null) {
+      offlineLibrary.cartItems.add(cartItem);
+      await box.put(boxName, offlineLibrary);
+      return true;
+    }
+
+    return false;
+  }
+
+  static Future<bool> removeFromCart(ListItemModel cartItem) async {
+    final box = await Hive.openBox<OfflineLibrary>(boxName);
+    final offlineLibrary = box.get(boxName);
+
+    if (offlineLibrary != null) {
+      offlineLibrary.cartItems.remove(cartItem);
+      await box.put(boxName, offlineLibrary);
+      return true;
+    }
+
+    return false;
+  }
+
+  static Future<void> emptyCart() async {
+    final box = await Hive.openBox<OfflineLibrary>(boxName);
+    final offlineLibrary = box.get(boxName);
+
+    if (offlineLibrary != null) {
+      offlineLibrary.cartItems.clear();
+      await box.put(boxName, offlineLibrary);
+    }
+  }
+
   static Box<OfflineLibrary>? get userBox {
     if (box == null) {
       throw Exception("Offline Library box has not been initialized.");
@@ -109,7 +146,8 @@ class OfflineLibraryBox {
           points: '0',
           offlineLibrary: [],
           favourites: [],
-          rating: 0.0);
+          rating: 0.0,
+          cartItems: []);
       await box!.clear();
       await box!.put(boxName, defaultModel);
     }

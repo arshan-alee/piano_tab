@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:hive/hive.dart';
+import 'package:paino_tab/utils/model.dart';
 
 part 'OfflineLibrary.g.dart';
 
@@ -21,17 +22,22 @@ class OfflineLibrary {
   @HiveField(4)
   double rating;
 
+  @HiveField(5)
+  List<ListItemModel> cartItems;
+
   OfflineLibrary(
       {bool? isLoggedIn,
       String? points,
       List<String>? offlineLibrary,
       List<String>? favourites,
-      double? rating})
+      double? rating,
+      List<ListItemModel>? cartItems})
       : isLoggedIn = isLoggedIn ?? false,
         points = points ?? '0',
         offlineLibrary = offlineLibrary ?? [],
         favourites = favourites ?? [],
-        rating = rating ?? 0.0;
+        rating = rating ?? 0.0,
+        cartItems = cartItems ?? [];
 
   Map<String, dynamic> toJson() {
     return {
@@ -39,7 +45,8 @@ class OfflineLibrary {
       'points': points,
       'offlineLibrary': offlineLibrary,
       'favourites': favourites,
-      'rating': rating
+      'rating': rating,
+      'cartItems': cartItems
     };
   }
 

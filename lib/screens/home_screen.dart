@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:paino_tab/controllers/home_controller.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
 import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
@@ -31,6 +32,10 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     HomeController.to.index = widget.initialIndex;
     _pageController = PageController(initialPage: widget.initialIndex);
+    setState(() {
+      HomeController.to.cartItems =
+          OfflineLibraryBox.userBox!.values.first.cartItems;
+    });
   }
 
   @override
@@ -89,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 child: CustomContainer(
                     onpressed: () {},
                     height: size.height * 0.09,
@@ -210,6 +215,81 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     )),
               ),
+              HomeController.to.cartItems.isNotEmpty
+                  ? Positioned(
+                      bottom: 90,
+                      right: 15,
+                      child: Stack(
+                        children: [
+                          Material(
+                            elevation: 6,
+                            shape: CircleBorder(),
+                            child: FloatingActionButton(
+                              onPressed: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  builder: (BuildContext bc) {
+                                    return CartScreen();
+                                  },
+                                );
+                              },
+                              backgroundColor: MyColors.primaryColor,
+                              child: Icon(
+                                Icons.shopping_cart,
+                                color: MyColors.whiteColor,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 0,
+                            right: 0,
+                            child: Container(
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: MyColors.primaryColor,
+                                  width: 2.0,
+                                ),
+                                color: MyColors.whiteColor,
+                              ),
+                              child: Center(
+                                child: TextWidget(
+                                  text: HomeController.to.cartItems.length
+                                      .toString(),
+                                  color: MyColors.primaryColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : Positioned(
+                      bottom: 90,
+                      right: 15,
+                      child: Material(
+                        elevation: 6,
+                        shape: CircleBorder(),
+                        child: FloatingActionButton(
+                          onPressed: () {
+                            showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                builder: (BuildContext bc) {
+                                  return CartScreen();
+                                });
+                          },
+                          backgroundColor: MyColors.primaryColor,
+                          child: Icon(
+                            Icons.shopping_cart,
+                            color: MyColors.whiteColor,
+                          ),
+                        ),
+                      ),
+                    ),
             ],
           ),
         ),
