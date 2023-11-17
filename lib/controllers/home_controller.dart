@@ -18,6 +18,7 @@ class HomeController extends GetxController {
   List<Songs> song = [];
 
   List<ListItemModel> cartItems = [];
+  var totalCartItemCount = ValueNotifier(0);
 
   RxList<ListItemModel> filteredBk = <ListItemModel>[].obs;
   RxList<ListItemModel> filteredSng = <ListItemModel>[].obs;

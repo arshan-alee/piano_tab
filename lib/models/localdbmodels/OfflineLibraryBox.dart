@@ -98,15 +98,19 @@ class OfflineLibraryBox {
 
   static Future<bool> addToCart(ListItemModel cartItem) async {
     final box = await Hive.openBox<OfflineLibrary>(boxName);
-    final offlineLibrary = box.get(boxName);
+    var offlineLibrary = box.get(boxName);
 
-    if (offlineLibrary != null) {
+    offlineLibrary ??= OfflineLibrary(cartItems: []);
+
+    // Check if the cartItem is already present
+    if (!offlineLibrary.cartItems.contains(cartItem)) {
       offlineLibrary.cartItems.add(cartItem);
       await box.put(boxName, offlineLibrary);
       return true;
+    } else {
+      // cartItem is already present, return false
+      return false;
     }
-
-    return false;
   }
 
   static Future<bool> removeFromCart(ListItemModel cartItem) async {

@@ -1,4 +1,4 @@
-package com.pianotab.paino_tab
+package com.pianotab.app
 
 import io.flutter.embedding.android.FlutterActivity
 

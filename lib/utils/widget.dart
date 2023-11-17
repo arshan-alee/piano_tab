@@ -1,6 +1,13 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 import 'dart:ui';
+import 'package:flutter_paypal_native/models/custom/currency_code.dart';
+import 'package:flutter_paypal_native/models/custom/environment.dart';
+import 'package:flutter_paypal_native/models/custom/order_callback.dart';
+import 'package:flutter_paypal_native/models/custom/purchase_unit.dart';
+import 'package:flutter_paypal_native/models/custom/user_action.dart';
+import 'package:flutter_paypal_native/str_helper.dart';
 import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:http/http.dart' as http;
 import 'package:audioplayers/audioplayers.dart';
@@ -14,6 +21,7 @@ import 'package:paino_tab/models/OfflineLibrary.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
 import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
+import 'package:flutter_paypal_native/flutter_paypal_native.dart';
 import 'package:paino_tab/pages/search_page.dart';
 import 'package:paino_tab/screens/home_screen.dart';
 import 'package:paino_tab/services/ad_mob_service.dart';
@@ -421,7 +429,7 @@ class _RatingBarDialogState extends State<RatingBarDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Rate This App"),
+      title: const Text("Rate This App"),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -434,7 +442,7 @@ class _RatingBarDialogState extends State<RatingBarDialog> {
                 allowHalfRating: true,
                 glow: true,
                 tapOnlyMode: true,
-                itemBuilder: (context, index) => Icon(
+                itemBuilder: (context, index) => const Icon(
                   Icons.star,
                   color: Color.fromARGB(255, 255, 217, 0),
                 ),
@@ -444,7 +452,7 @@ class _RatingBarDialogState extends State<RatingBarDialog> {
                   });
                 },
               ),
-              SizedBox(width: 8.0),
+              const SizedBox(width: 8.0),
               TextWidget(
                 text: '$rating',
                 fontSize: 16,
@@ -452,14 +460,14 @@ class _RatingBarDialogState extends State<RatingBarDialog> {
               ),
             ],
           ),
-          SizedBox(height: 8.0),
+          const SizedBox(height: 8.0),
           if (!isSubmitted) // Display the "Submit" button if not submitted
             ElevatedButton(
               onPressed: () {
                 // Call the function to submit the rating
                 submitRating(rating);
               },
-              child: Text("Submit"),
+              child: const Text("Submit"),
             ),
           if (isSubmitted)
             TextWidget(
@@ -523,7 +531,7 @@ class CustomSearchDelegate extends SearchDelegate {
       close(context, null); // Pass the query to the SearchPage
     }
 
-    return SizedBox();
+    return const SizedBox();
     // ListView.builder(
     //   itemCount: matchQuery.length,
     //   itemBuilder: (context, index) {
@@ -549,7 +557,7 @@ class CustomSearchDelegate extends SearchDelegate {
         matchQuery.add(srch);
       }
     }
-    return SizedBox();
+    return const SizedBox();
     // ListView.builder(
     //   itemCount: matchQuery.length,
     //   itemBuilder: (context, index) {
@@ -1130,7 +1138,7 @@ class RecentReleasedWidget extends StatelessWidget {
                       )
                     : Container(
                         height: 165.h,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                             image: DecorationImage(
                                 image:
                                     AssetImage('assets/images/background.jpeg'),
@@ -1173,7 +1181,7 @@ class RecentReleasedWidget extends StatelessWidget {
                           fontSize: 10.sp,
                           color: MyColors.grey,
                         ),
-                        Spacer(),
+                        const Spacer(),
                         Icon(
                           Icons.circle,
                           color: list.difficulty == 'Advanced'
@@ -1296,14 +1304,14 @@ class NewReleasesWidget extends StatelessWidget {
             color: MyColors.whiteColor,
           ),
           child: Padding(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Padding(
-                    padding: EdgeInsets.all(9),
+                    padding: const EdgeInsets.all(9),
                     child: Container(
                       width: size.width * 0.32,
                       decoration: BoxDecoration(
@@ -1311,7 +1319,8 @@ class NewReleasesWidget extends StatelessWidget {
                           fit: BoxFit.cover,
                           image: isBook
                               ? NetworkImage(list.imageUrl)
-                              : AssetImage('assets/images/background.jpeg')
+                              : const AssetImage(
+                                      'assets/images/background.jpeg')
                                   as ImageProvider,
                         ),
                         borderRadius: BorderRadius.circular(10),
@@ -1322,7 +1331,7 @@ class NewReleasesWidget extends StatelessWidget {
                 ), // Add your content here
 
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 13),
+                  padding: const EdgeInsets.symmetric(horizontal: 13),
                   child: Stack(
                     alignment: Alignment.bottomCenter,
                     children: [
@@ -1735,7 +1744,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 
   void initState() {
     super.initState();
-    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (play) {
         player.getCurrentPosition().then((position) {
           setState(() {
@@ -1864,18 +1873,18 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         context: context,
         builder: (BuildContext dialogContext) {
           return AlertDialog(
-            title: Text('Not Enough Tokens'),
-            content: Text('Watch a video to earn a token?'),
+            title: const Text('Not Enough Tokens'),
+            content: const Text('Watch a video to earn a token?'),
             actions: <Widget>[
               TextButton(
-                child: Text('No'),
+                child: const Text('No'),
                 onPressed: () {
                   Navigator.of(dialogContext)
                       .pop(false); // User declined to watch the video
                 },
               ),
               TextButton(
-                child: Text('Yes'),
+                child: const Text('Yes'),
                 onPressed: () {
                   setState(() {
                     earnToken = true;
@@ -2069,10 +2078,33 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                             ),
                                             int.parse(widget.book.pages) > 1
                                                 ? CustomContainer(
-                                                    onpressed: () {
-                                                      OfflineLibraryBox
-                                                          .addToCart(
-                                                              widget.book);
+                                                    onpressed: () async {
+                                                      var _ =
+                                                          await OfflineLibraryBox
+                                                              .addToCart(
+                                                                  widget.book);
+
+                                                      setState(() {
+                                                        HomeController
+                                                                .to.cartItems =
+                                                            OfflineLibraryBox
+                                                                .userBox!
+                                                                .values
+                                                                .first
+                                                                .cartItems;
+                                                        HomeController
+                                                                .to
+                                                                .totalCartItemCount
+                                                                .value =
+                                                            OfflineLibraryBox
+                                                                .userBox!
+                                                                .values
+                                                                .first
+                                                                .cartItems
+                                                                .length;
+                                                        ;
+                                                      });
+
                                                       showModalBottomSheet(
                                                         context: context,
                                                         isScrollControlled:
@@ -2082,6 +2114,15 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                           return CartScreen();
                                                         },
                                                       );
+                                                      if (_) {
+                                                        Get.snackbar(
+                                                            "Added to Cart",
+                                                            "");
+                                                      } else {
+                                                        Get.snackbar(
+                                                            "Already in Cart",
+                                                            "");
+                                                      }
                                                     },
                                                     height: size.height * 0.04,
                                                     width: size.width * 0.15,
@@ -2098,8 +2139,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                       ),
                                                     ),
                                                   )
-                                                : SizedBox(),
-                                            Spacer(),
+                                                : const SizedBox(),
+                                            const Spacer(),
                                             InkWell(
                                               onTap: () {
                                                 setState(() {
@@ -2159,10 +2200,32 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                 ? Row(
                                                     children: [
                                                       CustomContainer(
-                                                        onpressed: () {
-                                                          OfflineLibraryBox
-                                                              .addToCart(
-                                                                  widget.book);
+                                                        onpressed: () async {
+                                                          var _ =
+                                                              await OfflineLibraryBox
+                                                                  .addToCart(
+                                                                      widget
+                                                                          .book);
+                                                          setState(() {
+                                                            HomeController.to
+                                                                    .cartItems =
+                                                                OfflineLibraryBox
+                                                                    .userBox!
+                                                                    .values
+                                                                    .first
+                                                                    .cartItems;
+                                                            HomeController
+                                                                    .to
+                                                                    .totalCartItemCount
+                                                                    .value =
+                                                                OfflineLibraryBox
+                                                                    .userBox!
+                                                                    .values
+                                                                    .first
+                                                                    .cartItems
+                                                                    .length;
+                                                          });
+
                                                           showModalBottomSheet(
                                                             context: context,
                                                             isScrollControlled:
@@ -2170,9 +2233,18 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                             builder:
                                                                 (BuildContext
                                                                     bc) {
-                                                              return CartScreen();
+                                                              return const CartScreen();
                                                             },
                                                           );
+                                                          if (_) {
+                                                            Get.snackbar(
+                                                                "Added to Cart",
+                                                                "");
+                                                          } else {
+                                                            Get.snackbar(
+                                                                "Already in Cart",
+                                                                "");
+                                                          }
                                                         },
                                                         height:
                                                             size.height * 0.04,
@@ -2196,10 +2268,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                         width:
                                                             size.width * 0.01,
                                                       ),
-                                                      Spacer(),
+                                                      const Spacer(),
                                                     ],
                                                   )
-                                                : SizedBox(),
+                                                : const SizedBox(),
                                             InkWell(
                                               onTap: () {
                                                 setState(() {
@@ -2700,7 +2772,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                 centerTitle: true,
                 actions: [
                   IconButton(
-                    icon: Icon(Icons.file_download),
+                    icon: const Icon(Icons.file_download),
                     onPressed: () {
                       showDialog(
                         context: context,
@@ -2711,7 +2783,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.print),
+                    icon: const Icon(Icons.print),
                     onPressed: () {},
                   ),
                 ],
@@ -2857,7 +2929,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     super.initState();
     createRewardedAd();
     _pdfViewController = PdfViewerController();
-    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (play) {
         player.getCurrentPosition().then((position) {
           setState(() {
@@ -2986,18 +3058,18 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         context: context,
         builder: (BuildContext dialogContext) {
           return AlertDialog(
-            title: Text('Watch a Video'),
-            content: Text('Watch a video to earn a reward?'),
+            title: const Text('Watch a Video'),
+            content: const Text('Watch a video to earn a reward?'),
             actions: <Widget>[
               TextButton(
-                child: Text('No'),
+                child: const Text('No'),
                 onPressed: () {
                   Navigator.of(dialogContext)
                       .pop(false); // User declined to watch the video
                 },
               ),
               TextButton(
-                child: Text('Yes'),
+                child: const Text('Yes'),
                 onPressed: () {
                   setState(() {
                     earnReward = true;
@@ -3029,18 +3101,18 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         context: context,
         builder: (BuildContext dialogContext) {
           return AlertDialog(
-            title: Text('Not Enough Tokens'),
-            content: Text('Watch a video to earn a reward?'),
+            title: const Text('Not Enough Tokens'),
+            content: const Text('Watch a video to earn a reward?'),
             actions: <Widget>[
               TextButton(
-                child: Text('No'),
+                child: const Text('No'),
                 onPressed: () {
                   Navigator.of(dialogContext)
                       .pop(false); // User declined to watch the video
                 },
               ),
               TextButton(
-                child: Text('Yes'),
+                child: const Text('Yes'),
                 onPressed: () {
                   setState(() {
                     earnToken = true;
@@ -3173,12 +3245,13 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                               builder:
                                                   (BuildContext dialogContext) {
                                                 return AlertDialog(
-                                                  title: Text('Watch a Video'),
-                                                  content: Text(
+                                                  title: const Text(
+                                                      'Watch a Video'),
+                                                  content: const Text(
                                                       'Watch a video to earn a reward?'),
                                                   actions: <Widget>[
                                                     TextButton(
-                                                      child: Text('No'),
+                                                      child: const Text('No'),
                                                       onPressed: () {
                                                         Navigator.of(
                                                                 dialogContext)
@@ -3186,7 +3259,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                       },
                                                     ),
                                                     TextButton(
-                                                      child: Text('Yes'),
+                                                      child: const Text('Yes'),
                                                       onPressed: () {
                                                         earnRewardOpenPDF =
                                                             true;
@@ -3291,14 +3364,45 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                 width: size.width * 0.01,
                                               ),
                                               CustomContainer(
-                                                onpressed: () {
+                                                onpressed: () async {
+                                                  var _ =
+                                                      await OfflineLibraryBox
+                                                          .addToCart(
+                                                              widget.song);
+                                                  setState(() {
+                                                    HomeController
+                                                            .to.cartItems =
+                                                        OfflineLibraryBox
+                                                            .userBox!
+                                                            .values
+                                                            .first
+                                                            .cartItems;
+                                                    HomeController
+                                                            .to
+                                                            .totalCartItemCount
+                                                            .value =
+                                                        OfflineLibraryBox
+                                                            .userBox!
+                                                            .values
+                                                            .first
+                                                            .cartItems
+                                                            .length;
+                                                  });
+
                                                   showModalBottomSheet(
                                                     context: context,
                                                     isScrollControlled: true,
                                                     builder: (BuildContext bc) {
-                                                      return CartScreen();
+                                                      return const CartScreen();
                                                     },
                                                   );
+                                                  if (_) {
+                                                    Get.snackbar(
+                                                        "Added to Cart", "");
+                                                  } else {
+                                                    Get.snackbar(
+                                                        "Already in Cart", "");
+                                                  }
                                                 },
                                                 height: size.height * 0.04,
                                                 width: size.width * 0.15,
@@ -3317,7 +3421,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                               SizedBox(
                                                 width: size.width * 0.01,
                                               ),
-                                              Spacer(),
+                                              const Spacer(),
                                               InkWell(
                                                 onTap: () {
                                                   setState(() {
@@ -3435,14 +3539,44 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                         : Row(
                                             children: [
                                               CustomContainer(
-                                                onpressed: () {
+                                                onpressed: () async {
+                                                  var _ =
+                                                      await OfflineLibraryBox
+                                                          .addToCart(
+                                                              widget.song);
+                                                  setState(() {
+                                                    HomeController
+                                                            .to.cartItems =
+                                                        OfflineLibraryBox
+                                                            .userBox!
+                                                            .values
+                                                            .first
+                                                            .cartItems;
+                                                    HomeController
+                                                            .to
+                                                            .totalCartItemCount
+                                                            .value =
+                                                        OfflineLibraryBox
+                                                            .userBox!
+                                                            .values
+                                                            .first
+                                                            .cartItems
+                                                            .length;
+                                                  });
                                                   showModalBottomSheet(
                                                     context: context,
                                                     isScrollControlled: true,
                                                     builder: (BuildContext bc) {
-                                                      return CartScreen();
+                                                      return const CartScreen();
                                                     },
                                                   );
+                                                  if (_) {
+                                                    Get.snackbar(
+                                                        "Added to Cart", "");
+                                                  } else {
+                                                    Get.snackbar(
+                                                        "Already in Cart", "");
+                                                  }
                                                 },
                                                 height: size.height * 0.04,
                                                 width: size.width * 0.125,
@@ -3461,7 +3595,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                               SizedBox(
                                                 width: size.width * 0.01,
                                               ),
-                                              Spacer(),
+                                              const Spacer(),
                                               InkWell(
                                                 onTap: () {
                                                   setState(() {
@@ -3838,22 +3972,95 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  final _flutterPaypalPlugin = FlutterPaypalNative.instance;
+  double totalAmount = 0;
   @override
   void initState() {
     super.initState();
+    initPayPal();
     HomeController.to.cartItems =
         OfflineLibraryBox.userBox!.values.first.cartItems;
+    calculateTotalAmount();
+  }
+
+  void initPayPal() async {
+    //set debugMode for error logging
+    FlutterPaypalNative.isDebugMode = true;
+
+    //initiate payPal plugin
+    await _flutterPaypalPlugin.init(
+      //your app id !!! No Underscore!!! see readme.md for help
+      returnUrl: "com.pianotab.app://paypalpay",
+      //client id from developer dashboard
+      clientID:
+          "Ae3qnd5q9aAWIBEHa9E-qAsm_vTct454r4o8A09srWzjx4Xc_cUI-C99k1ppEQ2_8y7rppOrtVWjZ27E",
+      //sandbox, staging, live etc
+      payPalEnvironment: FPayPalEnvironment.sandbox,
+      //what currency do you plan to use? default is US dollars
+      currencyCode: FPayPalCurrencyCode.usd,
+      //action paynow?
+      action: FPayPalUserAction.payNow,
+    );
+
+    //call backs for payment
+    // _flutterPaypalPlugin.setPayPalOrderCallback(
+    //   callback: FPayPalOrderCallback(
+    //     onCancel: () {
+    //       //user canceled the payment
+    //       showResult("cancel");
+    //     },
+    //     onSuccess: (data) {
+    //       //successfully paid
+    //       //remove all items from queue
+    //       _flutterPaypalPlugin.removeAllPurchaseItems();
+    //       String orderID = data.orderId ?? "";
+    //       showResult("Order successful $orderID");
+    //     },
+    //     onError: (data) {
+    //       //an error occured
+    //       showResult("error: ${data.reason}");
+    //     },
+    //     onShippingChange: (data) {
+    //       //the user updated the shipping address
+    //       showResult(
+    //         "shipping change: ${data.shippingAddress?.addressLine1 ?? ""}",
+    //       );
+    //     },
+    //   ),
+    // );
+  }
+
+  String calculatePrice(String pages, String amazonPrice, bool isBook) {
+    if (isBook) {
+      double amazonPriceDouble = double.tryParse(amazonPrice) ?? 0.0;
+      double bookPrice = amazonPriceDouble * 0.5;
+      return '${bookPrice.round()}';
+    } else {
+      int pagesInt = int.tryParse(pages) ?? 0;
+      double songPrice = pagesInt * 0.5;
+      return '${songPrice.round()}';
+    }
+  }
+
+  void calculateTotalAmount() {
+    totalAmount = 0.0;
+
+    for (var cartItem in HomeController.to.cartItems) {
+      totalAmount += double.parse(calculatePrice(cartItem.pages,
+          cartItem.amazonPrice, cartItem.detail.startsWith('BK')));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Padding(
-      padding: const EdgeInsets.all(15),
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          Column(
+
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
@@ -3879,7 +4086,7 @@ class _CartScreenState extends State<CartScreen> {
                       children: [
                         ListView.builder(
                           shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
+                          physics: const NeverScrollableScrollPhysics(),
                           itemCount: HomeController.to.cartItems.length,
                           itemBuilder: (context, index) {
                             ListItemModel cartItem =
@@ -3887,19 +4094,26 @@ class _CartScreenState extends State<CartScreen> {
                             return CartItem(
                               list: cartItem,
                               onRemove: () async {
-                                await OfflineLibraryBox.removeFromCart(
+                                var _ = await OfflineLibraryBox.removeFromCart(
                                     cartItem);
                                 setState(() {
                                   HomeController.to.cartItems =
                                       OfflineLibraryBox
                                           .userBox!.values.first.cartItems;
+                                  HomeController.to.totalCartItemCount.value =
+                                      OfflineLibraryBox.userBox!.values.first
+                                          .cartItems.length;
                                 });
-                                Get.snackbar("Item removed from the cart", '');
+                                calculateTotalAmount();
+                                if (_) {
+                                  Get.snackbar(
+                                      "Item removed from the cart", '');
+                                }
                               },
                             );
                           },
                         ),
-                        SizedBox(height: 35)
+                        const SizedBox(height: 35),
                       ],
                     ),
                   ),
@@ -3907,30 +4121,79 @@ class _CartScreenState extends State<CartScreen> {
               ),
             ],
           ),
-          Positioned(
-              bottom: 0,
-              left: 16,
-              right: 16,
-              child: Container(
-                height: 50,
-                width: size.width,
-                decoration: BoxDecoration(
-                  color: MyColors.bottomColor,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextWidget(
-                      text: 'Pay with ',
-                      color: MyColors.whiteColor, // Set the text color
+        ),
+        Positioned(
+            bottom: 0,
+            right: 0,
+            left: 0,
+            child: InkWell(
+              onTap: () {
+                if (_flutterPaypalPlugin.canAddMorePurchaseUnit) {
+                  _flutterPaypalPlugin.addPurchaseUnit(
+                    FPayPalPurchaseUnit(
+                      // random prices
+                      amount: 100,
+
+                      ///please use your own algorithm for referenceId. Maybe ProductID?
+                      referenceId: FPayPalStrHelper.getRandomString(16),
                     ),
-                    Image.asset('assets/images/paypal.png', height: 45),
+                  );
+                  // initPayPal();
+                  _flutterPaypalPlugin.makeOrder(
+                    action: FPayPalUserAction.payNow,
+                  );
+                }
+              },
+              child: Container(
+                height: 100,
+                decoration: BoxDecoration(
+                  color: MyColors.grey,
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      height: 50,
+                      margin: EdgeInsets.symmetric(horizontal: 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextWidget(
+                            text: 'Total Amount : ',
+                            color: MyColors.blackColor, // Set the text color
+                          ),
+                          Spacer(),
+                          TextWidget(
+                            text: " \$ $totalAmount",
+                            color: MyColors.blackColor, // Set the text color
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: MyColors.bottomColor,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextWidget(
+                            text: 'Pay with ',
+                            color: MyColors.whiteColor, // Set the text color
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Image.asset('assets/images/paypal.png',
+                                height: 45),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              ))
-        ],
-      ),
+              ),
+            ))
+      ],
     );
   }
 }
@@ -3966,8 +4229,8 @@ class _CartItemState extends State<CartItem> {
         calculatePrice(widget.list.pages, widget.list.amazonPrice, isBook);
 
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
-      padding: EdgeInsets.all(5),
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: MyColors.whiteColor,
@@ -3976,7 +4239,7 @@ class _CartItemState extends State<CartItem> {
             color: Colors.grey.withOpacity(0.5),
             spreadRadius: 2,
             blurRadius: 5,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -3986,7 +4249,7 @@ class _CartItemState extends State<CartItem> {
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Padding(
-              padding: EdgeInsets.all(9),
+              padding: const EdgeInsets.all(9),
               child: Container(
                 height: size.height * 0.25,
                 width: size.width * 0.32,
@@ -3995,7 +4258,7 @@ class _CartItemState extends State<CartItem> {
                     fit: BoxFit.cover,
                     image: isBook
                         ? NetworkImage(widget.list.imageUrl)
-                        : AssetImage('assets/images/background.jpeg')
+                        : const AssetImage('assets/images/background.jpeg')
                             as ImageProvider,
                   ),
                   borderRadius: BorderRadius.circular(10),
@@ -4021,7 +4284,7 @@ class _CartItemState extends State<CartItem> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(13),
+                padding: const EdgeInsets.all(13),
                 child: Container(
                   height: size.height * 0.23,
                   width: size.width * 0.37,

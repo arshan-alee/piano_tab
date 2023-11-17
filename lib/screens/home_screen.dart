@@ -35,6 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       HomeController.to.cartItems =
           OfflineLibraryBox.userBox!.values.first.cartItems;
+      HomeController.to.totalCartItemCount = ValueNotifier(
+          OfflineLibraryBox.userBox!.values.first.cartItems.length);
     });
   }
 
@@ -215,81 +217,84 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     )),
               ),
-              HomeController.to.cartItems.isNotEmpty
-                  ? Positioned(
-                      bottom: 90,
-                      right: 15,
-                      child: Stack(
-                        children: [
-                          Material(
-                            elevation: 6,
-                            shape: CircleBorder(),
-                            child: FloatingActionButton(
-                              onPressed: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  builder: (BuildContext bc) {
-                                    return CartScreen();
-                                  },
-                                );
-                              },
-                              backgroundColor: MyColors.primaryColor,
-                              child: Icon(
-                                Icons.shopping_cart,
-                                color: MyColors.whiteColor,
+              ValueListenableBuilder(
+                  valueListenable: HomeController.to.totalCartItemCount,
+                  builder: (context, val, c) {
+                    return val > 0
+                        ? Positioned(
+                            bottom: 90,
+                            right: 15,
+                            child: Stack(
+                              children: [
+                                Material(
+                                  elevation: 6,
+                                  shape: CircleBorder(),
+                                  child: FloatingActionButton(
+                                    onPressed: () {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        builder: (BuildContext bc) {
+                                          return CartScreen();
+                                        },
+                                      );
+                                    },
+                                    backgroundColor: MyColors.primaryColor,
+                                    child: Icon(
+                                      Icons.shopping_cart,
+                                      color: MyColors.whiteColor,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: Container(
+                                    width: 20,
+                                    height: 20,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: MyColors.primaryColor,
+                                        width: 2.0,
+                                      ),
+                                      color: MyColors.whiteColor,
+                                    ),
+                                    child: Center(
+                                      child: TextWidget(
+                                        text: val.toString(),
+                                        color: MyColors.primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : Positioned(
+                            bottom: 90,
+                            right: 15,
+                            child: Material(
+                              elevation: 6,
+                              shape: CircleBorder(),
+                              child: FloatingActionButton(
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      builder: (BuildContext bc) {
+                                        return CartScreen();
+                                      });
+                                },
+                                backgroundColor: MyColors.primaryColor,
+                                child: Icon(
+                                  Icons.shopping_cart,
+                                  color: MyColors.whiteColor,
+                                ),
                               ),
                             ),
-                          ),
-                          Positioned(
-                            top: 0,
-                            right: 0,
-                            child: Container(
-                              width: 20,
-                              height: 20,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: MyColors.primaryColor,
-                                  width: 2.0,
-                                ),
-                                color: MyColors.whiteColor,
-                              ),
-                              child: Center(
-                                child: TextWidget(
-                                  text: HomeController.to.cartItems.length
-                                      .toString(),
-                                  color: MyColors.primaryColor,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : Positioned(
-                      bottom: 90,
-                      right: 15,
-                      child: Material(
-                        elevation: 6,
-                        shape: CircleBorder(),
-                        child: FloatingActionButton(
-                          onPressed: () {
-                            showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: true,
-                                builder: (BuildContext bc) {
-                                  return CartScreen();
-                                });
-                          },
-                          backgroundColor: MyColors.primaryColor,
-                          child: Icon(
-                            Icons.shopping_cart,
-                            color: MyColors.whiteColor,
-                          ),
-                        ),
-                      ),
-                    ),
+                          );
+                  })
             ],
           ),
         ),

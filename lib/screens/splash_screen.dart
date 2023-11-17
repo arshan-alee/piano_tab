@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -7,6 +9,8 @@ import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
 import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/screens/home_screen.dart';
 import 'package:paino_tab/screens/login_screen.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tzdata;
 
 import '../utils/colors.dart';
 
@@ -22,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     Get.put(HomeController());
     Future.delayed(
-      const Duration(seconds: 9),
+      const Duration(seconds: 5),
       () {
         HomeController.to.getSongs().then(
           (value) {
@@ -59,6 +63,29 @@ class _SplashScreenState extends State<SplashScreen> {
       },
     );
     super.initState();
+    tzdata.initializeTimeZones();
+    tz.setLocalLocation(tz.getLocation('America/Los_Angeles'));
+    scheduleDailyTask();
+  }
+
+  void scheduleDailyTask() {
+    // Get the current time in the local time zone
+    final now = tz.TZDateTime.now(tz.local);
+
+    // Calculate the next day at 12 am PST
+    final nextDay =
+        tz.TZDateTime(tz.local, now.year, now.month, now.day + 1, 0, 0);
+
+    // Calculate the duration until the next day
+    final duration = nextDay.difference(now);
+
+    // Schedule a daily task at 12 am PST
+    Timer(duration, () {
+      // Call the function to reset points
+      OfflineLibraryBox.updatePoints('0');
+      // Reschedule the task for the next day
+      scheduleDailyTask();
+    });
   }
 
   @override
