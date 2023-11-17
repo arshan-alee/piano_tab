@@ -2,12 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
-import 'package:flutter_paypal_native/models/custom/currency_code.dart';
-import 'package:flutter_paypal_native/models/custom/environment.dart';
-import 'package:flutter_paypal_native/models/custom/order_callback.dart';
-import 'package:flutter_paypal_native/models/custom/purchase_unit.dart';
-import 'package:flutter_paypal_native/models/custom/user_action.dart';
-import 'package:flutter_paypal_native/str_helper.dart';
+import 'package:flutter_paypal/flutter_paypal.dart';
 import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:http/http.dart' as http;
 import 'package:audioplayers/audioplayers.dart';
@@ -21,9 +16,9 @@ import 'package:paino_tab/models/OfflineLibrary.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
 import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
-import 'package:flutter_paypal_native/flutter_paypal_native.dart';
 import 'package:paino_tab/pages/search_page.dart';
 import 'package:paino_tab/screens/home_screen.dart';
+import 'package:paino_tab/screens/login_screen.dart';
 import 'package:paino_tab/services/ad_mob_service.dart';
 import 'package:paino_tab/services/auth_service.dart';
 import 'package:path_provider/path_provider.dart';
@@ -2079,48 +2074,55 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                             int.parse(widget.book.pages) > 1
                                                 ? CustomContainer(
                                                     onpressed: () async {
-                                                      var _ =
-                                                          await OfflineLibraryBox
-                                                              .addToCart(
-                                                                  widget.book);
+                                                      if (isLoggedIn) {
+                                                        var _ =
+                                                            await OfflineLibraryBox
+                                                                .addToCart(
+                                                                    widget
+                                                                        .book);
 
-                                                      setState(() {
-                                                        HomeController
-                                                                .to.cartItems =
-                                                            OfflineLibraryBox
-                                                                .userBox!
-                                                                .values
-                                                                .first
-                                                                .cartItems;
-                                                        HomeController
-                                                                .to
-                                                                .totalCartItemCount
-                                                                .value =
-                                                            OfflineLibraryBox
-                                                                .userBox!
-                                                                .values
-                                                                .first
-                                                                .cartItems
-                                                                .length;
-                                                        ;
-                                                      });
+                                                        setState(() {
+                                                          HomeController.to
+                                                                  .cartItems =
+                                                              OfflineLibraryBox
+                                                                  .userBox!
+                                                                  .values
+                                                                  .first
+                                                                  .cartItems;
+                                                          HomeController
+                                                                  .to
+                                                                  .totalCartItemCount
+                                                                  .value =
+                                                              OfflineLibraryBox
+                                                                  .userBox!
+                                                                  .values
+                                                                  .first
+                                                                  .cartItems
+                                                                  .length;
+                                                          ;
+                                                        });
 
-                                                      showModalBottomSheet(
-                                                        context: context,
-                                                        isScrollControlled:
-                                                            true,
-                                                        builder:
-                                                            (BuildContext bc) {
-                                                          return CartScreen();
-                                                        },
-                                                      );
-                                                      if (_) {
-                                                        Get.snackbar(
-                                                            "Added to Cart",
-                                                            "");
+                                                        showModalBottomSheet(
+                                                          context: context,
+                                                          isScrollControlled:
+                                                              true,
+                                                          builder: (BuildContext
+                                                              bc) {
+                                                            return CartScreen();
+                                                          },
+                                                        );
+                                                        if (_) {
+                                                          Get.snackbar(
+                                                              "Added to Cart",
+                                                              "");
+                                                        } else {
+                                                          Get.snackbar(
+                                                              "Already in Cart",
+                                                              "");
+                                                        }
                                                       } else {
                                                         Get.snackbar(
-                                                            "Already in Cart",
+                                                            "You need to Sign In to Add item to cart",
                                                             "");
                                                       }
                                                     },
@@ -2201,48 +2203,56 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                     children: [
                                                       CustomContainer(
                                                         onpressed: () async {
-                                                          var _ =
-                                                              await OfflineLibraryBox
-                                                                  .addToCart(
-                                                                      widget
-                                                                          .book);
-                                                          setState(() {
-                                                            HomeController.to
-                                                                    .cartItems =
-                                                                OfflineLibraryBox
-                                                                    .userBox!
-                                                                    .values
-                                                                    .first
-                                                                    .cartItems;
-                                                            HomeController
-                                                                    .to
-                                                                    .totalCartItemCount
-                                                                    .value =
-                                                                OfflineLibraryBox
-                                                                    .userBox!
-                                                                    .values
-                                                                    .first
-                                                                    .cartItems
-                                                                    .length;
-                                                          });
+                                                          if (isLoggedIn) {
+                                                            var _ =
+                                                                await OfflineLibraryBox
+                                                                    .addToCart(
+                                                                        widget
+                                                                            .book);
 
-                                                          showModalBottomSheet(
-                                                            context: context,
-                                                            isScrollControlled:
-                                                                true,
-                                                            builder:
-                                                                (BuildContext
-                                                                    bc) {
-                                                              return const CartScreen();
-                                                            },
-                                                          );
-                                                          if (_) {
-                                                            Get.snackbar(
-                                                                "Added to Cart",
-                                                                "");
+                                                            setState(() {
+                                                              HomeController.to
+                                                                      .cartItems =
+                                                                  OfflineLibraryBox
+                                                                      .userBox!
+                                                                      .values
+                                                                      .first
+                                                                      .cartItems;
+                                                              HomeController
+                                                                      .to
+                                                                      .totalCartItemCount
+                                                                      .value =
+                                                                  OfflineLibraryBox
+                                                                      .userBox!
+                                                                      .values
+                                                                      .first
+                                                                      .cartItems
+                                                                      .length;
+                                                              ;
+                                                            });
+
+                                                            showModalBottomSheet(
+                                                              context: context,
+                                                              isScrollControlled:
+                                                                  true,
+                                                              builder:
+                                                                  (BuildContext
+                                                                      bc) {
+                                                                return CartScreen();
+                                                              },
+                                                            );
+                                                            if (_) {
+                                                              Get.snackbar(
+                                                                  "Added to Cart",
+                                                                  "");
+                                                            } else {
+                                                              Get.snackbar(
+                                                                  "Already in Cart",
+                                                                  "");
+                                                            }
                                                           } else {
                                                             Get.snackbar(
-                                                                "Already in Cart",
+                                                                "You need to Sign In to Add item to cart",
                                                                 "");
                                                           }
                                                         },
@@ -3365,43 +3375,53 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                               ),
                                               CustomContainer(
                                                 onpressed: () async {
-                                                  var _ =
-                                                      await OfflineLibraryBox
-                                                          .addToCart(
-                                                              widget.song);
-                                                  setState(() {
-                                                    HomeController
-                                                            .to.cartItems =
-                                                        OfflineLibraryBox
-                                                            .userBox!
-                                                            .values
-                                                            .first
-                                                            .cartItems;
-                                                    HomeController
-                                                            .to
-                                                            .totalCartItemCount
-                                                            .value =
-                                                        OfflineLibraryBox
-                                                            .userBox!
-                                                            .values
-                                                            .first
-                                                            .cartItems
-                                                            .length;
-                                                  });
+                                                  if (isLoggedIn) {
+                                                    var _ =
+                                                        await OfflineLibraryBox
+                                                            .addToCart(
+                                                                widget.song);
 
-                                                  showModalBottomSheet(
-                                                    context: context,
-                                                    isScrollControlled: true,
-                                                    builder: (BuildContext bc) {
-                                                      return const CartScreen();
-                                                    },
-                                                  );
-                                                  if (_) {
-                                                    Get.snackbar(
-                                                        "Added to Cart", "");
+                                                    setState(() {
+                                                      HomeController
+                                                              .to.cartItems =
+                                                          OfflineLibraryBox
+                                                              .userBox!
+                                                              .values
+                                                              .first
+                                                              .cartItems;
+                                                      HomeController
+                                                              .to
+                                                              .totalCartItemCount
+                                                              .value =
+                                                          OfflineLibraryBox
+                                                              .userBox!
+                                                              .values
+                                                              .first
+                                                              .cartItems
+                                                              .length;
+                                                      ;
+                                                    });
+
+                                                    showModalBottomSheet(
+                                                      context: context,
+                                                      isScrollControlled: true,
+                                                      builder:
+                                                          (BuildContext bc) {
+                                                        return CartScreen();
+                                                      },
+                                                    );
+                                                    if (_) {
+                                                      Get.snackbar(
+                                                          "Added to Cart", "");
+                                                    } else {
+                                                      Get.snackbar(
+                                                          "Already in Cart",
+                                                          "");
+                                                    }
                                                   } else {
                                                     Get.snackbar(
-                                                        "Already in Cart", "");
+                                                        "You need to Sign In to Add item to cart",
+                                                        "");
                                                   }
                                                 },
                                                 height: size.height * 0.04,
@@ -3540,42 +3560,53 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                             children: [
                                               CustomContainer(
                                                 onpressed: () async {
-                                                  var _ =
-                                                      await OfflineLibraryBox
-                                                          .addToCart(
-                                                              widget.song);
-                                                  setState(() {
-                                                    HomeController
-                                                            .to.cartItems =
-                                                        OfflineLibraryBox
-                                                            .userBox!
-                                                            .values
-                                                            .first
-                                                            .cartItems;
-                                                    HomeController
-                                                            .to
-                                                            .totalCartItemCount
-                                                            .value =
-                                                        OfflineLibraryBox
-                                                            .userBox!
-                                                            .values
-                                                            .first
-                                                            .cartItems
-                                                            .length;
-                                                  });
-                                                  showModalBottomSheet(
-                                                    context: context,
-                                                    isScrollControlled: true,
-                                                    builder: (BuildContext bc) {
-                                                      return const CartScreen();
-                                                    },
-                                                  );
-                                                  if (_) {
-                                                    Get.snackbar(
-                                                        "Added to Cart", "");
+                                                  if (isLoggedIn) {
+                                                    var _ =
+                                                        await OfflineLibraryBox
+                                                            .addToCart(
+                                                                widget.song);
+
+                                                    setState(() {
+                                                      HomeController
+                                                              .to.cartItems =
+                                                          OfflineLibraryBox
+                                                              .userBox!
+                                                              .values
+                                                              .first
+                                                              .cartItems;
+                                                      HomeController
+                                                              .to
+                                                              .totalCartItemCount
+                                                              .value =
+                                                          OfflineLibraryBox
+                                                              .userBox!
+                                                              .values
+                                                              .first
+                                                              .cartItems
+                                                              .length;
+                                                      ;
+                                                    });
+
+                                                    showModalBottomSheet(
+                                                      context: context,
+                                                      isScrollControlled: true,
+                                                      builder:
+                                                          (BuildContext bc) {
+                                                        return CartScreen();
+                                                      },
+                                                    );
+                                                    if (_) {
+                                                      Get.snackbar(
+                                                          "Added to Cart", "");
+                                                    } else {
+                                                      Get.snackbar(
+                                                          "Already in Cart",
+                                                          "");
+                                                    }
                                                   } else {
                                                     Get.snackbar(
-                                                        "Already in Cart", "");
+                                                        "You need to Sign In to Add item to cart",
+                                                        "");
                                                   }
                                                 },
                                                 height: size.height * 0.04,
@@ -3972,62 +4003,14 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  final _flutterPaypalPlugin = FlutterPaypalNative.instance;
   double totalAmount = 0;
+  List<String> logQueue = [];
   @override
   void initState() {
     super.initState();
-    initPayPal();
     HomeController.to.cartItems =
         OfflineLibraryBox.userBox!.values.first.cartItems;
     calculateTotalAmount();
-  }
-
-  void initPayPal() async {
-    //set debugMode for error logging
-    FlutterPaypalNative.isDebugMode = true;
-
-    //initiate payPal plugin
-    await _flutterPaypalPlugin.init(
-      //your app id !!! No Underscore!!! see readme.md for help
-      returnUrl: "com.pianotab.app://paypalpay",
-      //client id from developer dashboard
-      clientID:
-          "Ae3qnd5q9aAWIBEHa9E-qAsm_vTct454r4o8A09srWzjx4Xc_cUI-C99k1ppEQ2_8y7rppOrtVWjZ27E",
-      //sandbox, staging, live etc
-      payPalEnvironment: FPayPalEnvironment.sandbox,
-      //what currency do you plan to use? default is US dollars
-      currencyCode: FPayPalCurrencyCode.usd,
-      //action paynow?
-      action: FPayPalUserAction.payNow,
-    );
-
-    //call backs for payment
-    // _flutterPaypalPlugin.setPayPalOrderCallback(
-    //   callback: FPayPalOrderCallback(
-    //     onCancel: () {
-    //       //user canceled the payment
-    //       showResult("cancel");
-    //     },
-    //     onSuccess: (data) {
-    //       //successfully paid
-    //       //remove all items from queue
-    //       _flutterPaypalPlugin.removeAllPurchaseItems();
-    //       String orderID = data.orderId ?? "";
-    //       showResult("Order successful $orderID");
-    //     },
-    //     onError: (data) {
-    //       //an error occured
-    //       showResult("error: ${data.reason}");
-    //     },
-    //     onShippingChange: (data) {
-    //       //the user updated the shipping address
-    //       showResult(
-    //         "shipping change: ${data.shippingAddress?.addressLine1 ?? ""}",
-    //       );
-    //     },
-    //   ),
-    // );
   }
 
   String calculatePrice(String pages, String amazonPrice, bool isBook) {
@@ -4054,7 +4037,14 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    if (OfflineLibraryBox.userBox!.values.first.isLoggedIn == true) {
+      return loggedInView(size);
+    } else {
+      return notLoggedInView(size);
+    }
+  }
 
+  Widget loggedInView(Size size) {
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
@@ -4128,21 +4118,38 @@ class _CartScreenState extends State<CartScreen> {
             left: 0,
             child: InkWell(
               onTap: () {
-                if (_flutterPaypalPlugin.canAddMorePurchaseUnit) {
-                  _flutterPaypalPlugin.addPurchaseUnit(
-                    FPayPalPurchaseUnit(
-                      // random prices
-                      amount: 100,
-
-                      ///please use your own algorithm for referenceId. Maybe ProductID?
-                      referenceId: FPayPalStrHelper.getRandomString(16),
-                    ),
-                  );
-                  // initPayPal();
-                  _flutterPaypalPlugin.makeOrder(
-                    action: FPayPalUserAction.payNow,
-                  );
-                }
+                Get.to(UsePaypal(
+                  sandboxMode: true,
+                  clientId:
+                      "ATN1ojtdC_jqrMRvAll4ZplkSCuYse4s_o592nubbS-VjubMp2mBIlBgg1qXhSkxrxcFCqe2RxygL7_R",
+                  secretKey:
+                      "EJH5ZtrISXwW3HkfiGJ8eI4PnR0vUPz7gPpaZtNMNKPGB1nkRygPa3H7A09IdpxhnrASDq1-LdIWFjBl",
+                  returnURL: "https://samplesite.com/return",
+                  cancelURL: "https://samplesite.com/cancel",
+                  transactions: [
+                    {
+                      "amount": {
+                        "total": totalAmount.toString(),
+                        "currency": "USD",
+                        "details": {
+                          "subtotal": totalAmount.toString(),
+                          "shipping": '0',
+                          "shipping_discount": 0
+                        }
+                      },
+                    }
+                  ],
+                  note: "Contact us for any questions on your order.",
+                  onSuccess: (Map params) async {
+                    print("onSuccess: $params");
+                  },
+                  onError: (error) {
+                    print("onError: $error");
+                  },
+                  onCancel: (params) {
+                    print('cancelled: $params');
+                  },
+                ));
               },
               child: Container(
                 height: 100,
@@ -4194,6 +4201,66 @@ class _CartScreenState extends State<CartScreen> {
               ),
             ))
       ],
+    );
+  }
+
+  Widget notLoggedInView(Size size) {
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(15),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: CustomAppBar(
+                    action: InkWell(
+                      onTap: () {
+                        Get.back();
+                      },
+                      child: Icon(
+                        Icons.arrow_back_ios_new,
+                        color: MyColors.primaryColor,
+                      ),
+                    ),
+                    title: 'You Cart'),
+              ),
+              SizedBox(
+                height: size.height * 0.06,
+              ),
+              TextWidget(
+                text: 'You have to login\n           first!',
+                fontSize: 26,
+                color: MyColors.blackColor,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextWidget(
+                    text: "Don't have an account?",
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: MyColors.greyColor,
+                  ),
+                  TextWidget(
+                    onTap: () {
+                      Get.offAll(() => const LoginScreen());
+                    },
+                    text: 'Login',
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: MyColors.primaryColor,
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: size.height * 0.05,
+              ),
+              Image.asset('assets/images/library.png'),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
