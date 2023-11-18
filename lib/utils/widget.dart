@@ -2031,6 +2031,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               width: size.width * 0.54,
                               padding: const EdgeInsets.only(left: 15),
                               child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   !isSongInLibrary
                                       ? Row(
@@ -2059,11 +2060,20 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                             'assets/images/logo_2.png'),
                                                     maxRadius: 8,
                                                   ),
-                                                  TextWidget(
-                                                    text:
-                                                        '${calculateRequiredTokens(int.parse(widget.book.pages))}', // Convert pages to int
-                                                    color: MyColors.blueColor,
-                                                    fontSize: 14,
+                                                  Container(
+                                                    constraints: BoxConstraints(
+                                                      maxWidth: size.width *
+                                                          0.15, // Adjust based on your layout
+                                                    ),
+                                                    child: Text(
+                                                      '${calculateRequiredTokens(int.parse(widget.book.pages))}',
+                                                      style: TextStyle(
+                                                        color:
+                                                            MyColors.blueColor,
+                                                        fontSize: 14,
+                                                      ),
+                                                      maxLines: 2,
+                                                    ),
                                                   )
                                                 ],
                                               ),
@@ -2071,77 +2081,71 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                             SizedBox(
                                               width: size.width * 0.01,
                                             ),
-                                            int.parse(widget.book.pages) > 1
-                                                ? CustomContainer(
-                                                    onpressed: () async {
-                                                      if (isLoggedIn) {
-                                                        var _ =
-                                                            await OfflineLibraryBox
-                                                                .addToCart(
-                                                                    widget
-                                                                        .book);
+                                            CustomContainer(
+                                              onpressed: () async {
+                                                if (isLoggedIn) {
+                                                  var _ =
+                                                      await OfflineLibraryBox
+                                                          .addToCart(
+                                                              widget.book);
 
-                                                        setState(() {
-                                                          HomeController.to
-                                                                  .cartItems =
-                                                              OfflineLibraryBox
-                                                                  .userBox!
-                                                                  .values
-                                                                  .first
-                                                                  .cartItems;
-                                                          HomeController
-                                                                  .to
-                                                                  .totalCartItemCount
-                                                                  .value =
-                                                              OfflineLibraryBox
-                                                                  .userBox!
-                                                                  .values
-                                                                  .first
-                                                                  .cartItems
-                                                                  .length;
-                                                          ;
-                                                        });
+                                                  setState(() {
+                                                    HomeController
+                                                            .to.cartItems =
+                                                        OfflineLibraryBox
+                                                            .userBox!
+                                                            .values
+                                                            .first
+                                                            .cartItems;
+                                                    HomeController
+                                                            .to
+                                                            .totalCartItemCount
+                                                            .value =
+                                                        OfflineLibraryBox
+                                                            .userBox!
+                                                            .values
+                                                            .first
+                                                            .cartItems
+                                                            .length;
+                                                    ;
+                                                  });
 
-                                                        showModalBottomSheet(
-                                                          context: context,
-                                                          isScrollControlled:
-                                                              true,
-                                                          builder: (BuildContext
-                                                              bc) {
-                                                            return CartScreen();
-                                                          },
-                                                        );
-                                                        if (_) {
-                                                          Get.snackbar(
-                                                              "Added to Cart",
-                                                              "");
-                                                        } else {
-                                                          Get.snackbar(
-                                                              "Already in Cart",
-                                                              "");
-                                                        }
-                                                      } else {
-                                                        Get.snackbar(
-                                                            "You need to Sign In to Add item to cart",
-                                                            "");
-                                                      }
+                                                  showModalBottomSheet(
+                                                    context: context,
+                                                    isScrollControlled: true,
+                                                    builder: (BuildContext bc) {
+                                                      return CartScreen();
                                                     },
-                                                    height: size.height * 0.04,
-                                                    width: size.width * 0.15,
-                                                    color:
-                                                        MyColors.primaryColor,
-                                                    borderRadius: 10,
-                                                    borderColor:
-                                                        MyColors.transparent,
-                                                    borderWidth: 0,
-                                                    widget: Center(
-                                                      child: TextWidget(
-                                                        text: '\$ $bookPrice',
-                                                        fontSize: 14,
-                                                      ),
-                                                    ),
-                                                  )
-                                                : const SizedBox(),
+                                                  );
+                                                  if (_) {
+                                                    Get.snackbar(
+                                                        "Added to Cart", "");
+                                                  } else {
+                                                    Get.snackbar(
+                                                        "Already in Cart", "");
+                                                  }
+                                                } else {
+                                                  Get.snackbar(
+                                                      "You need to Sign In to Add item to cart",
+                                                      "");
+                                                }
+                                              },
+                                              height: size.height * 0.04,
+                                              width: size.width * 0.15,
+                                              color: MyColors.primaryColor,
+                                              borderRadius: 10,
+                                              borderColor: MyColors.transparent,
+                                              borderWidth: 0,
+                                              widget: Center(
+                                                child: TextWidget(
+                                                  text: '\$ $bookPrice',
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: size.width * 0.01,
+                                            ),
                                             const Spacer(),
                                             InkWell(
                                               onTap: () {
@@ -2194,94 +2198,132 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                 color: MyColors.red,
                                               ),
                                             )
+
+                                            // CustomContainer(
+                                            //   onpressed: () {},
+                                            //   height: size.height * 0.04,
+                                            //   width: size.width * 0.2,
+                                            //   color: MyColors.primaryColor,
+                                            //   borderRadius: 10,
+                                            //   borderColor: MyColors.transparent,
+                                            //   borderWidth: 0,
+                                            //   widget: const Center(
+                                            //     child: TextWidget(
+                                            //       text: 'Book',
+                                            //       fontSize: 14,
+                                            //     ),
+                                            //   ),
+                                            // ),
+                                            // SizedBox(
+                                            //   width: 5,
+                                            // ),
+                                            // InkWell(
+                                            //   onTap: () {
+                                            //     setState(() {
+                                            //       final favorites = OfflineLibraryBox
+                                            //           .userBox!.values.first.favourites;
+                                            //       if (favorites
+                                            //           .contains(widget.song.detail)) {
+                                            //         // Remove from favorites
+                                            //         OfflineLibraryBox
+                                            //             .removeFromFavorites(
+                                            //                 widget.song.detail);
+                                            //         if (OfflineLibraryBox.userBox!
+                                            //             .values.first.isLoggedIn) {
+                                            //           Get.snackbar(
+                                            //               "Removed from favorites", "");
+                                            //         }
+                                            //       } else {
+                                            //         // Add to favorites
+                                            //         OfflineLibraryBox.addToFavorites(
+                                            //             widget.song.detail);
+                                            //         if (OfflineLibraryBox.userBox!
+                                            //             .values.first.isLoggedIn) {
+                                            //           Get.snackbar(
+                                            //               "Added to favorites", "");
+                                            //         }
+                                            //       }
+                                            //     });
+                                            //   },
+                                            //   child: Icon(
+                                            //     OfflineLibraryBox.userBox!.values.first
+                                            //             .favourites
+                                            //             .contains(widget.song.detail)
+                                            //         ? CupertinoIcons.heart_fill
+                                            //         : CupertinoIcons.heart,
+                                            //     color: MyColors.red,
+                                            //   ),
+                                            // )
                                           ],
                                         )
                                       : Row(
                                           children: [
-                                            int.parse(widget.book.pages) > 1
-                                                ? Row(
-                                                    children: [
-                                                      CustomContainer(
-                                                        onpressed: () async {
-                                                          if (isLoggedIn) {
-                                                            var _ =
-                                                                await OfflineLibraryBox
-                                                                    .addToCart(
-                                                                        widget
-                                                                            .book);
+                                            CustomContainer(
+                                              onpressed: () async {
+                                                if (isLoggedIn) {
+                                                  var _ =
+                                                      await OfflineLibraryBox
+                                                          .addToCart(
+                                                              widget.book);
 
-                                                            setState(() {
-                                                              HomeController.to
-                                                                      .cartItems =
-                                                                  OfflineLibraryBox
-                                                                      .userBox!
-                                                                      .values
-                                                                      .first
-                                                                      .cartItems;
-                                                              HomeController
-                                                                      .to
-                                                                      .totalCartItemCount
-                                                                      .value =
-                                                                  OfflineLibraryBox
-                                                                      .userBox!
-                                                                      .values
-                                                                      .first
-                                                                      .cartItems
-                                                                      .length;
-                                                              ;
-                                                            });
+                                                  setState(() {
+                                                    HomeController
+                                                            .to.cartItems =
+                                                        OfflineLibraryBox
+                                                            .userBox!
+                                                            .values
+                                                            .first
+                                                            .cartItems;
+                                                    HomeController
+                                                            .to
+                                                            .totalCartItemCount
+                                                            .value =
+                                                        OfflineLibraryBox
+                                                            .userBox!
+                                                            .values
+                                                            .first
+                                                            .cartItems
+                                                            .length;
+                                                    ;
+                                                  });
 
-                                                            showModalBottomSheet(
-                                                              context: context,
-                                                              isScrollControlled:
-                                                                  true,
-                                                              builder:
-                                                                  (BuildContext
-                                                                      bc) {
-                                                                return CartScreen();
-                                                              },
-                                                            );
-                                                            if (_) {
-                                                              Get.snackbar(
-                                                                  "Added to Cart",
-                                                                  "");
-                                                            } else {
-                                                              Get.snackbar(
-                                                                  "Already in Cart",
-                                                                  "");
-                                                            }
-                                                          } else {
-                                                            Get.snackbar(
-                                                                "You need to Sign In to Add item to cart",
-                                                                "");
-                                                          }
-                                                        },
-                                                        height:
-                                                            size.height * 0.04,
-                                                        width:
-                                                            size.width * 0.15,
-                                                        color: MyColors
-                                                            .primaryColor,
-                                                        borderRadius: 10,
-                                                        borderColor: MyColors
-                                                            .transparent,
-                                                        borderWidth: 0,
-                                                        widget: Center(
-                                                          child: TextWidget(
-                                                            text:
-                                                                '\$ $bookPrice',
-                                                            fontSize: 14,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        width:
-                                                            size.width * 0.01,
-                                                      ),
-                                                      const Spacer(),
-                                                    ],
-                                                  )
-                                                : const SizedBox(),
+                                                  showModalBottomSheet(
+                                                    context: context,
+                                                    isScrollControlled: true,
+                                                    builder: (BuildContext bc) {
+                                                      return CartScreen();
+                                                    },
+                                                  );
+                                                  if (_) {
+                                                    Get.snackbar(
+                                                        "Added to Cart", "");
+                                                  } else {
+                                                    Get.snackbar(
+                                                        "Already in Cart", "");
+                                                  }
+                                                } else {
+                                                  Get.snackbar(
+                                                      "You need to Sign In to Add item to cart",
+                                                      "");
+                                                }
+                                              },
+                                              height: size.height * 0.04,
+                                              width: size.width * 0.125,
+                                              color: MyColors.primaryColor,
+                                              borderRadius: 10,
+                                              borderColor: MyColors.transparent,
+                                              borderWidth: 0,
+                                              widget: Center(
+                                                child: TextWidget(
+                                                  text: '\$ $bookPrice',
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: size.width * 0.01,
+                                            ),
+                                            const Spacer(),
                                             InkWell(
                                               onTap: () {
                                                 setState(() {
@@ -2332,106 +2374,107 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                     : CupertinoIcons.heart,
                                                 color: MyColors.red,
                                               ),
-                                            )
+                                            ),
                                           ],
                                         ),
-                                  SizedBox(
-                                    height: size.height * 0.05,
-                                  ),
-                                  Row(
+                                  Column(
                                     children: [
-                                      Expanded(
-                                        child: TextWidget(
-                                          text: 'Artist:',
-                                          fontSize: 15,
-                                          color: MyColors.blackColor,
-                                          onTap: () {
-                                            print(widget.book);
-                                          },
-                                        ),
+                                      SizedBox(
+                                        height: size.height * 0.03,
                                       ),
-                                      Expanded(
-                                        child: TextWidget(
-                                          text: widget.book.artist,
-                                          fontSize: 15,
-                                          color: MyColors.blackColor,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: size.height * 0.01,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: TextWidget(
-                                          text: 'Genre: ',
-                                          fontSize: 15,
-                                          color: MyColors.blackColor,
-                                        ),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: TextWidget(
+                                              text: 'Artist:',
+                                              fontSize: 15,
+                                              color: MyColors.blackColor,
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: TextWidget(
+                                              text: widget.book.artist,
+                                              fontSize: 15,
+                                              color: MyColors.blackColor,
+                                            ),
+                                          )
+                                        ],
                                       ),
-                                      Expanded(
-                                        child: TextWidget(
-                                          text: widget.book.genre,
-                                          fontSize: 15,
-                                          color: MyColors.blackColor,
-                                          overflow: TextOverflow
-                                              .ellipsis, // Display ellipsis if the text overflows
-                                          maxLines:
-                                              1, // Limit text to a single line
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: size.height * 0.01,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: TextWidget(
-                                          text: 'Difficulty:',
-                                          fontSize: 15,
-                                          color: MyColors.blackColor,
-                                        ),
+                                      SizedBox(
+                                        height: size.height * 0.01,
                                       ),
-                                      Expanded(
-                                        child: TextWidget(
-                                          text: widget.book.difficulty,
-                                          fontSize: 15,
-                                          color: MyColors.blackColor,
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: size.height * 0.01,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: TextWidget(
-                                          text: 'Pages:',
-                                          fontSize: 15,
-                                          color: MyColors.blackColor,
-                                        ),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: TextWidget(
+                                              text: 'Genre',
+                                              fontSize: 15,
+                                              color: MyColors.blackColor,
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: TextWidget(
+                                              text: widget.book.genre,
+                                              fontSize: 15,
+                                              color: MyColors.blackColor,
+                                              overflow: TextOverflow
+                                                  .ellipsis, // Display ellipsis if the text overflows
+                                              maxLines:
+                                                  1, // Limit text to a single line
+                                            ),
+                                          )
+                                        ],
                                       ),
-                                      Expanded(
-                                        child: TextWidget(
-                                          text: widget.book.pages,
-                                          fontSize: 15,
-                                          color: MyColors.blackColor,
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                        ),
-                                      )
+                                      SizedBox(
+                                        height: size.height * 0.01,
+                                      ),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: TextWidget(
+                                              text: 'Difficulty:',
+                                              fontSize: 15,
+                                              color: MyColors.blackColor,
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: TextWidget(
+                                              text: widget.book.difficulty,
+                                              fontSize: 14,
+                                              color: MyColors.blackColor,
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: size.height * 0.01,
+                                      ),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: TextWidget(
+                                              text: 'Pages:',
+                                              fontSize: 15,
+                                              color: MyColors.blackColor,
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: TextWidget(
+                                              text: widget.book.pages,
+                                              fontSize: 15,
+                                              color: MyColors.blackColor,
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: size.height * 0.01,
+                                      ),
                                     ],
-                                  ),
-                                  SizedBox(
-                                    height: size.height * 0.01,
                                   ),
                                 ],
                               ),
@@ -2440,74 +2483,75 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               alignment: Alignment.bottomCenter,
                               children: [
                                 Container(
-                                  height: size.height * 0.076,
-                                  width: size.width * 0.54,
-                                  padding: const EdgeInsets.only(
-                                    left: 10,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              play = !play;
-                                              print(HomeController.to
-                                                  .getMp3Source(
-                                                      widget.book.detail));
-                                            });
-
-                                            // Play or pause audio when the "Play" button is tapped
-                                            if (play) {
-                                              playAudioFromUrl(HomeController.to
-                                                  .getMp3Source(
-                                                      widget.book.detail));
-                                            } else {
-                                              player.pause();
-                                            }
-                                          },
-                                          child: Icon(
-                                            play
-                                                ? Icons
-                                                    .pause_circle_outline_outlined
-                                                : Icons
-                                                    .play_circle_outline_outlined,
-                                            size: 28,
-                                            color: MyColors.blueColor,
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: size.width * 0.02,
-                                      ),
-                                      Expanded(
-                                        flex: 6,
-                                        child: SliderTheme(
-                                          data: const SliderThemeData(
-                                              trackHeight: 3,
-                                              trackShape:
-                                                  RectangularSliderTrackShape(),
-                                              overlayShape:
-                                                  RoundSliderOverlayShape(
-                                                      overlayRadius: 8),
-                                              thumbShape: RoundSliderThumbShape(
-                                                  enabledThumbRadius: 5)),
-                                          child: Slider(
-                                            min: 0,
-                                            max: maxValue,
-                                            value: value,
-                                            inactiveColor: MyColors.greyColor,
-                                            onChanged: (newValue) {
+                                    height: size.height * 0.076,
+                                    width: size.width * 0.54,
+                                    padding: const EdgeInsets.only(
+                                      left: 15,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: InkWell(
+                                            onTap: () {
                                               setState(() {
-                                                value = newValue;
+                                                play = !play;
+                                                print(HomeController.to
+                                                    .getMp3Source(
+                                                        widget.book.detail));
                                               });
+
+                                              // Play or pause audio when the "Play" button is tapped
+                                              if (play) {
+                                                playAudioFromUrl(HomeController
+                                                    .to
+                                                    .getMp3Source(
+                                                        widget.book.detail));
+                                              } else {
+                                                player.pause();
+                                              }
                                             },
+                                            child: Icon(
+                                              play
+                                                  ? Icons
+                                                      .pause_circle_outline_outlined
+                                                  : Icons
+                                                      .play_circle_outline_outlined,
+                                              size: 28,
+                                              color: MyColors.blueColor,
+                                            ),
                                           ),
                                         ),
-                                      )
-                                    ],
-                                  ),
-                                ),
+                                        SizedBox(
+                                          width: size.width * 0.02,
+                                        ),
+                                        Expanded(
+                                          flex: 6,
+                                          child: SliderTheme(
+                                            data: const SliderThemeData(
+                                                trackHeight: 3,
+                                                trackShape:
+                                                    RectangularSliderTrackShape(),
+                                                overlayShape:
+                                                    RoundSliderOverlayShape(
+                                                        overlayRadius: 8),
+                                                thumbShape:
+                                                    RoundSliderThumbShape(
+                                                        enabledThumbRadius: 5)),
+                                            child: Slider(
+                                              min: 0,
+                                              max: maxValue,
+                                              value: value,
+                                              inactiveColor: MyColors.greyColor,
+                                              onChanged: (newValue) {
+                                                setState(() {
+                                                  value = newValue;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    )),
                                 Row(
                                   children: [
                                     TextWidget(
@@ -4003,14 +4047,14 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  double totalAmount = 0;
-  List<String> logQueue = [];
+  int userPoints = int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
   @override
   void initState() {
     super.initState();
     HomeController.to.cartItems =
         OfflineLibraryBox.userBox!.values.first.cartItems;
     calculateTotalAmount();
+    calculateTotalTokens();
   }
 
   String calculatePrice(String pages, String amazonPrice, bool isBook) {
@@ -4026,11 +4070,45 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   void calculateTotalAmount() {
-    totalAmount = 0.0;
+    HomeController.to.totalAmount.value = 0.0;
 
     for (var cartItem in HomeController.to.cartItems) {
-      totalAmount += double.parse(calculatePrice(cartItem.pages,
-          cartItem.amazonPrice, cartItem.detail.startsWith('BK')));
+      HomeController.to.totalAmount.value += double.parse(calculatePrice(
+          cartItem.pages,
+          cartItem.amazonPrice,
+          cartItem.detail.startsWith('BK')));
+    }
+  }
+
+  String calculateRequiredTokens(int pages, bool isBook) {
+    if (isBook) {
+      double requiredTokens = 0;
+      if (pages >= 24 && pages <= 75) {
+        requiredTokens = pages * 0.5;
+      } else if (pages >= 76 && pages <= 100) {
+        requiredTokens = pages * 0.4;
+      } else if (pages >= 101 && pages <= 300) {
+        requiredTokens = pages * 0.25;
+      }
+      return '${requiredTokens.round()}'; // Round to the nearest integer
+    } else {
+      if (pages == 1) {
+        return '1';
+      } else if (pages >= 2 && pages <= 5) {
+        return '${(pages * 3).round()}';
+      } else {
+        return '${(pages * 2).round()}';
+      }
+    }
+  }
+
+  void calculateTotalTokens() {
+    HomeController.to.totalTokensAwarded.value = 0;
+
+    for (var cartItem in HomeController.to.cartItems) {
+      HomeController.to.totalTokensAwarded.value += int.parse(
+          calculateRequiredTokens(
+              int.parse(cartItem.pages), cartItem.detail.startsWith('BK')));
     }
   }
 
@@ -4095,6 +4173,7 @@ class _CartScreenState extends State<CartScreen> {
                                           .cartItems.length;
                                 });
                                 calculateTotalAmount();
+                                calculateTotalTokens();
                                 if (_) {
                                   Get.snackbar(
                                       "Item removed from the cart", '');
@@ -4112,94 +4191,152 @@ class _CartScreenState extends State<CartScreen> {
             ],
           ),
         ),
-        Positioned(
-            bottom: 0,
-            right: 0,
-            left: 0,
-            child: InkWell(
-              onTap: () {
-                Get.to(UsePaypal(
-                  sandboxMode: true,
-                  clientId:
-                      "ATN1ojtdC_jqrMRvAll4ZplkSCuYse4s_o592nubbS-VjubMp2mBIlBgg1qXhSkxrxcFCqe2RxygL7_R",
-                  secretKey:
-                      "EJH5ZtrISXwW3HkfiGJ8eI4PnR0vUPz7gPpaZtNMNKPGB1nkRygPa3H7A09IdpxhnrASDq1-LdIWFjBl",
-                  returnURL: "https://samplesite.com/return",
-                  cancelURL: "https://samplesite.com/cancel",
-                  transactions: [
-                    {
-                      "amount": {
-                        "total": totalAmount.toString(),
-                        "currency": "USD",
-                        "details": {
-                          "subtotal": totalAmount.toString(),
-                          "shipping": '0',
-                          "shipping_discount": 0
-                        }
-                      },
-                    }
-                  ],
-                  note: "Contact us for any questions on your order.",
-                  onSuccess: (Map params) async {
-                    print("onSuccess: $params");
-                  },
-                  onError: (error) {
-                    print("onError: $error");
-                  },
-                  onCancel: (params) {
-                    print('cancelled: $params');
-                  },
-                ));
-              },
-              child: Container(
-                height: 100,
-                decoration: BoxDecoration(
-                  color: MyColors.grey,
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 50,
-                      margin: EdgeInsets.symmetric(horizontal: 15),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          TextWidget(
-                            text: 'Total Amount : ',
-                            color: MyColors.blackColor, // Set the text color
+        ValueListenableBuilder(
+            valueListenable: HomeController.to.totalAmount,
+            builder: (context, amount, c) {
+              return ValueListenableBuilder(
+                  valueListenable: HomeController.to.totalTokensAwarded,
+                  builder: (context, token, c) {
+                    return Positioned(
+                        bottom: 0,
+                        right: 0,
+                        left: 0,
+                        child: InkWell(
+                          onTap: () {
+                            Get.to(UsePaypal(
+                              sandboxMode: true,
+                              clientId:
+                                  "ATN1ojtdC_jqrMRvAll4ZplkSCuYse4s_o592nubbS-VjubMp2mBIlBgg1qXhSkxrxcFCqe2RxygL7_R",
+                              secretKey:
+                                  "EJH5ZtrISXwW3HkfiGJ8eI4PnR0vUPz7gPpaZtNMNKPGB1nkRygPa3H7A09IdpxhnrASDq1-LdIWFjBl",
+                              returnURL: "https://samplesite.com/return",
+                              cancelURL: "https://samplesite.com/cancel",
+                              transactions: [
+                                {
+                                  "amount": {
+                                    "total": amount.toString(),
+                                    "currency": "USD",
+                                    "details": {
+                                      "subtotal": amount.toString(),
+                                      "shipping": '0',
+                                      "shipping_discount": 0
+                                    }
+                                  },
+                                }
+                              ],
+                              note:
+                                  "Contact us for any questions on your order.",
+                              onSuccess: (Map params) async {
+                                if (mounted) {
+                                  print("onSuccess: $params");
+                                  for (var cartItem
+                                      in HomeController.to.cartItems) {
+                                    await OfflineLibraryBox.updateLibrary(
+                                        cartItem.detail);
+                                  }
+                                  var a = OfflineLibrary.encodeOfflineLibrary(
+                                      OfflineLibraryBox.userBox!.values.first
+                                          .offlineLibrary);
+                                  print(a);
+                                  int newPoints = userPoints + token;
+                                  var submitted = await HomeController.to
+                                      .updateLibrary(
+                                          LoginBox
+                                              .userBox!.values.first.authToken,
+                                          a);
+                                  var pointsUpdated = await HomeController.to
+                                      .updatePoints(
+                                          LoginBox
+                                              .userBox!.values.first.authToken,
+                                          newPoints);
+                                  var userdata = await HomeController.to
+                                      .getuserData(LoginBox
+                                          .userBox!.values.first.authToken);
+
+                                  await OfflineLibraryBox.emptyCart();
+
+                                  Get.snackbar(
+                                      "You've been awarded $token tokens", '');
+
+                                  setState(() {
+                                    HomeController.to.cartItems =
+                                        OfflineLibraryBox
+                                            .userBox!.values.first.cartItems;
+
+                                    HomeController.to.totalCartItemCount.value =
+                                        OfflineLibraryBox.userBox!.values.first
+                                            .cartItems.length;
+                                  });
+                                  calculateTotalAmount();
+                                } else {
+                                  Get.snackbar(
+                                      "Problem occured in making the payment",
+                                      '');
+                                }
+                              },
+                              onError: (error) {
+                                print("onError: $error");
+                              },
+                              onCancel: (params) {
+                                print('cancelled: $params');
+                              },
+                            ));
+                          },
+                          child: Container(
+                            height: 100,
+                            decoration: BoxDecoration(
+                              color: MyColors.grey,
+                            ),
+                            child: Column(
+                              children: [
+                                Container(
+                                  height: 50,
+                                  margin: EdgeInsets.symmetric(horizontal: 15),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      TextWidget(
+                                        text: 'Total Amount : ',
+                                        color: MyColors
+                                            .blackColor, // Set the text color
+                                      ),
+                                      Spacer(),
+                                      TextWidget(
+                                        text: " \$ $amount",
+                                        color: MyColors
+                                            .blackColor, // Set the text color
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: MyColors.bottomColor,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      TextWidget(
+                                        text: 'Pay with ',
+                                        color: MyColors
+                                            .whiteColor, // Set the text color
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Image.asset(
+                                            'assets/images/paypal.png',
+                                            height: 45),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          Spacer(),
-                          TextWidget(
-                            text: " \$ $totalAmount",
-                            color: MyColors.blackColor, // Set the text color
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: MyColors.bottomColor,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          TextWidget(
-                            text: 'Pay with ',
-                            color: MyColors.whiteColor, // Set the text color
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Image.asset('assets/images/paypal.png',
-                                height: 45),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ))
+                        ));
+                  });
+            })
       ],
     );
   }

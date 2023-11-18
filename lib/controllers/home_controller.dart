@@ -20,6 +20,9 @@ class HomeController extends GetxController {
   List<ListItemModel> cartItems = [];
   var totalCartItemCount = ValueNotifier(0);
 
+  var totalAmount = ValueNotifier(0.0);
+  var totalTokensAwarded = ValueNotifier(0);
+
   RxList<ListItemModel> filteredBk = <ListItemModel>[].obs;
   RxList<ListItemModel> filteredSng = <ListItemModel>[].obs;
 
