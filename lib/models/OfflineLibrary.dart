@@ -23,7 +23,7 @@ class OfflineLibrary {
   double rating;
 
   @HiveField(5)
-  List<ListItemModel> cartItems;
+  int adsWatched;
 
   OfflineLibrary(
       {bool? isLoggedIn,
@@ -31,13 +31,13 @@ class OfflineLibrary {
       List<String>? offlineLibrary,
       List<String>? favourites,
       double? rating,
-      List<ListItemModel>? cartItems})
+      int? adsWatched})
       : isLoggedIn = isLoggedIn ?? false,
         points = points ?? '0',
         offlineLibrary = offlineLibrary ?? [],
         favourites = favourites ?? [],
         rating = rating ?? 0.0,
-        cartItems = cartItems ?? [];
+        adsWatched = adsWatched ?? 0;
 
   Map<String, dynamic> toJson() {
     return {
@@ -46,7 +46,7 @@ class OfflineLibrary {
       'offlineLibrary': offlineLibrary,
       'favourites': favourites,
       'rating': rating,
-      'cartItems': cartItems
+      'adsWatched': adsWatched
     };
   }
 

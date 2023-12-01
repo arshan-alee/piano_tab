@@ -32,12 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     HomeController.to.index = widget.initialIndex;
     _pageController = PageController(initialPage: widget.initialIndex);
-    setState(() {
-      HomeController.to.cartItems =
-          OfflineLibraryBox.userBox!.values.first.cartItems;
-      HomeController.to.totalCartItemCount = ValueNotifier(
-          OfflineLibraryBox.userBox!.values.first.cartItems.length);
-    });
   }
 
   @override

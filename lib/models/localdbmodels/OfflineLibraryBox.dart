@@ -96,43 +96,16 @@ class OfflineLibraryBox {
     }
   }
 
-  static Future<bool> addToCart(ListItemModel cartItem) async {
-    final box = await Hive.openBox<OfflineLibrary>(boxName);
-    var offlineLibrary = box.get(boxName);
+  static Future<void> updateAdsWatched(int ads) async {
+    box = await Hive.openBox<OfflineLibrary>(boxName);
+    final offlineLibrary = box!.get(boxName);
 
-    offlineLibrary ??= OfflineLibrary(cartItems: []);
-
-    // Check if the cartItem is already present
-    if (!offlineLibrary.cartItems.contains(cartItem)) {
-      offlineLibrary.cartItems.add(cartItem);
-      await box.put(boxName, offlineLibrary);
-      return true;
+    if (offlineLibrary == null) {
+      final newOfflineLibrary = OfflineLibrary(adsWatched: ads);
+      await box!.put(boxName, newOfflineLibrary);
     } else {
-      // cartItem is already present, return false
-      return false;
-    }
-  }
-
-  static Future<bool> removeFromCart(ListItemModel cartItem) async {
-    final box = await Hive.openBox<OfflineLibrary>(boxName);
-    final offlineLibrary = box.get(boxName);
-
-    if (offlineLibrary != null) {
-      offlineLibrary.cartItems.remove(cartItem);
-      await box.put(boxName, offlineLibrary);
-      return true;
-    }
-
-    return false;
-  }
-
-  static Future<void> emptyCart() async {
-    final box = await Hive.openBox<OfflineLibrary>(boxName);
-    final offlineLibrary = box.get(boxName);
-
-    if (offlineLibrary != null) {
-      offlineLibrary.cartItems.clear();
-      await box.put(boxName, offlineLibrary);
+      offlineLibrary.adsWatched = ads;
+      await box!.put(boxName, offlineLibrary);
     }
   }
 
@@ -151,7 +124,7 @@ class OfflineLibraryBox {
           offlineLibrary: [],
           favourites: [],
           rating: 0.0,
-          cartItems: []);
+          adsWatched: 0);
       await box!.clear();
       await box!.put(boxName, defaultModel);
     }

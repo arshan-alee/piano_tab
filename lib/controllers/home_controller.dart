@@ -17,10 +17,10 @@ class HomeController extends GetxController {
   List<Songs> book = [];
   List<Songs> song = [];
 
-  List<ListItemModel> cartItems = [];
+  RxList<ListItemModel> cartItems = <ListItemModel>[].obs;
   var totalCartItemCount = ValueNotifier(0);
 
-  var totalAmount = ValueNotifier(0.0);
+  var totalAmount = ValueNotifier(0);
   var totalTokensAwarded = ValueNotifier(0);
 
   RxList<ListItemModel> filteredBk = <ListItemModel>[].obs;
@@ -35,6 +35,7 @@ class HomeController extends GetxController {
   List<String> pageSongFilter = [];
   List<String> genreSongFilter = [];
   List<String> difficultySongFilter = [];
+  List<String> sectionOfSongsSongFilter = [];
 
   List<Songs> recentList = [];
   List<Songs> ez = [];
@@ -48,6 +49,7 @@ class HomeController extends GetxController {
   String selectedPages = "All";
   String selectedGenres = "All";
   String selectedDifficulty = "All";
+  String selectedSectionOfSongs = "All";
 
   Future<int> getSongs() async {
     try {
@@ -161,6 +163,9 @@ class HomeController extends GetxController {
         if (!pageSongFilter.contains(song.pages)) {
           pageSongFilter.add(song.pages!);
         }
+        if (!sectionOfSongsSongFilter.contains(song.sectionOfSong)) {
+          sectionOfSongsSongFilter.add(song.sectionOfSong!);
+        }
       }
     }
     authorSongFilter.sort();
@@ -172,6 +177,7 @@ class HomeController extends GetxController {
 
       return aValue - bValue;
     });
+    sectionOfSongsSongFilter.sort();
 
     authorBookFilter.sort();
     difficultyBookFilter.sort();
@@ -187,6 +193,7 @@ class HomeController extends GetxController {
     difficultySongFilter.insert(0, "All");
     genreSongFilter.insert(0, "All");
     pageSongFilter.insert(0, "All");
+    sectionOfSongsSongFilter.insert(0, "All");
 
     authorBookFilter.insert(0, "All");
     difficultyBookFilter.insert(0, "All");
@@ -204,15 +211,14 @@ class HomeController extends GetxController {
     return userlibrary;
   }
 
-  static List<Songs> filterSongs(
-    List<Songs> songs, {
-    double? maxPrice,
-    int? pages,
-    String? artist,
-    String? difficulty,
-    String? type, // Use 'book' or 'song' as values
-    String? genre,
-  }) {
+  static List<Songs> filterSongs(List<Songs> songs,
+      {double? maxPrice,
+      int? pages,
+      String? artist,
+      String? difficulty,
+      String? type, // Use 'book' or 'song' as values
+      String? genre,
+      String? sectionOfSong}) {
     return songs.where((song) {
       // Price filter
       if (maxPrice != null && double.parse(song.price!) > maxPrice) {
@@ -228,6 +234,8 @@ class HomeController extends GetxController {
       if (type == 'song' && song.songSku!.startsWith('BK')) return false;
       // Genre filter
       if (genre != null && song.genre != genre) return false;
+      if (sectionOfSong != null && song.sectionOfSong != sectionOfSong)
+        return false;
       if (difficulty != null) {
         if (difficulty == 'Beginner' && song.difficulty != difficulty) {
           return false;
@@ -392,5 +400,27 @@ class HomeController extends GetxController {
   Future emptyFuture() async {
     Future.delayed(Duration(seconds: 1));
     return;
+  }
+
+  static Future<bool> addToCart(ListItemModel cartItem) async {
+    if (!HomeController.to.cartItems.contains(cartItem)) {
+      HomeController.to.cartItems.add(cartItem);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  static Future<bool> removeFromCart(ListItemModel cartItem) async {
+    if (HomeController.to.cartItems.contains(cartItem)) {
+      HomeController.to.cartItems.remove(cartItem);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  static Future<void> emptyCart() async {
+    HomeController.to.cartItems.clear();
   }
 }

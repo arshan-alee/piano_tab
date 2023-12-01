@@ -179,7 +179,7 @@ class _HomePageState extends State<HomePage> {
                       width: size.width * 0.035,
                     ),
                     scrollDirection: Axis.horizontal,
-                    itemCount: beginner.length < 8 ? beginner.length : 8,
+                    itemCount: beginner.length < 10 ? beginner.length : 10,
                     itemBuilder: (context, index) {
                       return InkWell(
                           onTap: () {
@@ -224,7 +224,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     scrollDirection: Axis.horizontal,
                     itemCount:
-                        twentyonepilot.length < 8 ? twentyonepilot.length : 8,
+                        twentyonepilot.length < 10 ? twentyonepilot.length : 10,
                     itemBuilder: (context, index) {
                       return InkWell(
                           onTap: () {
@@ -269,7 +269,7 @@ class _HomePageState extends State<HomePage> {
                       width: size.width * 0.035,
                     ),
                     scrollDirection: Axis.horizontal,
-                    itemCount: pop.length < 8 ? pop.length : 8,
+                    itemCount: pop.length < 10 ? pop.length : 10,
                     itemBuilder: (context, index) {
                       // Display your regular items from the 'tvfilm' list
                       return InkWell(
@@ -315,7 +315,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     scrollDirection: Axis.horizontal,
                     itemCount:
-                        contemporary.length < 8 ? contemporary.length : 8,
+                        contemporary.length < 10 ? contemporary.length : 10,
                     itemBuilder: (context, index) {
                       return InkWell(
                           onTap: () {
@@ -360,7 +360,7 @@ class _HomePageState extends State<HomePage> {
                       width: size.width * 0.035,
                     ),
                     scrollDirection: Axis.horizontal,
-                    itemCount: classical.length < 8 ? classical.length : 8,
+                    itemCount: classical.length < 10 ? classical.length : 10,
                     itemBuilder: (context, index) {
                       return InkWell(
                           onTap: () {
@@ -404,7 +404,7 @@ class _HomePageState extends State<HomePage> {
                       width: size.width * 0.035,
                     ),
                     scrollDirection: Axis.horizontal,
-                    itemCount: tvfilm.length < 8 ? tvfilm.length : 8,
+                    itemCount: tvfilm.length < 10 ? tvfilm.length : 10,
                     itemBuilder: (context, index) {
                       return InkWell(
                           onTap: () {

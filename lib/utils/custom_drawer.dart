@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
 import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
 import 'package:paino_tab/screens/home_screen.dart';
+import 'package:paino_tab/screens/onboarding_screen.dart';
 import 'package:paino_tab/services/ad_mob_service.dart';
 import 'package:paino_tab/utils/widget.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
@@ -43,7 +45,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
     _pdfViewController = PdfViewerController();
 
-    createRewardedAd();
+    createRewardedAd;
     // HomeController.to.getUserName().then((value) {
     //   if (value != null) {
     //     setState(() {
@@ -62,19 +64,53 @@ class _CustomDrawerState extends State<CustomDrawer> {
   }
 
   void createRewardedAd() {
+    if (EasyLoading.isShow) {
+      return;
+    }
+    EasyLoading.show(status: 'loading...');
+    EasyLoading.dismiss();
     RewardedAd.load(
       adUnitId: AdMobService.rewardedAdUnitId!,
       request: const AdRequest(),
       rewardedAdLoadCallback: RewardedAdLoadCallback(
-        onAdLoaded: (ad) {
+        onAdLoaded: (ad) async {
           setState(() {
             _rewardedAd = ad;
+            print(' ad is loading');
+            EasyLoading.dismiss();
           });
+          await OfflineLibraryBox.updateAdsWatched(
+              OfflineLibraryBox.userBox!.values.first.adsWatched + 1);
         },
-        onAdFailedToLoad: (error) {
+        onAdFailedToLoad: (error) async {
           setState(() {
             _rewardedAd = null;
+            EasyLoading.dismiss();
           });
+          if (OfflineLibraryBox.userBox!.values.first.adsWatched < 10) {
+            if (isLoggedIn == true) {
+              int newPoints = userPoints + 1;
+              await HomeController.to
+                  .updatePoints(
+                      LoginBox.userBox!.values.first.authToken, newPoints)
+                  .then((pointsUpdated) async {
+                var userdata = await HomeController.to
+                    .getuserData(LoginBox.userBox!.values.first.authToken);
+                print('Points updated in logged In mode');
+                // Perform additional actions with userdata
+              });
+            } else {
+              int newPoints = offlineUserPoints++;
+              await OfflineLibraryBox.updatePoints(newPoints.toString());
+              print('Points updated in logged off mode');
+            }
+
+            Get.snackbar(
+                "Seems like the Ad failed to load but here's a token on us",
+                'You have recieved a token');
+            await OfflineLibraryBox.updateAdsWatched(
+                OfflineLibraryBox.userBox!.values.first.adsWatched + 1);
+          }
         },
       ),
     );
@@ -113,6 +149,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
             await OfflineLibraryBox.updatePoints(newPoints.toString());
             print('Points updated in logged off mode');
           }
+          Get.snackbar('You have recieved a token', "");
         },
       );
     }
@@ -577,6 +614,14 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                 setState(() {
                                                   index = 6;
                                                 });
+                                                Get.to(() => OnBoarding(
+                                                      isLoggedIn:
+                                                          OfflineLibraryBox
+                                                              .userBox!
+                                                              .values
+                                                              .first
+                                                              .isLoggedIn,
+                                                    ));
                                               },
                                               child: Container(
                                                 height: size.height * 0.063,
@@ -663,7 +708,18 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                           MyColors.blackColor,
                                                       fontSize: 18,
                                                       onTap: () {
-                                                        showRewardedAd();
+                                                        if (OfflineLibraryBox
+                                                                .userBox!
+                                                                .values
+                                                                .first
+                                                                .adsWatched <
+                                                            10) {
+                                                          showRewardedAd();
+                                                        } else {
+                                                          Get.snackbar(
+                                                              'You have reached the total Ads limit for today!',
+                                                              "");
+                                                        }
                                                       },
                                                     ),
                                                   ],
@@ -788,11 +844,13 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
   bool pages = false;
   bool genre = false;
   bool difficulty = false;
+  bool section = false;
 
   List<String> artistNames = [];
   List<String> genreNames = [];
   List<String> maxpages = [];
   List<String> difficultylevel = [];
+  List<String> sectionOfSongs = [];
 
   late String passedVal;
 
@@ -804,6 +862,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
       genreNames = HomeController.to.genreSongFilter;
       maxpages = HomeController.to.pageSongFilter;
       difficultylevel = HomeController.to.difficultySongFilter;
+      sectionOfSongs = HomeController.to.sectionOfSongsSongFilter;
     } else {
       artistNames = HomeController.to.authorBookFilter;
       genreNames = HomeController.to.genreBookFilter;
@@ -925,14 +984,16 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                                   MainAxisAlignment
                                                       .spaceBetween,
                                               children: [
-                                                TextWidget(
-                                                  text: artistName,
-                                                  fontSize: 14,
-                                                  color: HomeController.to
-                                                              .selectedArtists ==
-                                                          artistName
-                                                      ? MyColors.blueColor
-                                                      : MyColors.blackColor,
+                                                Flexible(
+                                                  child: TextWidget(
+                                                    text: artistName,
+                                                    fontSize: 14,
+                                                    color: HomeController.to
+                                                                .selectedArtists ==
+                                                            artistName
+                                                        ? MyColors.blueColor
+                                                        : MyColors.blackColor,
+                                                  ),
                                                 ),
                                                 HomeController.to
                                                             .selectedArtists ==
@@ -1044,17 +1105,19 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                                             MainAxisAlignment
                                                                 .spaceBetween,
                                                         children: [
-                                                          TextWidget(
-                                                            text: pageno,
-                                                            fontSize: 14,
-                                                            color: HomeController
-                                                                        .to
-                                                                        .selectedPages ==
-                                                                    pageno
-                                                                ? MyColors
-                                                                    .blueColor
-                                                                : MyColors
-                                                                    .blackColor,
+                                                          Flexible(
+                                                            child: TextWidget(
+                                                              text: pageno,
+                                                              fontSize: 14,
+                                                              color: HomeController
+                                                                          .to
+                                                                          .selectedPages ==
+                                                                      pageno
+                                                                  ? MyColors
+                                                                      .blueColor
+                                                                  : MyColors
+                                                                      .blackColor,
+                                                            ),
                                                           ),
                                                           HomeController.to
                                                                       .selectedPages ==
@@ -1094,6 +1157,139 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                   ),
                                   SizedBox(
                                     height: size.height * 0.01,
+                                  ),
+                                  Column(
+                                    children: [
+                                      AnimatedContainer(
+                                        duration:
+                                            const Duration(milliseconds: 300),
+                                        height: section == true
+                                            ? size.height * 0.3
+                                            : size.height * 0.05,
+                                        child: SingleChildScrollView(
+                                          child: Column(
+                                            children: [
+                                              Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  InkWell(
+                                                    onTap: () {
+                                                      setState(() {
+                                                        section = !section;
+                                                      });
+                                                      print(sectionOfSongs);
+                                                    },
+                                                    child: SizedBox(
+                                                      height:
+                                                          size.height * 0.05,
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          TextWidget(
+                                                            text: 'Section',
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: MyColors
+                                                                .blackColor,
+                                                          ),
+                                                          Icon(
+                                                            section == true
+                                                                ? Icons.remove
+                                                                : Icons.add,
+                                                            size: 18,
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              section == true
+                                                  ? ListView.builder(
+                                                      shrinkWrap: true,
+                                                      physics:
+                                                          NeverScrollableScrollPhysics(),
+                                                      itemCount:
+                                                          sectionOfSongs.length,
+                                                      itemBuilder:
+                                                          (context, index) {
+                                                        final sos =
+                                                            sectionOfSongs[
+                                                                index];
+                                                        return InkWell(
+                                                          onTap: () {
+                                                            setState(() {
+                                                              HomeController.to
+                                                                      .selectedSectionOfSongs =
+                                                                  sos;
+                                                              filterList();
+                                                            });
+                                                          },
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              Flexible(
+                                                                child:
+                                                                    TextWidget(
+                                                                  text: sos,
+                                                                  fontSize: 14,
+                                                                  color: HomeController
+                                                                              .to
+                                                                              .selectedSectionOfSongs ==
+                                                                          sos
+                                                                      ? MyColors
+                                                                          .blueColor
+                                                                      : MyColors
+                                                                          .blackColor,
+                                                                ),
+                                                              ),
+                                                              HomeController.to
+                                                                          .selectedSectionOfSongs ==
+                                                                      sos
+                                                                  ? Icon(
+                                                                      Icons
+                                                                          .circle,
+                                                                      color: MyColors
+                                                                          .blueColor,
+                                                                      size: 16,
+                                                                    )
+                                                                  : const Icon(
+                                                                      Icons
+                                                                          .circle_outlined,
+                                                                      size: 16,
+                                                                    )
+                                                            ],
+                                                          ),
+                                                        );
+                                                      },
+                                                    )
+                                                  : const SizedBox(),
+                                              SizedBox(
+                                                height: size.height * 0.01,
+                                              ),
+                                              Divider(
+                                                color: MyColors.greyColor,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: size.height * 0.01,
+                                      ),
+                                      Divider(
+                                        color: MyColors.greyColor,
+                                      ),
+                                      SizedBox(
+                                        height: size.height * 0.01,
+                                      ),
+                                    ],
                                   ),
                                 ],
                               )
@@ -1159,14 +1355,16 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                                   MainAxisAlignment
                                                       .spaceBetween,
                                               children: [
-                                                TextWidget(
-                                                  text: genre,
-                                                  fontSize: 14,
-                                                  color: HomeController.to
-                                                              .selectedGenres ==
-                                                          genre
-                                                      ? MyColors.blueColor
-                                                      : MyColors.blackColor,
+                                                Flexible(
+                                                  child: TextWidget(
+                                                    text: genre,
+                                                    fontSize: 14,
+                                                    color: HomeController.to
+                                                                .selectedGenres ==
+                                                            genre
+                                                        ? MyColors.blueColor
+                                                        : MyColors.blackColor,
+                                                  ),
                                                 ),
                                                 HomeController.to
                                                             .selectedGenres ==
@@ -1270,14 +1468,16 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                                   MainAxisAlignment
                                                       .spaceBetween,
                                               children: [
-                                                TextWidget(
-                                                  text: difficulty,
-                                                  fontSize: 14,
-                                                  color: HomeController.to
-                                                              .selectedDifficulty ==
-                                                          difficulty
-                                                      ? MyColors.blueColor
-                                                      : MyColors.blackColor,
+                                                Flexible(
+                                                  child: TextWidget(
+                                                    text: difficulty,
+                                                    fontSize: 14,
+                                                    color: HomeController.to
+                                                                .selectedDifficulty ==
+                                                            difficulty
+                                                        ? MyColors.blueColor
+                                                        : MyColors.blackColor,
+                                                  ),
                                                 ),
                                                 HomeController.to
                                                             .selectedDifficulty ==
@@ -1337,6 +1537,9 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
             : null,
         pages: HomeController.to.selectedPages != "All"
             ? int.parse(HomeController.to.selectedPages)
+            : null,
+        sectionOfSong: HomeController.to.selectedSectionOfSongs != "All"
+            ? HomeController.to.selectedSectionOfSongs
             : null,
       );
       HomeController.to.filteredSng.value =

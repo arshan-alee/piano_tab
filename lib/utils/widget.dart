@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 import 'package:flutter_paypal/flutter_paypal.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:http/http.dart' as http;
 import 'package:audioplayers/audioplayers.dart';
@@ -17,12 +18,15 @@ import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
 import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
 import 'package:paino_tab/pages/search_page.dart';
+import 'package:document_file_save_plus/document_file_save_plus.dart';
 import 'package:paino_tab/screens/home_screen.dart';
 import 'package:paino_tab/screens/login_screen.dart';
+import 'package:paino_tab/screens/onboarding_screen.dart';
 import 'package:paino_tab/services/ad_mob_service.dart';
 import 'package:paino_tab/services/auth_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../controllers/home_controller.dart';
@@ -53,23 +57,55 @@ class _CustomAppBarState extends State<CustomAppBar> {
   @override
   void initState() {
     super.initState();
-    createRewardedAd();
+    createRewardedAd;
   }
 
   void createRewardedAd() {
+    if (EasyLoading.isShow) {
+      return;
+    }
+    EasyLoading.show(status: 'loading...');
+    EasyLoading.dismiss();
     RewardedAd.load(
       adUnitId: AdMobService.rewardedAdUnitId!,
       request: const AdRequest(),
       rewardedAdLoadCallback: RewardedAdLoadCallback(
-        onAdLoaded: (ad) {
+        onAdLoaded: (ad) async {
           setState(() {
             _rewardedAd = ad;
+            print(' ad is loading');
+            EasyLoading.dismiss();
           });
+          await OfflineLibraryBox.updateAdsWatched(
+              OfflineLibraryBox.userBox!.values.first.adsWatched + 1);
         },
-        onAdFailedToLoad: (error) {
+        onAdFailedToLoad: (error) async {
           setState(() {
             _rewardedAd = null;
+            EasyLoading.dismiss();
           });
+          if (OfflineLibraryBox.userBox!.values.first.adsWatched < 10) {
+            if (isLoggedIn == true) {
+              int newPoints = userPoints + 1;
+              await HomeController.to
+                  .updatePoints(
+                      LoginBox.userBox!.values.first.authToken, newPoints)
+                  .then((pointsUpdated) async {
+                var userdata = await HomeController.to
+                    .getuserData(LoginBox.userBox!.values.first.authToken);
+                print('Points updated in logged In mode');
+                // Perform additional actions with userdata
+              });
+            } else {
+              int newPoints = offlineUserPoints++;
+              await OfflineLibraryBox.updatePoints(newPoints.toString());
+              print('Points updated in logged off mode');
+            }
+
+            Get.snackbar(
+                "Seems like the Ad failed to load but here's a token on us",
+                'You have recieved a token');
+          }
         },
       ),
     );
@@ -108,6 +144,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
             await OfflineLibraryBox.updatePoints(newPoints.toString());
             print('Points updated in logged off mode');
           }
+          Get.snackbar('You have recieved a token', "");
         },
       );
     }
@@ -217,7 +254,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
             child: Column(
               children: [
                 TextWidget(
-                  text: 'Rewards',
+                  text: 'Tokens',
                   fontSize: 24,
                   color: MyColors.blackColor,
                   fontWeight: FontWeight.w600,
@@ -260,7 +297,14 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 ),
                 CustomContainer(
                     onpressed: () {
-                      showRewardedAd();
+                      if (OfflineLibraryBox.userBox!.values.first.adsWatched <
+                          10) {
+                        showRewardedAd();
+                      } else {
+                        Get.snackbar(
+                            'You have reached the total Ads limit for today',
+                            "");
+                      }
                       // int newpoints = userPoints + 1;
                     },
                     height: size.height * 0.038,
@@ -589,9 +633,8 @@ class SkipButton extends StatelessWidget {
               // HomeController.to.setUserName('');
               HomeController.to.index = 0;
 
-              Get.offAll(() => const HomeScreen(
+              Get.offAll(() => const OnBoarding(
                     isLoggedIn: false,
-                    initialIndex: 0,
                   ));
             },
             height: size.height * 0.035,
@@ -1751,23 +1794,55 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
       }
     });
     checkOwnershipStatus();
-    createRewardedAd();
+    createRewardedAd;
   }
 
   void createRewardedAd() {
+    if (EasyLoading.isShow) {
+      return;
+    }
+    EasyLoading.show(status: 'loading...');
+    EasyLoading.dismiss();
     RewardedAd.load(
       adUnitId: AdMobService.rewardedAdUnitId!,
       request: const AdRequest(),
       rewardedAdLoadCallback: RewardedAdLoadCallback(
-        onAdLoaded: (ad) {
+        onAdLoaded: (ad) async {
           setState(() {
             _rewardedAd = ad;
+            print(' ad is loading');
+            EasyLoading.dismiss();
           });
+          await OfflineLibraryBox.updateAdsWatched(
+              OfflineLibraryBox.userBox!.values.first.adsWatched + 1);
         },
-        onAdFailedToLoad: (error) {
+        onAdFailedToLoad: (error) async {
           setState(() {
             _rewardedAd = null;
+            EasyLoading.dismiss();
           });
+          if (OfflineLibraryBox.userBox!.values.first.adsWatched < 10) {
+            if (isLoggedIn == true) {
+              int newPoints = userPoints + 1;
+              await HomeController.to
+                  .updatePoints(
+                      LoginBox.userBox!.values.first.authToken, newPoints)
+                  .then((pointsUpdated) async {
+                var userdata = await HomeController.to
+                    .getuserData(LoginBox.userBox!.values.first.authToken);
+                print('Points updated in logged In mode');
+                // Perform additional actions with userdata
+              });
+            } else {
+              int newPoints = offlineUserPoints++;
+              await OfflineLibraryBox.updatePoints(newPoints.toString());
+              print('Points updated in logged off mode');
+            }
+
+            Get.snackbar(
+                "Seems like the Ad failed to load but here's a token on us",
+                'You have recieved a token');
+          }
         },
       ),
     );
@@ -1805,6 +1880,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             await OfflineLibraryBox.updatePoints(newPoints.toString());
             print('Points updated in logged off mode');
           }
+          Get.snackbar('You have recieved a token', "");
         }
       });
     }
@@ -1893,7 +1969,11 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         },
       );
       if (userWantsToWatchVideo) {
-        showRewardedAd();
+        if (OfflineLibraryBox.userBox!.values.first.adsWatched < 10) {
+          showRewardedAd();
+        } else {
+          Get.snackbar('You have reached the total Ads limit for today', "");
+        }
       }
     }
 
@@ -2084,30 +2164,16 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                             CustomContainer(
                                               onpressed: () async {
                                                 if (isLoggedIn) {
-                                                  var _ =
-                                                      await OfflineLibraryBox
-                                                          .addToCart(
-                                                              widget.book);
+                                                  var _ = await HomeController
+                                                      .addToCart(widget.book);
 
                                                   setState(() {
-                                                    HomeController
-                                                            .to.cartItems =
-                                                        OfflineLibraryBox
-                                                            .userBox!
-                                                            .values
-                                                            .first
-                                                            .cartItems;
                                                     HomeController
                                                             .to
                                                             .totalCartItemCount
                                                             .value =
-                                                        OfflineLibraryBox
-                                                            .userBox!
-                                                            .values
-                                                            .first
-                                                            .cartItems
-                                                            .length;
-                                                    ;
+                                                        HomeController.to
+                                                            .cartItems.length;
                                                   });
 
                                                   showModalBottomSheet(
@@ -2261,30 +2327,16 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                             CustomContainer(
                                               onpressed: () async {
                                                 if (isLoggedIn) {
-                                                  var _ =
-                                                      await OfflineLibraryBox
-                                                          .addToCart(
-                                                              widget.book);
+                                                  var _ = await HomeController
+                                                      .addToCart(widget.book);
 
                                                   setState(() {
-                                                    HomeController
-                                                            .to.cartItems =
-                                                        OfflineLibraryBox
-                                                            .userBox!
-                                                            .values
-                                                            .first
-                                                            .cartItems;
                                                     HomeController
                                                             .to
                                                             .totalCartItemCount
                                                             .value =
-                                                        OfflineLibraryBox
-                                                            .userBox!
-                                                            .values
-                                                            .first
-                                                            .cartItems
-                                                            .length;
-                                                    ;
+                                                        HomeController.to
+                                                            .cartItems.length;
                                                   });
 
                                                   showModalBottomSheet(
@@ -2785,11 +2837,13 @@ class PdfViewerScreen extends StatefulWidget {
 class _PdfViewerScreenState extends State<PdfViewerScreen> {
   final GlobalKey<SfPdfViewerState> _pdfViewerKey = GlobalKey();
   late PdfViewerController _pdfViewController;
+  late DocumentFileSavePlus documentFileSavePlus;
 
   @override
   void initState() {
     super.initState();
     _pdfViewController = PdfViewerController();
+    documentFileSavePlus = DocumentFileSavePlus();
 
     _preventSS();
   }
@@ -2827,18 +2881,20 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                 actions: [
                   IconButton(
                     icon: const Icon(Icons.file_download),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => DownloadingDialog(
-                          pdfPath: widget.pdfPath,
-                        ),
-                      );
+                    onPressed: () async {
+                      var response = await http.get(Uri.parse(widget.pdfPath));
+                      var pdfBytes = response.bodyBytes;
+                      documentFileSavePlus.saveFile(
+                          pdfBytes, "${widget.title}.pdf", "appliation/pdf");
                     },
                   ),
                   IconButton(
                     icon: const Icon(Icons.print),
-                    onPressed: () {},
+                    onPressed: () async {
+                      var response = await http.get(Uri.parse(widget.pdfPath));
+                      var pdfBytes = response.bodyBytes;
+                      await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
+                    },
                   ),
                 ],
               ),
@@ -2981,7 +3037,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   @override
   void initState() {
     super.initState();
-    createRewardedAd();
+    createRewardedAd;
     _pdfViewController = PdfViewerController();
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (play) {
@@ -3004,19 +3060,54 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   }
 
   void createRewardedAd() {
+    if (EasyLoading.isShow) {
+      return;
+    }
+    EasyLoading.show(status: 'loading...');
+    EasyLoading.dismiss();
     RewardedAd.load(
       adUnitId: AdMobService.rewardedAdUnitId!,
       request: const AdRequest(),
       rewardedAdLoadCallback: RewardedAdLoadCallback(
-        onAdLoaded: (ad) {
+        onAdLoaded: (ad) async {
           setState(() {
             _rewardedAd = ad;
+            print(' ad is loading');
+            EasyLoading.dismiss();
           });
+          await OfflineLibraryBox.updateAdsWatched(
+              OfflineLibraryBox.userBox!.values.first.adsWatched + 1);
         },
-        onAdFailedToLoad: (error) {
+        onAdFailedToLoad: (error) async {
           setState(() {
             _rewardedAd = null;
+            EasyLoading.dismiss();
           });
+          if (OfflineLibraryBox.userBox!.values.first.adsWatched < 10) {
+            if (isLoggedIn == true) {
+              int newPoints = userPoints + 1;
+              await HomeController.to
+                  .updatePoints(
+                      LoginBox.userBox!.values.first.authToken, newPoints)
+                  .then((pointsUpdated) async {
+                var userdata = await HomeController.to
+                    .getuserData(LoginBox.userBox!.values.first.authToken);
+                print('Points updated in logged In mode');
+                // Perform additional actions with userdata
+              });
+            } else {
+              int newPoints = offlineUserPoints++;
+              await OfflineLibraryBox.updatePoints(newPoints.toString());
+              print('Points updated in logged off mode');
+            }
+
+            Get.snackbar(
+                "Seems like the Ad failed to load but here's a token on us",
+                'You have recieved a token');
+
+            await OfflineLibraryBox.updateAdsWatched(
+                OfflineLibraryBox.userBox!.values.first.adsWatched + 1);
+          }
         },
       ),
     );
@@ -3068,6 +3159,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
             print('Points updated in logged off mode');
             Get.snackbar("${widget.song.title} is Redeemed for 24 hours", '');
           }
+          Get.snackbar('You have recieved a token', "");
         }
       });
     }
@@ -3112,8 +3204,8 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         context: context,
         builder: (BuildContext dialogContext) {
           return AlertDialog(
-            title: const Text('Watch a Video'),
-            content: const Text('Watch a video to earn a reward?'),
+            title: const Text('Not Enough Tokens'),
+            content: const Text('Watch a video to earn a token?'),
             actions: <Widget>[
               TextButton(
                 child: const Text('No'),
@@ -3138,7 +3230,11 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         },
       );
       if (userWantsToWatchVideo) {
-        showRewardedAd();
+        if (OfflineLibraryBox.userBox!.values.first.adsWatched < 10) {
+          showRewardedAd();
+        } else {
+          Get.snackbar('You have reached the total Ads limit for today', "");
+        }
       }
     } else if (requiredTokens <= userPoints) {
       var _ = await OfflineLibraryBox.updateLibrary(widget.song.detail);
@@ -3181,7 +3277,11 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         },
       );
       if (userWantsToWatchVideo) {
-        showRewardedAd();
+        if (OfflineLibraryBox.userBox!.values.first.adsWatched < 10) {
+          showRewardedAd();
+        } else {
+          Get.snackbar('You have reached the total Ads limit for today', "");
+        }
       }
     }
 
@@ -3317,7 +3417,18 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                       onPressed: () {
                                                         earnRewardOpenPDF =
                                                             true;
-                                                        showRewardedAd();
+                                                        if (OfflineLibraryBox
+                                                                .userBox!
+                                                                .values
+                                                                .first
+                                                                .adsWatched <
+                                                            10) {
+                                                          showRewardedAd();
+                                                        } else {
+                                                          Get.snackbar(
+                                                              'You have reached the total Ads limit for today',
+                                                              "");
+                                                        }
                                                         Navigator.of(
                                                                 dialogContext)
                                                             .pop();
@@ -3420,30 +3531,16 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                               CustomContainer(
                                                 onpressed: () async {
                                                   if (isLoggedIn) {
-                                                    var _ =
-                                                        await OfflineLibraryBox
-                                                            .addToCart(
-                                                                widget.song);
+                                                    var _ = await HomeController
+                                                        .addToCart(widget.song);
 
                                                     setState(() {
-                                                      HomeController
-                                                              .to.cartItems =
-                                                          OfflineLibraryBox
-                                                              .userBox!
-                                                              .values
-                                                              .first
-                                                              .cartItems;
                                                       HomeController
                                                               .to
                                                               .totalCartItemCount
                                                               .value =
-                                                          OfflineLibraryBox
-                                                              .userBox!
-                                                              .values
-                                                              .first
-                                                              .cartItems
-                                                              .length;
-                                                      ;
+                                                          HomeController.to
+                                                              .cartItems.length;
                                                     });
 
                                                     showModalBottomSheet(
@@ -3605,30 +3702,16 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                               CustomContainer(
                                                 onpressed: () async {
                                                   if (isLoggedIn) {
-                                                    var _ =
-                                                        await OfflineLibraryBox
-                                                            .addToCart(
-                                                                widget.song);
+                                                    var _ = await HomeController
+                                                        .addToCart(widget.song);
 
                                                     setState(() {
-                                                      HomeController
-                                                              .to.cartItems =
-                                                          OfflineLibraryBox
-                                                              .userBox!
-                                                              .values
-                                                              .first
-                                                              .cartItems;
                                                       HomeController
                                                               .to
                                                               .totalCartItemCount
                                                               .value =
-                                                          OfflineLibraryBox
-                                                              .userBox!
-                                                              .values
-                                                              .first
-                                                              .cartItems
-                                                              .length;
-                                                      ;
+                                                          HomeController.to
+                                                              .cartItems.length;
                                                     });
 
                                                     showModalBottomSheet(
@@ -4051,8 +4134,6 @@ class _CartScreenState extends State<CartScreen> {
   @override
   void initState() {
     super.initState();
-    HomeController.to.cartItems =
-        OfflineLibraryBox.userBox!.values.first.cartItems;
     calculateTotalAmount();
     calculateTotalTokens();
   }
@@ -4070,10 +4151,10 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   void calculateTotalAmount() {
-    HomeController.to.totalAmount.value = 0.0;
+    HomeController.to.totalAmount.value = 0;
 
     for (var cartItem in HomeController.to.cartItems) {
-      HomeController.to.totalAmount.value += double.parse(calculatePrice(
+      HomeController.to.totalAmount.value += int.parse(calculatePrice(
           cartItem.pages,
           cartItem.amazonPrice,
           cartItem.detail.startsWith('BK')));
@@ -4112,6 +4193,28 @@ class _CartScreenState extends State<CartScreen> {
     }
   }
 
+  List<Map<String, dynamic>> getItemsDetails() {
+    List<Map<String, dynamic>> itemsList = [];
+
+    for (var cartItem in HomeController.to.cartItems) {
+      String sku = cartItem.detail;
+      String title = cartItem.title;
+      String artist = cartItem.artist;
+      String price = calculatePrice(cartItem.pages, cartItem.amazonPrice,
+          cartItem.detail.startsWith('BK'));
+
+      itemsList.add({
+        "sku": sku,
+        "title": title,
+        "artist": artist,
+        "price": price,
+        "quantity": 1,
+      });
+    }
+
+    return itemsList;
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -4123,222 +4226,223 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Widget loggedInView(Size size) {
-    return Stack(
-      alignment: Alignment.bottomCenter,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: CustomAppBar(
-                  action: InkWell(
-                    onTap: () {
-                      Get.back();
-                    },
-                    child: Icon(
-                      Icons.arrow_back_ios_new,
-                      color: MyColors.primaryColor,
+    return Obx(() {
+      return Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: CustomAppBar(
+                    action: InkWell(
+                      onTap: () {
+                        Get.back();
+                      },
+                      child: Icon(
+                        Icons.arrow_back_ios_new,
+                        color: MyColors.primaryColor,
+                      ),
                     ),
-                  ),
-                  title: 'Your Cart',
-                ),
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: HomeController.to.cartItems.length,
-                          itemBuilder: (context, index) {
-                            ListItemModel cartItem =
-                                HomeController.to.cartItems[index];
-                            return CartItem(
-                              list: cartItem,
-                              onRemove: () async {
-                                var _ = await OfflineLibraryBox.removeFromCart(
-                                    cartItem);
-                                setState(() {
-                                  HomeController.to.cartItems =
-                                      OfflineLibraryBox
-                                          .userBox!.values.first.cartItems;
-                                  HomeController.to.totalCartItemCount.value =
-                                      OfflineLibraryBox.userBox!.values.first
-                                          .cartItems.length;
-                                });
-                                calculateTotalAmount();
-                                calculateTotalTokens();
-                                if (_) {
-                                  Get.snackbar(
-                                      "Item removed from the cart", '');
-                                }
-                              },
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 35),
-                      ],
-                    ),
+                    title: 'Your Cart',
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
-        ValueListenableBuilder(
-            valueListenable: HomeController.to.totalAmount,
-            builder: (context, amount, c) {
-              return ValueListenableBuilder(
-                  valueListenable: HomeController.to.totalTokensAwarded,
-                  builder: (context, token, c) {
-                    return Positioned(
-                        bottom: 0,
-                        right: 0,
-                        left: 0,
-                        child: InkWell(
-                          onTap: () {
-                            Get.to(UsePaypal(
-                              sandboxMode: true,
-                              clientId:
-                                  "ATN1ojtdC_jqrMRvAll4ZplkSCuYse4s_o592nubbS-VjubMp2mBIlBgg1qXhSkxrxcFCqe2RxygL7_R",
-                              secretKey:
-                                  "EJH5ZtrISXwW3HkfiGJ8eI4PnR0vUPz7gPpaZtNMNKPGB1nkRygPa3H7A09IdpxhnrASDq1-LdIWFjBl",
-                              returnURL: "https://samplesite.com/return",
-                              cancelURL: "https://samplesite.com/cancel",
-                              transactions: [
-                                {
-                                  "amount": {
-                                    "total": amount.toString(),
-                                    "currency": "USD",
-                                    "details": {
-                                      "subtotal": amount.toString(),
-                                      "shipping": '0',
-                                      "shipping_discount": 0
-                                    }
-                                  },
-                                }
-                              ],
-                              note:
-                                  "Contact us for any questions on your order.",
-                              onSuccess: (Map params) async {
-                                if (mounted) {
-                                  print("onSuccess: $params");
-                                  for (var cartItem
-                                      in HomeController.to.cartItems) {
-                                    await OfflineLibraryBox.updateLibrary(
-                                        cartItem.detail);
-                                  }
-                                  var a = OfflineLibrary.encodeOfflineLibrary(
-                                      OfflineLibraryBox.userBox!.values.first
-                                          .offlineLibrary);
-                                  print(a);
-                                  int newPoints = userPoints + token;
-                                  var submitted = await HomeController.to
-                                      .updateLibrary(
-                                          LoginBox
-                                              .userBox!.values.first.authToken,
-                                          a);
-                                  var pointsUpdated = await HomeController.to
-                                      .updatePoints(
-                                          LoginBox
-                                              .userBox!.values.first.authToken,
-                                          newPoints);
-                                  var userdata = await HomeController.to
-                                      .getuserData(LoginBox
-                                          .userBox!.values.first.authToken);
-
-                                  await OfflineLibraryBox.emptyCart();
-
-                                  Get.snackbar(
-                                      "You've been awarded $token tokens", '');
-
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: HomeController.to.cartItems.length,
+                            itemBuilder: (context, index) {
+                              ListItemModel cartItem =
+                                  HomeController.to.cartItems[index];
+                              return CartItem(
+                                list: cartItem,
+                                onRemove: () async {
+                                  var _ = await HomeController.removeFromCart(
+                                      cartItem);
                                   setState(() {
-                                    HomeController.to.cartItems =
-                                        OfflineLibraryBox
-                                            .userBox!.values.first.cartItems;
-
                                     HomeController.to.totalCartItemCount.value =
-                                        OfflineLibraryBox.userBox!.values.first
-                                            .cartItems.length;
+                                        HomeController.to.cartItems.length;
                                   });
                                   calculateTotalAmount();
-                                } else {
-                                  Get.snackbar(
-                                      "Problem occured in making the payment",
-                                      '');
-                                }
-                              },
-                              onError: (error) {
-                                print("onError: $error");
-                              },
-                              onCancel: (params) {
-                                print('cancelled: $params');
-                              },
-                            ));
-                          },
-                          child: Container(
-                            height: 100,
-                            decoration: BoxDecoration(
-                              color: MyColors.grey,
-                            ),
-                            child: Column(
-                              children: [
-                                Container(
-                                  height: 50,
-                                  margin: EdgeInsets.symmetric(horizontal: 15),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      TextWidget(
-                                        text: 'Total Amount : ',
-                                        color: MyColors
-                                            .blackColor, // Set the text color
-                                      ),
-                                      Spacer(),
-                                      TextWidget(
-                                        text: " \$ $amount",
-                                        color: MyColors
-                                            .blackColor, // Set the text color
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    color: MyColors.bottomColor,
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      TextWidget(
-                                        text: 'Pay with ',
-                                        color: MyColors
-                                            .whiteColor, // Set the text color
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Image.asset(
-                                            'assets/images/paypal.png',
-                                            height: 45),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
+                                  calculateTotalTokens();
+                                  if (_) {
+                                    Get.snackbar(
+                                        "Item removed from the cart", '');
+                                  }
+                                },
+                              );
+                            },
                           ),
-                        ));
-                  });
-            })
-      ],
-    );
+                          const SizedBox(height: 35),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ValueListenableBuilder(
+              valueListenable: HomeController.to.totalAmount,
+              builder: (context, amount, c) {
+                return ValueListenableBuilder(
+                    valueListenable: HomeController.to.totalTokensAwarded,
+                    builder: (context, token, c) {
+                      return Positioned(
+                          bottom: 0,
+                          right: 0,
+                          left: 0,
+                          child: InkWell(
+                            onTap: () {
+                              Get.to(UsePaypal(
+                                sandboxMode: true,
+                                clientId:
+                                    "ATN1ojtdC_jqrMRvAll4ZplkSCuYse4s_o592nubbS-VjubMp2mBIlBgg1qXhSkxrxcFCqe2RxygL7_R",
+                                secretKey:
+                                    "EJH5ZtrISXwW3HkfiGJ8eI4PnR0vUPz7gPpaZtNMNKPGB1nkRygPa3H7A09IdpxhnrASDq1-LdIWFjBl",
+                                returnURL: "https://samplesite.com/return",
+                                cancelURL: "https://samplesite.com/cancel",
+                                transactions: [
+                                  {
+                                    "amount": {
+                                      "total": amount.toString(),
+                                      "currency": "USD",
+                                      "details": {
+                                        "subtotal": amount.toString(),
+                                        "shipping": '0',
+                                        "shipping_discount": 0
+                                      },
+                                      "item_list": {
+                                        "items": getItemsDetails(),
+                                      }
+                                    },
+                                  }
+                                ],
+                                note:
+                                    "Contact us for any questions on your order.",
+                                onSuccess: (Map params) async {
+                                  if (mounted) {
+                                    print("onSuccess: $params");
+                                    for (var cartItem
+                                        in HomeController.to.cartItems) {
+                                      await OfflineLibraryBox.updateLibrary(
+                                          cartItem.detail);
+                                    }
+                                    var a = OfflineLibrary.encodeOfflineLibrary(
+                                        OfflineLibraryBox.userBox!.values.first
+                                            .offlineLibrary);
+                                    print(a);
+                                    int newPoints = userPoints + token;
+                                    var submitted = await HomeController.to
+                                        .updateLibrary(
+                                            LoginBox.userBox!.values.first
+                                                .authToken,
+                                            a);
+                                    var pointsUpdated = await HomeController.to
+                                        .updatePoints(
+                                            LoginBox.userBox!.values.first
+                                                .authToken,
+                                            newPoints);
+                                    var userdata = await HomeController.to
+                                        .getuserData(LoginBox
+                                            .userBox!.values.first.authToken);
+
+                                    await HomeController.emptyCart();
+
+                                    Get.snackbar(
+                                        "You've been awarded $token tokens",
+                                        '');
+
+                                    setState(() {
+                                      HomeController
+                                              .to.totalCartItemCount.value =
+                                          HomeController.to.cartItems.length;
+                                    });
+                                    calculateTotalAmount();
+                                  } else {
+                                    Get.snackbar(
+                                        "Problem occured in making the payment",
+                                        '');
+                                  }
+                                },
+                                onError: (error) {
+                                  print("onError: $error");
+                                },
+                                onCancel: (params) {
+                                  print('cancelled: $params');
+                                },
+                              ));
+                            },
+                            child: Container(
+                              height: 100,
+                              decoration: BoxDecoration(
+                                color: MyColors.grey,
+                              ),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: 50,
+                                    margin:
+                                        EdgeInsets.symmetric(horizontal: 15),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        TextWidget(
+                                          text: 'Total Amount : ',
+                                          color: MyColors
+                                              .blackColor, // Set the text color
+                                        ),
+                                        Spacer(),
+                                        TextWidget(
+                                          text: " \$ $amount",
+                                          color: MyColors
+                                              .blackColor, // Set the text color
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      color: MyColors.bottomColor,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        TextWidget(
+                                          text: 'Pay with ',
+                                          color: MyColors
+                                              .whiteColor, // Set the text color
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Image.asset(
+                                              'assets/images/paypal.png',
+                                              height: 45),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ));
+                    });
+              })
+        ],
+      );
+    });
   }
 
   Widget notLoggedInView(Size size) {
@@ -4433,10 +4537,10 @@ class _CartItemState extends State<CartItem> {
         calculatePrice(widget.list.pages, widget.list.amazonPrice, isBook);
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      padding: const EdgeInsets.all(5),
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      padding: EdgeInsets.symmetric(vertical: 5),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(10),
         color: MyColors.whiteColor,
         boxShadow: [
           BoxShadow(
@@ -4475,8 +4579,8 @@ class _CartItemState extends State<CartItem> {
             alignment: Alignment.bottomCenter,
             children: [
               Positioned(
-                right: -5,
-                top: -3,
+                top: 0,
+                right: 0,
                 child: InkWell(
                   onTap: () {
                     widget.onRemove();
@@ -4487,110 +4591,114 @@ class _CartItemState extends State<CartItem> {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(13),
-                child: Container(
-                  height: size.height * 0.23,
-                  width: size.width * 0.37,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TextWidget(
-                        text: widget.list.title,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      height: size.height * 0.23,
+                      width: size.width * 0.37,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextWidget(
+                            text: widget.list.title,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            color: MyColors.blackColor,
+                          ),
+                          SizedBox(height: size.height * 0.0175),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextWidget(
+                                  text: 'SKU: ',
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w300,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  color: MyColors.blackColor,
+                                ),
+                              ),
+                              Expanded(
+                                child: TextWidget(
+                                  text: widget.list.detail,
+                                  fontSize: 11,
+                                  color: MyColors.blackColor,
+                                  fontWeight: FontWeight.w300,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: size.height * 0.009),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextWidget(
+                                  text: 'Artist: ',
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w300,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  color: MyColors.blackColor,
+                                ),
+                              ),
+                              Expanded(
+                                child: TextWidget(
+                                  text: widget.list.artist,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w300,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  color: MyColors.blackColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: size.height * 0.009),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextWidget(
+                                  text: 'Pages:',
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w300,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  color: MyColors.blackColor,
+                                ),
+                              ),
+                              Expanded(
+                                child: TextWidget(
+                                  text: widget.list.pages,
+                                  fontSize: 11,
+                                  color: MyColors.blackColor,
+                                  fontWeight: FontWeight.w300,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                      bottom: 0,
+                      child: TextWidget(
+                        text: 'Total Price : \$ $price',
+                        color: MyColors.blackColor,
+                        fontWeight: FontWeight.bold,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
-                        color: MyColors.blackColor,
-                      ),
-                      SizedBox(height: size.height * 0.0175),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextWidget(
-                              text: 'SKU: ',
-                              fontSize: 11,
-                              fontWeight: FontWeight.w300,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              color: MyColors.blackColor,
-                            ),
-                          ),
-                          Expanded(
-                            child: TextWidget(
-                              text: widget.list.detail,
-                              fontSize: 11,
-                              color: MyColors.blackColor,
-                              fontWeight: FontWeight.w300,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: size.height * 0.009),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextWidget(
-                              text: 'Artist: ',
-                              fontSize: 11,
-                              fontWeight: FontWeight.w300,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              color: MyColors.blackColor,
-                            ),
-                          ),
-                          Expanded(
-                            child: TextWidget(
-                              text: widget.list.artist,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w300,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              color: MyColors.blackColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: size.height * 0.009),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextWidget(
-                              text: 'Pages:',
-                              fontSize: 11,
-                              fontWeight: FontWeight.w300,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              color: MyColors.blackColor,
-                            ),
-                          ),
-                          Expanded(
-                            child: TextWidget(
-                              text: widget.list.pages,
-                              fontSize: 11,
-                              color: MyColors.blackColor,
-                              fontWeight: FontWeight.w300,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+                      ))
+                ],
               ),
-              Positioned(
-                  bottom: 0,
-                  child: TextWidget(
-                    text: 'Total Price : \$ $price',
-                    color: MyColors.blackColor,
-                    fontWeight: FontWeight.bold,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ))
             ],
           ),
         ],

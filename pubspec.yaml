@@ -58,6 +58,8 @@ dependencies:
   url_launcher:
   flutter_paypal:
   timezone:
+  document_file_save_plus:
+  flutter_easyloading:
   
 
 

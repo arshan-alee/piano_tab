@@ -6,6 +6,7 @@ import 'package:paino_tab/controllers/home_controller.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
 import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
+import 'package:paino_tab/screens/onboarding_screen.dart';
 import 'package:paino_tab/screens/sign_up.dart';
 import 'package:paino_tab/services/ad_mob_service.dart';
 import 'package:paino_tab/utils/colors.dart';
@@ -179,10 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           var message = LoginBox.userBox!.values.first.message;
                           Get.snackbar(message, '');
                           HomeController.to.index = 0;
-                          Get.offAll(() => const HomeScreen(
-                                isLoggedIn: true,
-                                initialIndex: 0,
-                              ));
+                          Get.offAll(() => const OnBoarding(isLoggedIn: true));
 
                           final userDataLibrary =
                               UserDataBox.userBox!.values.first.userDataLibrary;

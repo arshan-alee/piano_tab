@@ -80,10 +80,8 @@ class _SplashScreenState extends State<SplashScreen> {
     final duration = nextDay.difference(now);
 
     // Schedule a daily task at 12 am PST
-    Timer(duration, () {
-      // Call the function to reset points
-      OfflineLibraryBox.updatePoints('0');
-      // Reschedule the task for the next day
+    Timer(duration, () async {
+      await OfflineLibraryBox.setDefault();
       scheduleDailyTask();
     });
   }

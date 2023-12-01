@@ -22,7 +22,7 @@ class OfflineLibraryAdapter extends TypeAdapter<OfflineLibrary> {
       offlineLibrary: (fields[2] as List?)?.cast<String>(),
       favourites: (fields[3] as List?)?.cast<String>(),
       rating: fields[4] as double?,
-      cartItems: (fields[5] as List?)?.cast<ListItemModel>(),
+      adsWatched: fields[5] as int?,
     );
   }
 
@@ -41,7 +41,7 @@ class OfflineLibraryAdapter extends TypeAdapter<OfflineLibrary> {
       ..writeByte(4)
       ..write(obj.rating)
       ..writeByte(5)
-      ..write(obj.cartItems);
+      ..write(obj.adsWatched);
   }
 
   @override
