@@ -109,31 +109,31 @@ class HomeController extends GetxController {
         recentList.add(song);
         recentCount++;
       }
-      if (difficultyCount < 8 && song.difficulty == "Beginner") {
+      if (difficultyCount < 10 && song.difficulty == "Beginner") {
         ez.add(song);
         difficultyCount++;
       }
-      if (twentyonepilotCount < 8 && song.artist == "Twenty One Pilots") {
+      if (twentyonepilotCount < 10 && song.artist == "Twenty One Pilots") {
         twentyone.add(song);
         twentyonepilotCount++;
       }
-      if (popCount < 8 && song.difficulty == "Beginner") {
-        ez.add(song);
-        popCount++;
-      }
-      if (contempCount < 8 && song.genre == "Contemporary") {
+      // if (popCount < 10 && song.difficulty == "Beginner") {
+      //   ez.add(song);
+      //   popCount++;
+      // }
+      if (contempCount < 10 && song.genre == "Contemporary") {
         contemp.add(song);
         contempCount++;
       }
-      if (popCount < 8 && song.genre == "Pop") {
+      if (popCount < 10 && song.genre == "Pop") {
         popsng.add(song);
         popCount++;
       }
-      if (classicCount < 8 && song.genre == "Classical") {
+      if (classicCount < 10 && song.genre == "Classical") {
         clsscal.add(song);
         classicCount++;
       }
-      if (tvfilmCount < 8 && song.genre == "TV / Film") {
+      if (tvfilmCount < 10 && song.genre == "TV / Film") {
         tvflm.add(song);
         tvfilmCount++;
       }

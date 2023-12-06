@@ -32,7 +32,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
   Color color = MyColors.darkGrey;
   bool isLoggedIn = OfflineLibraryBox.userBox!.values.first.isLoggedIn;
   late PdfViewerController _pdfViewController;
-  RewardedAd? _rewardedAd;
+  RewardedInterstitialAd? _rewardedAd;
   int userPoints = int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
   int offlineUserPoints =
       int.tryParse(OfflineLibraryBox.userBox!.values.first.points) ?? 0;
@@ -45,7 +45,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
     _pdfViewController = PdfViewerController();
 
-    createRewardedAd;
+    super.initState();
+    createRewardedAd();
     // HomeController.to.getUserName().then((value) {
     //   if (value != null) {
     //     setState(() {
@@ -60,7 +61,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
     //     });
     //   }
     // });
-    super.initState();
   }
 
   void createRewardedAd() {
@@ -69,10 +69,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
     }
     EasyLoading.show(status: 'loading...');
     EasyLoading.dismiss();
-    RewardedAd.load(
-      adUnitId: AdMobService.rewardedAdUnitId!,
+    RewardedInterstitialAd.load(
+      adUnitId: AdMobService.rewardedInterstitialAdUnitId!,
       request: const AdRequest(),
-      rewardedAdLoadCallback: RewardedAdLoadCallback(
+      rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
         onAdLoaded: (ad) async {
           setState(() {
             _rewardedAd = ad;
@@ -152,6 +152,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
           Get.snackbar('You have recieved a token', "");
         },
       );
+      _rewardedAd = null;
     }
   }
 
@@ -484,10 +485,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                   index = 4;
                                                 });
                                                 if (await canLaunchUrl(Uri.parse(
-                                                    'https://www.amazon.com/'))) {
+                                                    'https://www.amazon.com/Piano-Tab-Keyboards-Paperback-English/s?k=Piano+Tab&rh=n%3A1769%2Cp_n_feature_eighteen_browse-bin%3A8622846011%2Cp_n_feature_nine_browse-bin%3A3291437011'))) {
                                                   await launchUrl(
                                                     Uri.parse(
-                                                        'https://www.amazon.com/'),
+                                                        'https://www.amazon.com/Piano-Tab-Keyboards-Paperback-English/s?k=Piano+Tab&rh=n%3A1769%2Cp_n_feature_eighteen_browse-bin%3A8622846011%2Cp_n_feature_nine_browse-bin%3A3291437011'),
                                                   );
                                                 } else {
                                                   throw Exception(
@@ -588,9 +589,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                                       bc) {
                                                                 return PdfViewerScreen(
                                                                     pdfPath:
-                                                                        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                                                                        'assets/Guide to Read Piano Tab.pdf',
                                                                     title:
-                                                                        "Guide");
+                                                                        "Guide",
+                                                                    type:
+                                                                        'asset');
                                                               });
                                                         },
                                                       ),
@@ -749,6 +752,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
                             text: 'Follow us on',
                             color: MyColors.blackColor,
                             fontSize: 16,
+                            onTap: () {
+                              print(OfflineLibraryBox
+                                  .userBox!.values.first.adsWatched);
+                            },
                           ),
                           Divider(
                             height: 12,
@@ -756,26 +763,63 @@ class _CustomDrawerState extends State<CustomDrawer> {
                           ),
                           Row(
                             children: [
-                              Image.asset(
-                                'assets/images/instagram.png',
-                                height: 18,
-                                color: MyColors.blueColor,
+                              GestureDetector(
+                                onTap: () async {
+                                  if (await canLaunchUrl(Uri.parse(
+                                      'https://instagram.com/pianotab'))) {
+                                    await launchUrl(
+                                      Uri.parse(
+                                          'https://instagram.com/pianotab'),
+                                    );
+                                  } else {
+                                    throw Exception(
+                                        'Could not launch https://instagram.com/pianotab');
+                                  }
+                                },
+                                child: Image.asset(
+                                  'assets/images/instagram.png',
+                                  height: 18,
+                                  color: MyColors.blueColor,
+                                ),
                               ),
-                              const SizedBox(
-                                width: 10,
+                              const SizedBox(width: 10),
+                              GestureDetector(
+                                onTap: () async {
+                                  if (await canLaunchUrl(Uri.parse(
+                                      'https://www.facebook.com/groups/857114521121364/?ref=share'))) {
+                                    await launchUrl(
+                                      Uri.parse(
+                                          'https://www.facebook.com/groups/857114521121364/?ref=share'),
+                                    );
+                                  } else {
+                                    throw Exception(
+                                        'Could not launch https://www.facebook.com/groups/857114521121364/?ref=share');
+                                  }
+                                },
+                                child: Image.asset(
+                                  'assets/images/facebook_1.png',
+                                  height: 18,
+                                  color: MyColors.blueColor,
+                                ),
                               ),
-                              Image.asset(
-                                'assets/images/facebook_1.png',
-                                height: 18,
-                                color: MyColors.blueColor,
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Image.asset(
-                                'assets/images/twitter_1.png',
-                                height: 18,
-                                color: MyColors.blueColor,
+                              const SizedBox(width: 10),
+                              GestureDetector(
+                                onTap: () async {
+                                  if (await canLaunchUrl(Uri.parse(
+                                      'https://x.com/PianoVisionTab'))) {
+                                    await launchUrl(
+                                      Uri.parse('https://x.com/PianoVisionTab'),
+                                    );
+                                  } else {
+                                    throw Exception(
+                                        'Could not launch https://x.com/PianoVisionTab');
+                                  }
+                                },
+                                child: Image.asset(
+                                  'assets/images/twitter-x.png',
+                                  height: 18,
+                                  color: MyColors.blueColor,
+                                ),
                               ),
                               const Spacer(),
                               InkWell(

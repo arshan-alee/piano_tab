@@ -121,6 +121,9 @@ class _HomePageState extends State<HomePage> {
                   color: MyColors.blackColor,
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
+                  onTap: () {
+                    print(HomeController.to.popsng.length);
+                  },
                 ),
                 const Divider(
                   height: 6,

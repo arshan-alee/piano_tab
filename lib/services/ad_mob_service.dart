@@ -8,6 +8,13 @@ class AdMobService {
     } else {
       return 'ca-app-pub-3940256099942544/5224354917';
     }
-    return null;
+  }
+
+  static String? get rewardedInterstitialAdUnitId {
+    if (Platform.isAndroid) {
+      return 'ca-app-pub-8389406233953842/8983244317';
+    } else {
+      return 'ca-app-pub-8389406233953842/1184629435';
+    }
   }
 }

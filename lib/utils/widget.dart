@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
@@ -48,7 +49,7 @@ class CustomAppBar extends StatefulWidget {
 }
 
 class _CustomAppBarState extends State<CustomAppBar> {
-  RewardedAd? _rewardedAd;
+  RewardedInterstitialAd? _rewardedAd;
   int userPoints = int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
   int offlineUserPoints =
       int.tryParse(OfflineLibraryBox.userBox!.values.first.points) ?? 0;
@@ -57,7 +58,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
   @override
   void initState() {
     super.initState();
-    createRewardedAd;
+    createRewardedAd();
   }
 
   void createRewardedAd() {
@@ -66,10 +67,10 @@ class _CustomAppBarState extends State<CustomAppBar> {
     }
     EasyLoading.show(status: 'loading...');
     EasyLoading.dismiss();
-    RewardedAd.load(
-      adUnitId: AdMobService.rewardedAdUnitId!,
+    RewardedInterstitialAd.load(
+      adUnitId: AdMobService.rewardedInterstitialAdUnitId!,
       request: const AdRequest(),
-      rewardedAdLoadCallback: RewardedAdLoadCallback(
+      rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
         onAdLoaded: (ad) async {
           setState(() {
             _rewardedAd = ad;
@@ -147,6 +148,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
           Get.snackbar('You have recieved a token', "");
         },
       );
+      _rewardedAd = null;
     }
   }
 
@@ -1240,48 +1242,54 @@ class RecentReleasedWidget extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        CustomContainer(
-                          onpressed: () {},
-                          height: 19.h,
-                          width: tokenWidth,
-                          color: MyColors.whiteColor,
-                          borderRadius: 40,
-                          borderColor: MyColors.transparent,
-                          borderWidth: 0,
-                          widget: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              const CircleAvatar(
-                                backgroundImage:
-                                    AssetImage('assets/images/logo_2.png'),
-                                maxRadius: 8,
+                        Visibility(
+                            visible: HomeController.to.index != 3,
+                            child: CustomContainer(
+                              onpressed: () {},
+                              height: 19.h,
+                              width: tokenWidth,
+                              color: MyColors.whiteColor,
+                              borderRadius: 40,
+                              borderColor: MyColors.transparent,
+                              borderWidth: 0,
+                              widget: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  const CircleAvatar(
+                                    backgroundImage:
+                                        AssetImage('assets/images/logo_2.png'),
+                                    maxRadius: 8,
+                                  ),
+                                  TextWidget(
+                                    fontSize: tokenTextSize,
+                                    text: tokenText,
+                                    color: MyColors.blackColor,
+                                  ),
+                                ],
                               ),
-                              TextWidget(
-                                fontSize: tokenTextSize,
-                                text: tokenText,
-                                color: MyColors.blackColor,
-                              ),
-                            ],
-                          ),
-                        ),
-                        CustomContainer(
-                            onpressed: () {},
-                            height: size.height * 0.028,
-                            width: size.width * 0.10,
-                            color: MyColors.whiteColor,
-                            borderRadius: 40,
-                            borderColor: MyColors.transparent,
-                            borderWidth: 0,
-                            widget: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                TextWidget(
-                                  text: '\$ $price',
-                                  color: MyColors.blackColor,
-                                  fontSize: 12.sp,
-                                )
-                              ],
-                            ))
+                            )),
+                        Visibility(
+                            visible: HomeController.to.index != 3,
+                            child: CustomContainer(
+                                onpressed: () {},
+                                height: size.height * 0.028,
+                                width: size.width * 0.10,
+                                color: MyColors.whiteColor,
+                                borderRadius: 40,
+                                borderColor: MyColors.transparent,
+                                borderWidth: 0,
+                                widget: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    TextWidget(
+                                      text: '\$ $price',
+                                      color: MyColors.blackColor,
+                                      fontSize: 12.sp,
+                                    )
+                                  ],
+                                )))
                       ],
                     )
                   ],
@@ -1770,7 +1778,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   bool earnReward = false;
   final player = AudioPlayer();
   late Timer timer;
-  RewardedAd? _rewardedAd;
+  RewardedInterstitialAd? _rewardedAd;
   int userPoints = int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
   int offlineUserPoints =
       int.tryParse(OfflineLibraryBox.userBox!.values.first.points) ?? 0;
@@ -1794,7 +1802,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
       }
     });
     checkOwnershipStatus();
-    createRewardedAd;
+    createRewardedAd();
   }
 
   void createRewardedAd() {
@@ -1803,10 +1811,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     }
     EasyLoading.show(status: 'loading...');
     EasyLoading.dismiss();
-    RewardedAd.load(
-      adUnitId: AdMobService.rewardedAdUnitId!,
+    RewardedInterstitialAd.load(
+      adUnitId: AdMobService.rewardedInterstitialAdUnitId!,
       request: const AdRequest(),
-      rewardedAdLoadCallback: RewardedAdLoadCallback(
+      rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
         onAdLoaded: (ad) async {
           setState(() {
             _rewardedAd = ad;
@@ -1883,6 +1891,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
           Get.snackbar('You have recieved a token', "");
         }
       });
+      _rewardedAd = null;
     }
   }
 
@@ -2022,755 +2031,796 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     bool isLoggedIn = OfflineLibraryBox.userBox!.values.first.isLoggedIn;
     String bookPrice = calculateBookPrice(widget.book.amazonPrice);
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: CustomAppBar(
-                  action: InkWell(
-                    onTap: () {
-                      Get.back();
-                    },
-                    child: Icon(
-                      Icons.arrow_back_ios_new,
-                      color: MyColors.primaryColor,
-                    ),
-                  ),
-                  title: widget.book.title),
-            ),
-            Expanded(
-              flex: 1,
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: size.height * 0.03,
-                    ),
-                    Row(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Container(
-                            height: size.height * 0.29,
-                            width: size.width * 0.36,
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: NetworkImage(widget.book.imageUrl),
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                                color: MyColors.darkBlue),
-                            child: Stack(
-                              children: [
-                                hide == true
-                                    ? BackdropFilter(
-                                        filter: ImageFilter.blur(
-                                            sigmaX: 2, sigmaY: 2),
-                                        child: Container(
-                                          color: Colors.black.withOpacity(0.1),
-                                        ),
-                                      )
-                                    : const SizedBox(),
-                                Center(
-                                    child: InkWell(
-                                  onTap: () {
-                                    player.pause();
-                                    showModalBottomSheet(
-                                        context: context,
-                                        isScrollControlled: true,
-                                        builder: (BuildContext bc) {
-                                          return PdfViewerScreen(
-                                              pdfPath: isSongInLibrary
-                                                  ? HomeController.to
-                                                      .getOriginalbookPdfSource(
-                                                          widget.book.detail)
-                                                  : HomeController.to
-                                                      .getSamplePdfSource(
-                                                          widget.book.detail),
-                                              title: widget.book.title);
-                                        });
-                                  },
-                                  child: Icon(
-                                    CupertinoIcons.eye_fill,
-                                    size: 40,
-                                    color: MyColors.whiteColor,
-                                  ),
-                                )),
-                              ],
-                            ),
-                          ),
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: CustomAppBar(
+                      action: InkWell(
+                        onTap: () {
+                          Get.back();
+                        },
+                        child: Icon(
+                          Icons.arrow_back_ios_new,
+                          color: MyColors.primaryColor,
                         ),
-                        Stack(
-                          alignment: Alignment.bottomCenter,
+                      ),
+                      title: widget.book.title),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: size.height * 0.03,
+                        ),
+                        Row(
                           children: [
-                            Container(
-                              height: size.height * 0.29,
-                              width: size.width * 0.54,
-                              padding: const EdgeInsets.only(left: 15),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  !isSongInLibrary
-                                      ? Row(
-                                          children: [
-                                            CustomContainer(
-                                              onpressed: () {
-                                                AddtoLibrary(context);
-                                              },
-                                              height: size.height * 0.04,
-                                              width: size.width * 0.2,
-                                              color: MyColors.whiteColor,
-                                              borderRadius: 8,
-                                              borderColor:
-                                                  MyColors.primaryColor,
-                                              borderWidth: 1.5,
-                                              widget: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                children: [
-                                                  CircleAvatar(
-                                                    backgroundColor:
-                                                        MyColors.transparent,
-                                                    backgroundImage:
-                                                        const AssetImage(
-                                                            'assets/images/logo_2.png'),
-                                                    maxRadius: 8,
-                                                  ),
-                                                  Container(
-                                                    constraints: BoxConstraints(
-                                                      maxWidth: size.width *
-                                                          0.15, // Adjust based on your layout
-                                                    ),
-                                                    child: Text(
-                                                      '${calculateRequiredTokens(int.parse(widget.book.pages))}',
-                                                      style: TextStyle(
-                                                        color:
-                                                            MyColors.blueColor,
-                                                        fontSize: 14,
-                                                      ),
-                                                      maxLines: 2,
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Container(
+                                height: size.height * 0.29,
+                                width: size.width * 0.36,
+                                decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(widget.book.imageUrl),
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: MyColors.darkBlue),
+                                child: Stack(
+                                  children: [
+                                    hide == true
+                                        ? BackdropFilter(
+                                            filter: ImageFilter.blur(
+                                                sigmaX: 2, sigmaY: 2),
+                                            child: Container(
+                                              color:
+                                                  Colors.black.withOpacity(0.1),
                                             ),
-                                            SizedBox(
-                                              width: size.width * 0.01,
-                                            ),
-                                            CustomContainer(
-                                              onpressed: () async {
-                                                if (isLoggedIn) {
-                                                  var _ = await HomeController
-                                                      .addToCart(widget.book);
-
-                                                  setState(() {
-                                                    HomeController
-                                                            .to
-                                                            .totalCartItemCount
-                                                            .value =
-                                                        HomeController.to
-                                                            .cartItems.length;
-                                                  });
-
-                                                  showModalBottomSheet(
-                                                    context: context,
-                                                    isScrollControlled: true,
-                                                    builder: (BuildContext bc) {
-                                                      return CartScreen();
-                                                    },
-                                                  );
-                                                  if (_) {
-                                                    Get.snackbar(
-                                                        "Added to Cart", "");
-                                                  } else {
-                                                    Get.snackbar(
-                                                        "Already in Cart", "");
-                                                  }
-                                                } else {
-                                                  Get.snackbar(
-                                                      "You need to Sign In to Add item to cart",
-                                                      "");
-                                                }
-                                              },
-                                              height: size.height * 0.04,
-                                              width: size.width * 0.15,
-                                              color: MyColors.primaryColor,
-                                              borderRadius: 10,
-                                              borderColor: MyColors.transparent,
-                                              borderWidth: 0,
-                                              widget: Center(
-                                                child: TextWidget(
-                                                  text: '\$ $bookPrice',
-                                                  fontSize: 14,
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: size.width * 0.01,
-                                            ),
-                                            const Spacer(),
-                                            InkWell(
-                                              onTap: () {
-                                                setState(() {
-                                                  final favorites =
-                                                      OfflineLibraryBox
-                                                          .userBox!
-                                                          .values
-                                                          .first
-                                                          .favourites;
-                                                  if (favorites.contains(
-                                                      widget.book.detail)) {
-                                                    // Remove from favorites
-                                                    OfflineLibraryBox
-                                                        .removeFromFavorites(
-                                                            widget.book.detail);
-                                                    if (OfflineLibraryBox
-                                                        .userBox!
-                                                        .values
-                                                        .first
-                                                        .isLoggedIn) {
-                                                      Get.snackbar(
-                                                          "Removed from favorites",
-                                                          "");
-                                                    }
-                                                  } else {
-                                                    // Add to favorites
-                                                    OfflineLibraryBox
-                                                        .addToFavorites(
-                                                            widget.book.detail);
-                                                    if (OfflineLibraryBox
-                                                        .userBox!
-                                                        .values
-                                                        .first
-                                                        .isLoggedIn) {
-                                                      Get.snackbar(
-                                                          "Added to favorites",
-                                                          "");
-                                                    }
-                                                  }
-                                                });
-                                              },
-                                              child: Icon(
-                                                OfflineLibraryBox.userBox!
-                                                        .values.first.favourites
-                                                        .contains(
+                                          )
+                                        : const SizedBox(),
+                                    Center(
+                                        child: InkWell(
+                                      onTap: () {
+                                        player.pause();
+                                        showModalBottomSheet(
+                                            context: context,
+                                            isScrollControlled: true,
+                                            builder: (BuildContext bc) {
+                                              return PdfViewerScreen(
+                                                pdfPath: isSongInLibrary
+                                                    ? HomeController.to
+                                                        .getOriginalbookPdfSource(
                                                             widget.book.detail)
-                                                    ? CupertinoIcons.heart_fill
-                                                    : CupertinoIcons.heart,
-                                                color: MyColors.red,
-                                              ),
-                                            )
-
-                                            // CustomContainer(
-                                            //   onpressed: () {},
-                                            //   height: size.height * 0.04,
-                                            //   width: size.width * 0.2,
-                                            //   color: MyColors.primaryColor,
-                                            //   borderRadius: 10,
-                                            //   borderColor: MyColors.transparent,
-                                            //   borderWidth: 0,
-                                            //   widget: const Center(
-                                            //     child: TextWidget(
-                                            //       text: 'Book',
-                                            //       fontSize: 14,
-                                            //     ),
-                                            //   ),
-                                            // ),
-                                            // SizedBox(
-                                            //   width: 5,
-                                            // ),
-                                            // InkWell(
-                                            //   onTap: () {
-                                            //     setState(() {
-                                            //       final favorites = OfflineLibraryBox
-                                            //           .userBox!.values.first.favourites;
-                                            //       if (favorites
-                                            //           .contains(widget.song.detail)) {
-                                            //         // Remove from favorites
-                                            //         OfflineLibraryBox
-                                            //             .removeFromFavorites(
-                                            //                 widget.song.detail);
-                                            //         if (OfflineLibraryBox.userBox!
-                                            //             .values.first.isLoggedIn) {
-                                            //           Get.snackbar(
-                                            //               "Removed from favorites", "");
-                                            //         }
-                                            //       } else {
-                                            //         // Add to favorites
-                                            //         OfflineLibraryBox.addToFavorites(
-                                            //             widget.song.detail);
-                                            //         if (OfflineLibraryBox.userBox!
-                                            //             .values.first.isLoggedIn) {
-                                            //           Get.snackbar(
-                                            //               "Added to favorites", "");
-                                            //         }
-                                            //       }
-                                            //     });
-                                            //   },
-                                            //   child: Icon(
-                                            //     OfflineLibraryBox.userBox!.values.first
-                                            //             .favourites
-                                            //             .contains(widget.song.detail)
-                                            //         ? CupertinoIcons.heart_fill
-                                            //         : CupertinoIcons.heart,
-                                            //     color: MyColors.red,
-                                            //   ),
-                                            // )
-                                          ],
-                                        )
-                                      : Row(
-                                          children: [
-                                            CustomContainer(
-                                              onpressed: () async {
-                                                if (isLoggedIn) {
-                                                  var _ = await HomeController
-                                                      .addToCart(widget.book);
-
-                                                  setState(() {
-                                                    HomeController
-                                                            .to
-                                                            .totalCartItemCount
-                                                            .value =
-                                                        HomeController.to
-                                                            .cartItems.length;
-                                                  });
-
-                                                  showModalBottomSheet(
-                                                    context: context,
-                                                    isScrollControlled: true,
-                                                    builder: (BuildContext bc) {
-                                                      return CartScreen();
-                                                    },
-                                                  );
-                                                  if (_) {
-                                                    Get.snackbar(
-                                                        "Added to Cart", "");
-                                                  } else {
-                                                    Get.snackbar(
-                                                        "Already in Cart", "");
-                                                  }
-                                                } else {
-                                                  Get.snackbar(
-                                                      "You need to Sign In to Add item to cart",
-                                                      "");
-                                                }
-                                              },
-                                              height: size.height * 0.04,
-                                              width: size.width * 0.125,
-                                              color: MyColors.primaryColor,
-                                              borderRadius: 10,
-                                              borderColor: MyColors.transparent,
-                                              borderWidth: 0,
-                                              widget: Center(
-                                                child: TextWidget(
-                                                  text: '\$ $bookPrice',
-                                                  fontSize: 14,
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: size.width * 0.01,
-                                            ),
-                                            const Spacer(),
-                                            InkWell(
-                                              onTap: () {
-                                                setState(() {
-                                                  final favorites =
-                                                      OfflineLibraryBox
-                                                          .userBox!
-                                                          .values
-                                                          .first
-                                                          .favourites;
-                                                  if (favorites.contains(
-                                                      widget.book.detail)) {
-                                                    // Remove from favorites
-                                                    OfflineLibraryBox
-                                                        .removeFromFavorites(
-                                                            widget.book.detail);
-                                                    if (OfflineLibraryBox
-                                                        .userBox!
-                                                        .values
-                                                        .first
-                                                        .isLoggedIn) {
-                                                      Get.snackbar(
-                                                          "Removed from favorites",
-                                                          "");
-                                                    }
-                                                  } else {
-                                                    // Add to favorites
-                                                    OfflineLibraryBox
-                                                        .addToFavorites(
-                                                            widget.book.detail);
-                                                    if (OfflineLibraryBox
-                                                        .userBox!
-                                                        .values
-                                                        .first
-                                                        .isLoggedIn) {
-                                                      Get.snackbar(
-                                                          "Added to favorites",
-                                                          "");
-                                                    }
-                                                  }
-                                                });
-                                              },
-                                              child: Icon(
-                                                OfflineLibraryBox.userBox!
-                                                        .values.first.favourites
-                                                        .contains(
-                                                            widget.book.detail)
-                                                    ? CupertinoIcons.heart_fill
-                                                    : CupertinoIcons.heart,
-                                                color: MyColors.red,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                  Column(
-                                    children: [
-                                      SizedBox(
-                                        height: size.height * 0.03,
+                                                    : HomeController.to
+                                                        .getSamplePdfSource(
+                                                            widget.book.detail),
+                                                title: widget.book.title,
+                                                type: 'network',
+                                              );
+                                            });
+                                      },
+                                      child: Icon(
+                                        CupertinoIcons.eye_fill,
+                                        size: 40,
+                                        color: MyColors.whiteColor,
                                       ),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: TextWidget(
-                                              text: 'Artist:',
-                                              fontSize: 15,
-                                              color: MyColors.blackColor,
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: TextWidget(
-                                              text: widget.book.artist,
-                                              fontSize: 15,
-                                              color: MyColors.blackColor,
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: size.height * 0.01,
-                                      ),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: TextWidget(
-                                              text: 'Genre',
-                                              fontSize: 15,
-                                              color: MyColors.blackColor,
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: TextWidget(
-                                              text: widget.book.genre,
-                                              fontSize: 15,
-                                              color: MyColors.blackColor,
-                                              overflow: TextOverflow
-                                                  .ellipsis, // Display ellipsis if the text overflows
-                                              maxLines:
-                                                  1, // Limit text to a single line
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: size.height * 0.01,
-                                      ),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: TextWidget(
-                                              text: 'Difficulty:',
-                                              fontSize: 15,
-                                              color: MyColors.blackColor,
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: TextWidget(
-                                              text: widget.book.difficulty,
-                                              fontSize: 14,
-                                              color: MyColors.blackColor,
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 1,
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: size.height * 0.01,
-                                      ),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: TextWidget(
-                                              text: 'Pages:',
-                                              fontSize: 15,
-                                              color: MyColors.blackColor,
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: TextWidget(
-                                              text: widget.book.pages,
-                                              fontSize: 15,
-                                              color: MyColors.blackColor,
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 1,
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: size.height * 0.01,
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                    )),
+                                  ],
+                                ),
                               ),
                             ),
                             Stack(
                               alignment: Alignment.bottomCenter,
                               children: [
                                 Container(
-                                    height: size.height * 0.076,
-                                    width: size.width * 0.54,
-                                    padding: const EdgeInsets.only(
-                                      left: 15,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: InkWell(
-                                            onTap: () {
-                                              setState(() {
-                                                play = !play;
-                                                print(HomeController.to
-                                                    .getMp3Source(
-                                                        widget.book.detail));
-                                              });
-
-                                              // Play or pause audio when the "Play" button is tapped
-                                              if (play) {
-                                                playAudioFromUrl(HomeController
-                                                    .to
-                                                    .getMp3Source(
-                                                        widget.book.detail));
-                                              } else {
-                                                player.pause();
-                                              }
-                                            },
-                                            child: Icon(
-                                              play
-                                                  ? Icons
-                                                      .pause_circle_outline_outlined
-                                                  : Icons
-                                                      .play_circle_outline_outlined,
-                                              size: 28,
-                                              color: MyColors.blueColor,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: size.width * 0.02,
-                                        ),
-                                        Expanded(
-                                          flex: 6,
-                                          child: SliderTheme(
-                                            data: const SliderThemeData(
-                                                trackHeight: 3,
-                                                trackShape:
-                                                    RectangularSliderTrackShape(),
-                                                overlayShape:
-                                                    RoundSliderOverlayShape(
-                                                        overlayRadius: 8),
-                                                thumbShape:
-                                                    RoundSliderThumbShape(
-                                                        enabledThumbRadius: 5)),
-                                            child: Slider(
-                                              min: 0,
-                                              max: maxValue,
-                                              value: value,
-                                              inactiveColor: MyColors.greyColor,
-                                              onChanged: (newValue) {
-                                                setState(() {
-                                                  value = newValue;
-                                                });
-                                              },
-                                            ),
-                                          ),
-                                        )
-                                      ],
-                                    )),
-                                Row(
-                                  children: [
-                                    TextWidget(
-                                      text: formatTime(value.toInt()),
-                                      color: MyColors.blackColor,
-                                      fontSize: 12,
-                                    ),
-                                    SizedBox(
-                                      width: size.width * 0.01,
-                                    ),
-                                    Container(
-                                      height: size.height * 0.022,
-                                      width: 1,
-                                      color: MyColors.greyColor,
-                                    ),
-                                    SizedBox(
-                                      width: size.width * 0.01,
-                                    ),
-                                    TextWidget(
-                                      text: formatTime(maxValue.toInt()),
-                                      color: MyColors.blackColor,
-                                      fontSize: 12,
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: size.height * 0.015,
-                    ),
-                    Row(
-                      children: [
-                        CustomContainer(
-                            onpressed: () async {
-                              final url = Uri.parse(widget.book.imageUrl);
-                              final response = await http.get(url);
-                              final bytes = response.bodyBytes;
-                              final temp = await getTemporaryDirectory();
-                              final path = '${temp.path}/image.jpg';
-                              File(path).writeAsBytesSync(bytes);
-                              final XFile xfile = XFile(path);
-                              await Share.shareXFiles([xfile],
-                                  text: '${widget.book.title}');
-                            },
-                            height: size.height * 0.04,
-                            width: size.width * 0.22,
-                            color: MyColors.whiteColor,
-                            borderRadius: 10,
-                            borderColor: MyColors.primaryColor,
-                            borderWidth: 1.5,
-                            widget: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Expanded(
-                                  flex: 3,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
+                                  height: size.height * 0.29,
+                                  width: size.width * 0.54,
+                                  padding: const EdgeInsets.only(left: 15),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      TextWidget(
-                                        text: 'Share',
-                                        fontSize: 12,
-                                        color: MyColors.primaryColor,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                      Container(
-                                        height: size.height * 0.025,
-                                        width: 1,
-                                        color: MyColors.primaryColor
-                                            .withOpacity(0.5),
+                                      !isSongInLibrary
+                                          ? Row(
+                                              children: [
+                                                CustomContainer(
+                                                  onpressed: () {
+                                                    AddtoLibrary(context);
+                                                  },
+                                                  height: size.height * 0.04,
+                                                  width: size.width * 0.2,
+                                                  color: MyColors.whiteColor,
+                                                  borderRadius: 8,
+                                                  borderColor:
+                                                      MyColors.primaryColor,
+                                                  borderWidth: 1.5,
+                                                  widget: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    children: [
+                                                      CircleAvatar(
+                                                        backgroundColor:
+                                                            MyColors
+                                                                .transparent,
+                                                        backgroundImage:
+                                                            const AssetImage(
+                                                                'assets/images/logo_2.png'),
+                                                        maxRadius: 8,
+                                                      ),
+                                                      Container(
+                                                        constraints:
+                                                            BoxConstraints(
+                                                          maxWidth: size.width *
+                                                              0.15, // Adjust based on your layout
+                                                        ),
+                                                        child: Text(
+                                                          '${calculateRequiredTokens(int.parse(widget.book.pages))}',
+                                                          style: TextStyle(
+                                                            color: MyColors
+                                                                .blueColor,
+                                                            fontSize: 14,
+                                                          ),
+                                                          maxLines: 2,
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: size.width * 0.01,
+                                                ),
+                                                CustomContainer(
+                                                  onpressed: () async {
+                                                    if (isLoggedIn) {
+                                                      var _ =
+                                                          await HomeController
+                                                              .addToCart(
+                                                                  widget.book);
+
+                                                      setState(() {
+                                                        HomeController
+                                                                .to
+                                                                .totalCartItemCount
+                                                                .value =
+                                                            HomeController
+                                                                .to
+                                                                .cartItems
+                                                                .length;
+                                                      });
+
+                                                      showModalBottomSheet(
+                                                        context: context,
+                                                        isScrollControlled:
+                                                            true,
+                                                        builder:
+                                                            (BuildContext bc) {
+                                                          return CartScreen();
+                                                        },
+                                                      );
+                                                      if (_) {
+                                                        Get.snackbar(
+                                                            "Added to Cart",
+                                                            "");
+                                                      } else {
+                                                        Get.snackbar(
+                                                            "Already in Cart",
+                                                            "");
+                                                      }
+                                                    } else {
+                                                      Get.snackbar(
+                                                          "You need to Sign In to Add item to cart",
+                                                          "");
+                                                    }
+                                                  },
+                                                  height: size.height * 0.04,
+                                                  width: size.width * 0.15,
+                                                  color: MyColors.primaryColor,
+                                                  borderRadius: 10,
+                                                  borderColor:
+                                                      MyColors.transparent,
+                                                  borderWidth: 0,
+                                                  widget: Center(
+                                                    child: TextWidget(
+                                                      text: '\$ $bookPrice',
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: size.width * 0.01,
+                                                ),
+                                                const Spacer(),
+                                                InkWell(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      final favorites =
+                                                          OfflineLibraryBox
+                                                              .userBox!
+                                                              .values
+                                                              .first
+                                                              .favourites;
+                                                      if (favorites.contains(
+                                                          widget.book.detail)) {
+                                                        // Remove from favorites
+                                                        OfflineLibraryBox
+                                                            .removeFromFavorites(
+                                                                widget.book
+                                                                    .detail);
+                                                        if (OfflineLibraryBox
+                                                            .userBox!
+                                                            .values
+                                                            .first
+                                                            .isLoggedIn) {
+                                                          Get.snackbar(
+                                                              "Removed from favorites",
+                                                              "");
+                                                        }
+                                                      } else {
+                                                        // Add to favorites
+                                                        OfflineLibraryBox
+                                                            .addToFavorites(
+                                                                widget.book
+                                                                    .detail);
+                                                        if (OfflineLibraryBox
+                                                            .userBox!
+                                                            .values
+                                                            .first
+                                                            .isLoggedIn) {
+                                                          Get.snackbar(
+                                                              "Added to Favorites",
+                                                              "");
+                                                        }
+                                                      }
+                                                    });
+                                                  },
+                                                  child: Icon(
+                                                    OfflineLibraryBox
+                                                            .userBox!
+                                                            .values
+                                                            .first
+                                                            .favourites
+                                                            .contains(widget
+                                                                .book.detail)
+                                                        ? CupertinoIcons
+                                                            .heart_fill
+                                                        : CupertinoIcons.heart,
+                                                    color: MyColors.red,
+                                                  ),
+                                                )
+
+                                                // CustomContainer(
+                                                //   onpressed: () {},
+                                                //   height: size.height * 0.04,
+                                                //   width: size.width * 0.2,
+                                                //   color: MyColors.primaryColor,
+                                                //   borderRadius: 10,
+                                                //   borderColor: MyColors.transparent,
+                                                //   borderWidth: 0,
+                                                //   widget: const Center(
+                                                //     child: TextWidget(
+                                                //       text: 'Book',
+                                                //       fontSize: 14,
+                                                //     ),
+                                                //   ),
+                                                // ),
+                                                // SizedBox(
+                                                //   width: 5,
+                                                // ),
+                                                // InkWell(
+                                                //   onTap: () {
+                                                //     setState(() {
+                                                //       final favorites = OfflineLibraryBox
+                                                //           .userBox!.values.first.favourites;
+                                                //       if (favorites
+                                                //           .contains(widget.song.detail)) {
+                                                //         // Remove from favorites
+                                                //         OfflineLibraryBox
+                                                //             .removeFromFavorites(
+                                                //                 widget.song.detail);
+                                                //         if (OfflineLibraryBox.userBox!
+                                                //             .values.first.isLoggedIn) {
+                                                //           Get.snackbar(
+                                                //               "Removed from favorites", "");
+                                                //         }
+                                                //       } else {
+                                                //         // Add to favorites
+                                                //         OfflineLibraryBox.addToFavorites(
+                                                //             widget.song.detail);
+                                                //         if (OfflineLibraryBox.userBox!
+                                                //             .values.first.isLoggedIn) {
+                                                //           Get.snackbar(
+                                                //               "Added to favorites", "");
+                                                //         }
+                                                //       }
+                                                //     });
+                                                //   },
+                                                //   child: Icon(
+                                                //     OfflineLibraryBox.userBox!.values.first
+                                                //             .favourites
+                                                //             .contains(widget.song.detail)
+                                                //         ? CupertinoIcons.heart_fill
+                                                //         : CupertinoIcons.heart,
+                                                //     color: MyColors.red,
+                                                //   ),
+                                                // )
+                                              ],
+                                            )
+                                          : Row(
+                                              children: [
+                                                InkWell(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      final favorites =
+                                                          OfflineLibraryBox
+                                                              .userBox!
+                                                              .values
+                                                              .first
+                                                              .favourites;
+                                                      if (favorites.contains(
+                                                          widget.book.detail)) {
+                                                        // Remove from favorites
+                                                        OfflineLibraryBox
+                                                            .removeFromFavorites(
+                                                                widget.book
+                                                                    .detail);
+                                                        if (OfflineLibraryBox
+                                                            .userBox!
+                                                            .values
+                                                            .first
+                                                            .isLoggedIn) {
+                                                          Get.snackbar(
+                                                              "Removed from favorites",
+                                                              "");
+                                                        }
+                                                      } else {
+                                                        // Add to favorites
+                                                        OfflineLibraryBox
+                                                            .addToFavorites(
+                                                                widget.book
+                                                                    .detail);
+                                                        if (OfflineLibraryBox
+                                                            .userBox!
+                                                            .values
+                                                            .first
+                                                            .isLoggedIn) {
+                                                          Get.snackbar(
+                                                              "Added to Favorites",
+                                                              "");
+                                                        }
+                                                      }
+                                                    });
+                                                  },
+                                                  child: Icon(
+                                                    OfflineLibraryBox
+                                                            .userBox!
+                                                            .values
+                                                            .first
+                                                            .favourites
+                                                            .contains(widget
+                                                                .book.detail)
+                                                        ? CupertinoIcons
+                                                            .heart_fill
+                                                        : CupertinoIcons.heart,
+                                                    color: MyColors.red,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                      Column(
+                                        children: [
+                                          SizedBox(
+                                            height: size.height * 0.03,
+                                          ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: TextWidget(
+                                                  text: 'Artist:',
+                                                  fontSize: 15,
+                                                  color: MyColors.blackColor,
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: TextWidget(
+                                                  text: widget.book.artist,
+                                                  fontSize: 15,
+                                                  color: MyColors.blackColor,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: size.height * 0.01,
+                                          ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: TextWidget(
+                                                  text: 'Genre',
+                                                  fontSize: 15,
+                                                  color: MyColors.blackColor,
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: TextWidget(
+                                                  text: widget.book.genre,
+                                                  fontSize: 15,
+                                                  color: MyColors.blackColor,
+                                                  overflow: TextOverflow
+                                                      .ellipsis, // Display ellipsis if the text overflows
+                                                  maxLines:
+                                                      1, // Limit text to a single line
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: size.height * 0.01,
+                                          ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: TextWidget(
+                                                  text: 'Difficulty:',
+                                                  fontSize: 15,
+                                                  color: MyColors.blackColor,
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: TextWidget(
+                                                  text: widget.book.difficulty,
+                                                  fontSize: 14,
+                                                  color: MyColors.blackColor,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  maxLines: 1,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: size.height * 0.01,
+                                          ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: TextWidget(
+                                                  text: 'Pages:',
+                                                  fontSize: 15,
+                                                  color: MyColors.blackColor,
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: TextWidget(
+                                                  text: widget.book.pages,
+                                                  fontSize: 15,
+                                                  color: MyColors.blackColor,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  maxLines: 1,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: size.height * 0.01,
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
                                 ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Icon(
-                                    CupertinoIcons.share,
-                                    size: 16,
-                                    color: MyColors.primaryColor,
-                                  ),
-                                )
-                              ],
-                            )),
-                        SizedBox(
-                          width: size.width * 0.02,
-                        ),
-                        CustomContainer(
-                          onpressed: () async {
-                            print(widget.book.amazonLink);
-                            if (await canLaunchUrl(
-                                Uri.parse(widget.book.amazonLink))) {
-                              await launchUrl(
-                                Uri.parse(widget.book.amazonLink),
-                              );
-                            } else {
-                              throw Exception(
-                                  'Could not launch ${widget.book.amazonLink}');
-                            }
-                          },
-                          height: size.height * 0.04,
-                          width: size.width * 0.2,
-                          color: MyColors.primaryColor,
-                          borderRadius: 8,
-                          borderColor: MyColors.primaryColor,
-                          borderWidth: 1.5,
-                          widget: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              CircleAvatar(
-                                backgroundColor: MyColors.transparent,
-                                backgroundImage: const AssetImage(
-                                    'assets/images/amazon.png'),
-                                maxRadius: 8,
-                              ),
-                              Flexible(
-                                child: TextWidget(
-                                  text: '\$ ${widget.book.amazonPrice}',
-                                  color: MyColors.whiteColor,
-                                  fontSize: 14,
+                                Stack(
+                                  alignment: Alignment.bottomCenter,
+                                  children: [
+                                    Container(
+                                        height: size.height * 0.076,
+                                        width: size.width * 0.54,
+                                        padding: const EdgeInsets.only(
+                                          left: 15,
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: InkWell(
+                                                onTap: () {
+                                                  setState(() {
+                                                    play = !play;
+                                                    print(HomeController.to
+                                                        .getMp3Source(widget
+                                                            .book.detail));
+                                                  });
+
+                                                  // Play or pause audio when the "Play" button is tapped
+                                                  if (play) {
+                                                    playAudioFromUrl(
+                                                        HomeController.to
+                                                            .getMp3Source(widget
+                                                                .book.detail));
+                                                  } else {
+                                                    player.pause();
+                                                  }
+                                                },
+                                                child: Icon(
+                                                  play
+                                                      ? Icons
+                                                          .pause_circle_outline_outlined
+                                                      : Icons
+                                                          .play_circle_outline_outlined,
+                                                  size: 28,
+                                                  color: MyColors.blueColor,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: size.width * 0.02,
+                                            ),
+                                            Expanded(
+                                              flex: 6,
+                                              child: SliderTheme(
+                                                data: const SliderThemeData(
+                                                    trackHeight: 3,
+                                                    trackShape:
+                                                        RectangularSliderTrackShape(),
+                                                    overlayShape:
+                                                        RoundSliderOverlayShape(
+                                                            overlayRadius: 8),
+                                                    thumbShape:
+                                                        RoundSliderThumbShape(
+                                                            enabledThumbRadius:
+                                                                5)),
+                                                child: Slider(
+                                                  min: 0,
+                                                  max: maxValue,
+                                                  value: value,
+                                                  inactiveColor:
+                                                      MyColors.greyColor,
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      value = newValue;
+                                                    });
+                                                  },
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        )),
+                                    Row(
+                                      children: [
+                                        TextWidget(
+                                          text: formatTime(value.toInt()),
+                                          color: MyColors.blackColor,
+                                          fontSize: 12,
+                                        ),
+                                        SizedBox(
+                                          width: size.width * 0.01,
+                                        ),
+                                        Container(
+                                          height: size.height * 0.022,
+                                          width: 1,
+                                          color: MyColors.greyColor,
+                                        ),
+                                        SizedBox(
+                                          width: size.width * 0.01,
+                                        ),
+                                        TextWidget(
+                                          text: formatTime(maxValue.toInt()),
+                                          color: MyColors.blackColor,
+                                          fontSize: 12,
+                                        )
+                                      ],
+                                    )
+                                  ],
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            )
+                          ],
                         ),
-                        // SizedBox(
-                        //   width: size.width * 0.02,
-                        // ),
-                        // Icon(
-                        //   Icons.playlist_add,
-                        //   size: 32,
-                        //   color: MyColors.primaryColor,
-                        // )
+                        SizedBox(
+                          height: size.height * 0.015,
+                        ),
+                        Row(
+                          children: [
+                            CustomContainer(
+                                onpressed: () async {
+                                  final url = Uri.parse(widget.book.imageUrl);
+                                  final response = await http.get(url);
+                                  final bytes = response.bodyBytes;
+                                  final temp = await getTemporaryDirectory();
+                                  final path = '${temp.path}/image.jpg';
+                                  File(path).writeAsBytesSync(bytes);
+                                  final XFile xfile = XFile(path);
+                                  await Share.shareXFiles([xfile],
+                                      text: '${widget.book.title}');
+                                },
+                                height: size.height * 0.04,
+                                width: size.width * 0.22,
+                                color: MyColors.whiteColor,
+                                borderRadius: 10,
+                                borderColor: MyColors.primaryColor,
+                                borderWidth: 1.5,
+                                widget: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Expanded(
+                                      flex: 3,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          TextWidget(
+                                            text: 'Share',
+                                            fontSize: 12,
+                                            color: MyColors.primaryColor,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                          Container(
+                                            height: size.height * 0.025,
+                                            width: 1,
+                                            color: MyColors.primaryColor
+                                                .withOpacity(0.5),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 2,
+                                      child: Icon(
+                                        CupertinoIcons.share,
+                                        size: 16,
+                                        color: MyColors.primaryColor,
+                                      ),
+                                    )
+                                  ],
+                                )),
+                            SizedBox(
+                              width: size.width * 0.02,
+                            ),
+                            CustomContainer(
+                              onpressed: () async {
+                                print(widget.book.amazonLink);
+                                if (await canLaunchUrl(
+                                    Uri.parse(widget.book.amazonLink))) {
+                                  await launchUrl(
+                                    Uri.parse(widget.book.amazonLink),
+                                  );
+                                } else {
+                                  throw Exception(
+                                      'Could not launch ${widget.book.amazonLink}');
+                                }
+                              },
+                              height: size.height * 0.04,
+                              width: size.width * 0.2,
+                              color: MyColors.primaryColor,
+                              borderRadius: 8,
+                              borderColor: MyColors.primaryColor,
+                              borderWidth: 1.5,
+                              widget: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  CircleAvatar(
+                                    backgroundColor: MyColors.transparent,
+                                    backgroundImage: const AssetImage(
+                                        'assets/images/amazon.png'),
+                                    maxRadius: 8,
+                                  ),
+                                  Flexible(
+                                    child: TextWidget(
+                                      text: '\$ ${widget.book.amazonPrice}',
+                                      color: MyColors.whiteColor,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // SizedBox(
+                            //   width: size.width * 0.02,
+                            // ),
+                            // Icon(
+                            //   Icons.playlist_add,
+                            //   size: 32,
+                            //   color: MyColors.primaryColor,
+                            // )
+                          ],
+                        ),
+                        SizedBox(
+                          height: size.height * 0.015,
+                        ),
+                        TextWidget(
+                          text: 'Description',
+                          color: MyColors.blackColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        SizedBox(
+                          height: size.height * 0.015,
+                        ),
+                        Text(widget.book.description,
+                            style: TextStyle(
+                                color: MyColors.blackColor.withOpacity(0.4),
+                                fontSize: 16.sp)),
+                        SizedBox(
+                          height: size.height * 0.02,
+                        ),
+                        SizedBox(
+                          height: size.height * 0.2,
+                        ),
                       ],
                     ),
-                    SizedBox(
-                      height: size.height * 0.015,
-                    ),
-                    TextWidget(
-                      text: 'Description',
-                      color: MyColors.blackColor,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    SizedBox(
-                      height: size.height * 0.015,
-                    ),
-                    Text(widget.book.description,
-                        style: TextStyle(
-                            color: MyColors.blackColor.withOpacity(0.4),
-                            fontSize: 16.sp)),
-                    SizedBox(
-                      height: size.height * 0.02,
-                    ),
-                    SizedBox(
-                      height: size.height * 0.2,
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+          ValueListenableBuilder(
+              valueListenable: HomeController.to.totalCartItemCount,
+              builder: (context, val, c) {
+                return Visibility(
+                    visible: val > 0,
+                    child: Positioned(
+                      bottom: 90,
+                      right: 15,
+                      child: Stack(
+                        children: [
+                          Material(
+                            elevation: 6,
+                            shape: CircleBorder(),
+                            child: FloatingActionButton(
+                              onPressed: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  builder: (BuildContext bc) {
+                                    return CartScreen();
+                                  },
+                                );
+                              },
+                              backgroundColor: MyColors.primaryColor,
+                              child: Icon(
+                                Icons.shopping_cart,
+                                color: MyColors.whiteColor,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 0,
+                            right: 0,
+                            child: Container(
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: MyColors.primaryColor,
+                                  width: 2.0,
+                                ),
+                                color: MyColors.whiteColor,
+                              ),
+                              child: Center(
+                                child: TextWidget(
+                                  text: val.toString(),
+                                  color: MyColors.primaryColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ));
+              })
+        ],
       ),
     );
   }
@@ -2824,11 +2874,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 class PdfViewerScreen extends StatefulWidget {
   final String pdfPath;
   final String title;
+  final String type;
 
-  PdfViewerScreen({
-    required this.pdfPath,
-    required this.title,
-  });
+  PdfViewerScreen(
+      {required this.pdfPath, required this.title, required this.type});
 
   @override
   _PdfViewerScreenState createState() => _PdfViewerScreenState();
@@ -2899,10 +2948,15 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                 ],
               ),
               Expanded(
-                child: SfPdfViewer.network(
-                  widget.pdfPath,
-                  controller: _pdfViewController,
-                ),
+                child: widget.type == 'network'
+                    ? SfPdfViewer.network(
+                        widget.pdfPath,
+                        controller: _pdfViewController,
+                      )
+                    : SfPdfViewer.asset(
+                        widget.pdfPath,
+                        controller: _pdfViewController,
+                      ),
               ),
             ],
           ),
@@ -3003,7 +3057,8 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   final player = AudioPlayer();
   late Timer timer;
   bool isOwned = false;
-  RewardedAd? _rewardedAd;
+  RewardedInterstitialAd? _rewardedAd;
+
   bool earnToken = false;
   bool earnReward = false;
   bool earnRewardOpenPDF = false;
@@ -3037,7 +3092,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   @override
   void initState() {
     super.initState();
-    createRewardedAd;
+    createRewardedAd();
     _pdfViewController = PdfViewerController();
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (play) {
@@ -3065,10 +3120,10 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     }
     EasyLoading.show(status: 'loading...');
     EasyLoading.dismiss();
-    RewardedAd.load(
-      adUnitId: AdMobService.rewardedAdUnitId!,
+    RewardedInterstitialAd.load(
+      adUnitId: AdMobService.rewardedInterstitialAdUnitId!,
       request: const AdRequest(),
-      rewardedAdLoadCallback: RewardedAdLoadCallback(
+      rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
         onAdLoaded: (ad) async {
           setState(() {
             _rewardedAd = ad;
@@ -3137,7 +3192,8 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                 return PdfViewerScreen(
                     pdfPath: HomeController.to
                         .getOriginalsongPdfSource(widget.song.detail),
-                    title: widget.song.title);
+                    title: widget.song.title,
+                    type: 'network');
               });
         } else if (earnToken) {
           if (isLoggedIn == true) {
@@ -3162,6 +3218,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
           Get.snackbar('You have recieved a token', "");
         }
       });
+      _rewardedAd = null;
     }
   }
 
@@ -3454,7 +3511,8 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                               .getSamplePdfSource(
                                                                   widget.song
                                                                       .detail),
-                                                      title: widget.song.title);
+                                                      title: widget.song.title,
+                                                      type: 'network');
                                                 });
                                           }
                                         },
@@ -3619,7 +3677,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                           .first
                                                           .isLoggedIn) {
                                                         Get.snackbar(
-                                                            "Added to favorites",
+                                                            "Added to Favorites",
                                                             "");
                                                       }
                                                     }
@@ -3638,15 +3696,15 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                       : CupertinoIcons.heart,
                                                   color: MyColors.red,
                                                 ),
-                                              )
-
+                                              ),
                                               // CustomContainer(
                                               //   onpressed: () {},
                                               //   height: size.height * 0.04,
                                               //   width: size.width * 0.2,
                                               //   color: MyColors.primaryColor,
                                               //   borderRadius: 10,
-                                              //   borderColor: MyColors.transparent,
+                                              //   borderColor:
+                                              //       MyColors.transparent,
                                               //   borderWidth: 0,
                                               //   widget: const Center(
                                               //     child: TextWidget(
@@ -3661,36 +3719,55 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                               // InkWell(
                                               //   onTap: () {
                                               //     setState(() {
-                                              //       final favorites = OfflineLibraryBox
-                                              //           .userBox!.values.first.favourites;
-                                              //       if (favorites
-                                              //           .contains(widget.song.detail)) {
+                                              //       final favorites =
+                                              //           OfflineLibraryBox
+                                              //               .userBox!
+                                              //               .values
+                                              //               .first
+                                              //               .favourites;
+                                              //       if (favorites.contains(
+                                              //           widget.song.detail)) {
                                               //         // Remove from favorites
                                               //         OfflineLibraryBox
                                               //             .removeFromFavorites(
-                                              //                 widget.song.detail);
-                                              //         if (OfflineLibraryBox.userBox!
-                                              //             .values.first.isLoggedIn) {
+                                              //                 widget
+                                              //                     .song.detail);
+                                              //         if (OfflineLibraryBox
+                                              //             .userBox!
+                                              //             .values
+                                              //             .first
+                                              //             .isLoggedIn) {
                                               //           Get.snackbar(
-                                              //               "Removed from favorites", "");
+                                              //               "Removed from favorites",
+                                              //               "");
                                               //         }
                                               //       } else {
                                               //         // Add to favorites
-                                              //         OfflineLibraryBox.addToFavorites(
-                                              //             widget.song.detail);
-                                              //         if (OfflineLibraryBox.userBox!
-                                              //             .values.first.isLoggedIn) {
+                                              //         OfflineLibraryBox
+                                              //             .addToFavorites(widget
+                                              //                 .song.detail);
+                                              //         if (OfflineLibraryBox
+                                              //             .userBox!
+                                              //             .values
+                                              //             .first
+                                              //             .isLoggedIn) {
                                               //           Get.snackbar(
-                                              //               "Added to favorites", "");
+                                              //               "Added to Favorites",
+                                              //               "");
                                               //         }
                                               //       }
                                               //     });
                                               //   },
                                               //   child: Icon(
-                                              //     OfflineLibraryBox.userBox!.values.first
+                                              //     OfflineLibraryBox
+                                              //             .userBox!
+                                              //             .values
+                                              //             .first
                                               //             .favourites
-                                              //             .contains(widget.song.detail)
-                                              //         ? CupertinoIcons.heart_fill
+                                              //             .contains(widget
+                                              //                 .song.detail)
+                                              //         ? CupertinoIcons
+                                              //             .heart_fill
                                               //         : CupertinoIcons.heart,
                                               //     color: MyColors.red,
                                               //   ),
@@ -3699,61 +3776,6 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                           )
                                         : Row(
                                             children: [
-                                              CustomContainer(
-                                                onpressed: () async {
-                                                  if (isLoggedIn) {
-                                                    var _ = await HomeController
-                                                        .addToCart(widget.song);
-
-                                                    setState(() {
-                                                      HomeController
-                                                              .to
-                                                              .totalCartItemCount
-                                                              .value =
-                                                          HomeController.to
-                                                              .cartItems.length;
-                                                    });
-
-                                                    showModalBottomSheet(
-                                                      context: context,
-                                                      isScrollControlled: true,
-                                                      builder:
-                                                          (BuildContext bc) {
-                                                        return CartScreen();
-                                                      },
-                                                    );
-                                                    if (_) {
-                                                      Get.snackbar(
-                                                          "Added to Cart", "");
-                                                    } else {
-                                                      Get.snackbar(
-                                                          "Already in Cart",
-                                                          "");
-                                                    }
-                                                  } else {
-                                                    Get.snackbar(
-                                                        "You need to Sign In to Add item to cart",
-                                                        "");
-                                                  }
-                                                },
-                                                height: size.height * 0.04,
-                                                width: size.width * 0.125,
-                                                color: MyColors.primaryColor,
-                                                borderRadius: 10,
-                                                borderColor:
-                                                    MyColors.transparent,
-                                                borderWidth: 0,
-                                                widget: Center(
-                                                  child: TextWidget(
-                                                    text: '\$ $songPrice',
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: size.width * 0.01,
-                                              ),
-                                              const Spacer(),
                                               InkWell(
                                                 onTap: () {
                                                   setState(() {
@@ -3790,7 +3812,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                           .first
                                                           .isLoggedIn) {
                                                         Get.snackbar(
-                                                            "Added to favorites",
+                                                            "Added to Favorites",
                                                             "");
                                                       }
                                                     }
@@ -4035,7 +4057,9 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                 File(path).writeAsBytesSync(bytes);
                                 final XFile xfile = XFile(path);
                                 await Share.shareXFiles([xfile],
-                                    text: '${widget.song.title}');
+                                    text: Platform.isAndroid
+                                        ? 'Checkout \'${widget.song.title}\' on Play Store:\nhttps://play.google.com/store/apps/details?id=com.pianotab.app'
+                                        : 'Checkout \'${widget.song.title}\' on App Store:\n https://apps.apple.com/pk/app/piano-tab/id1330123889');
                               },
                               height: size.height * 0.04,
                               width: size.width * 0.22,
@@ -4117,6 +4141,62 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
             ],
           ),
         ),
+        ValueListenableBuilder(
+            valueListenable: HomeController.to.totalCartItemCount,
+            builder: (context, val, c) {
+              return Visibility(
+                  visible: val > 0,
+                  child: Positioned(
+                    bottom: 90,
+                    right: 15,
+                    child: Stack(
+                      children: [
+                        Material(
+                          elevation: 6,
+                          shape: CircleBorder(),
+                          child: FloatingActionButton(
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                builder: (BuildContext bc) {
+                                  return CartScreen();
+                                },
+                              );
+                            },
+                            backgroundColor: MyColors.primaryColor,
+                            child: Icon(
+                              Icons.shopping_cart,
+                              color: MyColors.whiteColor,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: Container(
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: MyColors.primaryColor,
+                                width: 2.0,
+                              ),
+                              color: MyColors.whiteColor,
+                            ),
+                            child: Center(
+                              child: TextWidget(
+                                text: val.toString(),
+                                color: MyColors.primaryColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ));
+            })
       ],
     );
   }
@@ -4204,11 +4284,10 @@ class _CartScreenState extends State<CartScreen> {
           cartItem.detail.startsWith('BK'));
 
       itemsList.add({
-        "sku": sku,
-        "title": title,
-        "artist": artist,
-        "price": price,
+        "name": sku,
         "quantity": 1,
+        "price": price,
+        "currency": "USD",
       });
     }
 
@@ -4303,6 +4382,33 @@ class _CartScreenState extends State<CartScreen> {
                           left: 0,
                           child: InkWell(
                             onTap: () {
+                              String transactionsJson = jsonEncode([
+                                {
+                                  "amount": {
+                                    "total": amount.toString(),
+                                    "currency": "USD",
+                                    "details": {
+                                      "subtotal": amount.toString(),
+                                      "shipping": '0',
+                                      "shipping_discount": 0
+                                    },
+                                    "description":
+                                        "The payment transaction description.",
+                                    "item_list": {
+                                      "items": [
+                                        {
+                                          "name": "A demo product",
+                                          "quantity": 1,
+                                          "price": '10.12',
+                                          "currency": "USD"
+                                        }
+                                      ],
+                                    }
+                                  },
+                                }
+                              ]);
+
+                              print("Transactions JSON: $transactionsJson");
                               Get.to(UsePaypal(
                                 sandboxMode: true,
                                 clientId:
@@ -4320,11 +4426,29 @@ class _CartScreenState extends State<CartScreen> {
                                         "subtotal": amount.toString(),
                                         "shipping": '0',
                                         "shipping_discount": 0
-                                      },
-                                      "item_list": {
-                                        "items": getItemsDetails(),
                                       }
                                     },
+                                    "description":
+                                        "The payment transaction description.",
+                                    // "payment_options": {
+                                    //   "allowed_payment_method":
+                                    //       "INSTANT_FUNDING_SOURCE"
+                                    // },
+                                    "item_list": {
+                                      "items": getItemsDetails(),
+
+                                      // shipping address is not required though
+                                      // "shipping_address": {
+                                      //   "recipient_name": "Jane Foster",
+                                      //   "line1": "Travis County",
+                                      //   "line2": "",
+                                      //   "city": "Austin",
+                                      //   "country_code": "US",
+                                      //   "postal_code": "73301",
+                                      //   "phone": "+00000000",
+                                      //   "state": "Texas"
+                                      // },
+                                    }
                                   }
                                 ],
                                 note:
@@ -4551,55 +4675,54 @@ class _CartItemState extends State<CartItem> {
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      child: Stack(
+        alignment: Alignment.bottomCenter,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Padding(
-              padding: const EdgeInsets.all(9),
-              child: Container(
-                height: size.height * 0.25,
-                width: size.width * 0.32,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: isBook
-                        ? NetworkImage(widget.list.imageUrl)
-                        : const AssetImage('assets/images/background.jpeg')
-                            as ImageProvider,
-                  ),
-                  borderRadius: BorderRadius.circular(10),
-                  color: MyColors.darkBlue,
-                ),
+          Positioned(
+            top: 0,
+            right: 0,
+            child: InkWell(
+              onTap: () {
+                widget.onRemove();
+              },
+              child: Icon(
+                Icons.delete,
+                color: MyColors.primaryColor,
               ),
             ),
           ),
-          Stack(
-            alignment: Alignment.bottomCenter,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Positioned(
-                top: 0,
-                right: 0,
-                child: InkWell(
-                  onTap: () {
-                    widget.onRemove();
-                  },
-                  child: Icon(
-                    Icons.delete,
-                    color: MyColors.primaryColor,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    height: size.height * 0.18,
+                    width: size.width * 0.25,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: isBook
+                            ? NetworkImage(widget.list.imageUrl)
+                            : const AssetImage('assets/images/background.jpeg')
+                                as ImageProvider,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                      color: MyColors.darkBlue,
+                    ),
                   ),
                 ),
               ),
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      height: size.height * 0.23,
-                      width: size.width * 0.37,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           TextWidget(
                             text: widget.list.title,
@@ -4609,95 +4732,83 @@ class _CartItemState extends State<CartItem> {
                             maxLines: 1,
                             color: MyColors.blackColor,
                           ),
-                          SizedBox(height: size.height * 0.0175),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TextWidget(
-                                  text: 'SKU: ',
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w300,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  color: MyColors.blackColor,
-                                ),
-                              ),
-                              Expanded(
-                                child: TextWidget(
-                                  text: widget.list.detail,
-                                  fontSize: 11,
-                                  color: MyColors.blackColor,
-                                  fontWeight: FontWeight.w300,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                ),
-                              ),
-                            ],
+                        ],
+                      ),
+                      SizedBox(height: size.height * 0.0175),
+                      Row(
+                        children: [
+                          TextWidget(
+                            text: 'SKU: ',
+                            fontSize: 11,
+                            fontWeight: FontWeight.w300,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            color: MyColors.blackColor,
                           ),
-                          SizedBox(height: size.height * 0.009),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TextWidget(
-                                  text: 'Artist: ',
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w300,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  color: MyColors.blackColor,
-                                ),
-                              ),
-                              Expanded(
-                                child: TextWidget(
-                                  text: widget.list.artist,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w300,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  color: MyColors.blackColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: size.height * 0.009),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TextWidget(
-                                  text: 'Pages:',
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w300,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  color: MyColors.blackColor,
-                                ),
-                              ),
-                              Expanded(
-                                child: TextWidget(
-                                  text: widget.list.pages,
-                                  fontSize: 11,
-                                  color: MyColors.blackColor,
-                                  fontWeight: FontWeight.w300,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                ),
-                              ),
-                            ],
+                          TextWidget(
+                            text: widget.list.detail,
+                            fontSize: 11,
+                            color: MyColors.blackColor,
+                            fontWeight: FontWeight.w300,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                  Positioned(
-                      bottom: 0,
-                      child: TextWidget(
-                        text: 'Total Price : \$ $price',
+                      SizedBox(height: size.height * 0.009),
+                      Row(
+                        children: [
+                          TextWidget(
+                            text: 'Artist: ',
+                            fontSize: 11,
+                            fontWeight: FontWeight.w300,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            color: MyColors.blackColor,
+                          ),
+                          TextWidget(
+                            text: widget.list.artist,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w300,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            color: MyColors.blackColor,
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: size.height * 0.009),
+                      Row(
+                        children: [
+                          TextWidget(
+                            text: 'Pages:',
+                            fontSize: 11,
+                            fontWeight: FontWeight.w300,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            color: MyColors.blackColor,
+                          ),
+                          TextWidget(
+                            text: widget.list.pages,
+                            fontSize: 11,
+                            color: MyColors.blackColor,
+                            fontWeight: FontWeight.w300,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: size.height * 0.019),
+                      TextWidget(
+                        text: 'Price : \$ $price',
                         color: MyColors.blackColor,
+                        fontSize: 11,
                         fontWeight: FontWeight.bold,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
-                      ))
-                ],
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
