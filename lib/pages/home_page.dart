@@ -68,24 +68,32 @@ class _HomePageState extends State<HomePage> {
     if (bgnritem) {
       isBook = beginner[selectedSongIndex].detail.startsWith("BK");
       selectedItem = beginner[selectedSongIndex];
+      print(beginner[selectedSongIndex].detail);
     } else if (twpitem) {
       isBook = twentyonepilot[selectedSongIndex].detail.startsWith("BK");
       selectedItem = twentyonepilot[selectedSongIndex];
+      print(twentyonepilot[selectedSongIndex].detail);
     } else if (popitem) {
       isBook = pop[selectedSongIndex].detail.startsWith("BK");
       selectedItem = pop[selectedSongIndex];
+      print(pop[selectedSongIndex].detail);
     } else if (contempitem) {
       isBook = contemporary[selectedSongIndex].detail.startsWith("BK");
       selectedItem = contemporary[selectedSongIndex];
+      print(contemporary[selectedSongIndex].detail);
     } else if (classicalitem) {
       isBook = classical[selectedSongIndex].detail.startsWith("BK");
       selectedItem = classical[selectedSongIndex];
+      print(classical[selectedSongIndex].detail);
     } else if (tvfilmitem) {
       isBook = tvfilm[selectedSongIndex].detail.startsWith("BK");
       selectedItem = tvfilm[selectedSongIndex];
+      print(tvfilm[selectedSongIndex].detail);
     } else if (albumItem) {
       isBook = albumList[selectedSongIndex].detail.startsWith("BK");
       selectedItem = albumList[selectedSongIndex];
+      print(albumList[selectedSongIndex].detail);
+      print(albumList[selectedSongIndex].pages);
     }
 
     await showModalBottomSheet(

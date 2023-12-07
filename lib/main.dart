@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -30,6 +31,7 @@ void main() async {
       RequestConfiguration(testDeviceIds: testDeviceIds);
   MobileAds.instance.updateRequestConfiguration(configuration);
   MobileAds.instance.initialize();
+  FlutterDownloader.initialize();
   runApp(const MyApp());
 }
 

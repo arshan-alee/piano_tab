@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_paypal/flutter_paypal.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_windowmanager/flutter_windowmanager.dart';
@@ -2931,10 +2933,14 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                   IconButton(
                     icon: const Icon(Icons.file_download),
                     onPressed: () async {
-                      var response = await http.get(Uri.parse(widget.pdfPath));
-                      var pdfBytes = response.bodyBytes;
-                      documentFileSavePlus.saveFile(
-                          pdfBytes, "${widget.title}.pdf", "appliation/pdf");
+                      showDialog(
+                        context: context,
+                        builder: (context) => DownloadingDialog(
+                          pdfPath: widget.pdfPath,
+                          title:
+                              widget.title, // Pass the PDF path to the dialog
+                        ),
+                      );
                     },
                   ),
                   IconButton(
@@ -2968,9 +2974,11 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
 
 class DownloadingDialog extends StatefulWidget {
   final String pdfPath;
+  final String title;
 
   DownloadingDialog({
     required this.pdfPath,
+    required this.title,
   });
 
   @override
@@ -2980,38 +2988,65 @@ class DownloadingDialog extends StatefulWidget {
 class _DownloadingDialogState extends State<DownloadingDialog> {
   Dio dio = Dio();
   double progress = 0.0;
+  late DocumentFileSavePlus documentFileSavePlus;
 
   void startDownloading() async {
-    const String fileName = "PDF";
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.storage,
+      //add more permission to request here.
+    ].request();
 
-    String path = await _getFilePath(fileName);
+    // String path = await _getFilePath(fileName);
+    String path = '/storage/emulated/0/Download/';
+    if (statuses[Permission.storage]!.isGranted) {
+      await FlutterDownloader.enqueue(
+        url: widget.pdfPath,
+        savedDir: path,
+        fileName: '${widget.title}.pdf',
+        showNotification: true,
+        openFileFromNotification: true,
+      );
 
-    await dio.download(
-      widget.pdfPath,
-      path,
-      onReceiveProgress: (recivedBytes, totalBytes) {
-        setState(() {
-          progress = recivedBytes / totalBytes;
-        });
+      // FlutterDownloader.registerCallback((id, status, progress) {
+      //   print(
+      //       'Download task ($id) is in status ($status) and process ($progress)');
+      //   // setState(() {
+      //   //   downloadingprogress = progress;
+      //   // });
+      // });
 
-        print(progress);
-      },
-      deleteOnError: true,
-    ).then((_) {
+      await dio.get(
+        widget.pdfPath,
+        onReceiveProgress: (recivedBytes, totalBytes) {
+          setState(() {
+            progress = recivedBytes / totalBytes;
+          });
+
+          print(progress);
+        },
+        options: Options(
+            responseType: ResponseType.bytes,
+            followRedirects: false,
+            validateStatus: (status) {
+              return status! < 500;
+            }),
+      ).then((_) {
+        Navigator.pop(context);
+        Get.snackbar(
+            '${widget.title} has been downloaded to the Downloads', '');
+      });
+    } else {
       Navigator.pop(context);
-    });
-  }
 
-  Future<String> _getFilePath(String filename) async {
-    final dir = await getApplicationDocumentsDirectory();
-    print("${dir.path}/$filename");
-    return "${dir.path}/$filename";
+      Get.snackbar('Unable to download', '');
+    }
   }
 
   @override
   void initState() {
     super.initState();
     startDownloading();
+    documentFileSavePlus = DocumentFileSavePlus();
   }
 
   @override
@@ -4057,9 +4092,10 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                 File(path).writeAsBytesSync(bytes);
                                 final XFile xfile = XFile(path);
                                 await Share.shareXFiles([xfile],
-                                    text: Platform.isAndroid
-                                        ? 'Checkout \'${widget.song.title}\' on Play Store:\nhttps://play.google.com/store/apps/details?id=com.pianotab.app'
-                                        : 'Checkout \'${widget.song.title}\' on App Store:\n https://apps.apple.com/pk/app/piano-tab/id1330123889');
+                                    text:
+                                        'Checkout ${widget.song.title} on Play Store');
+                                // 'Checkout ${widget.song.title} on Play Store:https://play.google.com/store/apps/details?id=com.pianotab.app');
+                                // : 'Checkout \'${widget.song.title}\' on App Store: https://apps.apple.com/pk/app/piano-tab/id1330123889');
                               },
                               height: size.height * 0.04,
                               width: size.width * 0.22,

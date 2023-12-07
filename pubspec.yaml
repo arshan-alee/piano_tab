@@ -60,6 +60,8 @@ dependencies:
   timezone:
   document_file_save_plus:
   flutter_easyloading:
+  permission_handler:
+  flutter_downloader: 
   
 
 
