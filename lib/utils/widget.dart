@@ -1114,7 +1114,7 @@ class RecentReleasedWidget extends StatelessWidget {
   String calculateRequiredTokens(int pages, bool isBook) {
     if (isBook) {
       double requiredTokens = 0;
-      if (pages >= 24 && pages <= 75) {
+      if (pages <= 75) {
         requiredTokens = pages * 0.5;
       } else if (pages >= 76 && pages <= 100) {
         requiredTokens = pages * 0.4;
@@ -1149,6 +1149,9 @@ class RecentReleasedWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     final bool isBook = list.detail.startsWith('BK');
+    final isSongInLibrary = OfflineLibraryBox
+        .userBox!.values.first.offlineLibrary
+        .contains(list.detail);
     final String tokenText =
         calculateRequiredTokens(int.parse(list.pages), isBook);
     double tokenWidth = 45.w;
@@ -1179,7 +1182,7 @@ class RecentReleasedWidget extends StatelessWidget {
                         fit: BoxFit.cover,
                       )
                     : Container(
-                        height: 165.h,
+                        height: HomeController.to.index != 3 ? 165.h : 190.h,
                         decoration: const BoxDecoration(
                             image: DecorationImage(
                                 image:
@@ -1200,7 +1203,7 @@ class RecentReleasedWidget extends StatelessWidget {
               ],
             ),
             Container(
-              height: 85.h,
+              height: HomeController.to.index != 3 ? 85.h : 60.h,
               width: 175.w,
               color: MyColors.darkBlue,
               child: Padding(
@@ -1237,63 +1240,97 @@ class RecentReleasedWidget extends StatelessWidget {
                         )
                       ],
                     ),
-                    Divider(
-                      thickness: 0.8,
-                      color: MyColors.lightGrey,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Visibility(
-                            visible: HomeController.to.index != 3,
-                            child: CustomContainer(
-                              onpressed: () {},
-                              height: 19.h,
-                              width: tokenWidth,
-                              color: MyColors.whiteColor,
-                              borderRadius: 40,
-                              borderColor: MyColors.transparent,
-                              borderWidth: 0,
-                              widget: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  const CircleAvatar(
-                                    backgroundImage:
-                                        AssetImage('assets/images/logo_2.png'),
-                                    maxRadius: 8,
-                                  ),
-                                  TextWidget(
-                                    fontSize: tokenTextSize,
-                                    text: tokenText,
-                                    color: MyColors.blackColor,
-                                  ),
-                                ],
-                              ),
-                            )),
-                        Visibility(
-                            visible: HomeController.to.index != 3,
-                            child: CustomContainer(
-                                onpressed: () {},
-                                height: size.height * 0.028,
-                                width: size.width * 0.10,
-                                color: MyColors.whiteColor,
-                                borderRadius: 40,
-                                borderColor: MyColors.transparent,
-                                borderWidth: 0,
-                                widget: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    TextWidget(
-                                      text: '\$ $price',
-                                      color: MyColors.blackColor,
-                                      fontSize: 12.sp,
-                                    )
-                                  ],
-                                )))
-                      ],
-                    )
+                    Visibility(
+                        visible: HomeController.to.index != 3,
+                        child: Column(
+                          children: [
+                            Divider(
+                              thickness: 0.8,
+                              color: MyColors.lightGrey,
+                            ),
+                            !isBook && int.parse(list.pages) == 1
+                                ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CustomContainer(
+                                        onpressed: () {},
+                                        height: 19.h,
+                                        width: tokenWidth,
+                                        color: MyColors.whiteColor,
+                                        borderRadius: 40,
+                                        borderColor: MyColors.transparent,
+                                        borderWidth: 0,
+                                        widget: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            const CircleAvatar(
+                                              backgroundImage: AssetImage(
+                                                  'assets/images/logo_2.png'),
+                                              maxRadius: 8,
+                                            ),
+                                            TextWidget(
+                                              fontSize: tokenTextSize,
+                                              text: tokenText,
+                                              color: MyColors.blackColor,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      CustomContainer(
+                                        onpressed: () {},
+                                        height: 19.h,
+                                        width: tokenWidth,
+                                        color: MyColors.whiteColor,
+                                        borderRadius: 40,
+                                        borderColor: MyColors.transparent,
+                                        borderWidth: 0,
+                                        widget: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            const CircleAvatar(
+                                              backgroundImage: AssetImage(
+                                                  'assets/images/logo_2.png'),
+                                              maxRadius: 8,
+                                            ),
+                                            TextWidget(
+                                              fontSize: tokenTextSize,
+                                              text: tokenText,
+                                              color: MyColors.blackColor,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      CustomContainer(
+                                          onpressed: () {},
+                                          height: size.height * 0.028,
+                                          width: size.width * 0.10,
+                                          color: MyColors.whiteColor,
+                                          borderRadius: 40,
+                                          borderColor: MyColors.transparent,
+                                          borderWidth: 0,
+                                          widget: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              TextWidget(
+                                                text: '\$ $price',
+                                                color: MyColors.blackColor,
+                                                fontSize: 12.sp,
+                                              )
+                                            ],
+                                          ))
+                                    ],
+                                  )
+                          ],
+                        ))
                   ],
                 ),
               ),
@@ -1312,7 +1349,7 @@ class NewReleasesWidget extends StatelessWidget {
   String calculateRequiredTokens(int pages, bool isBook) {
     if (isBook) {
       double requiredTokens = 0;
-      if (pages >= 24 && pages <= 75) {
+      if (pages <= 75) {
         requiredTokens = pages * 0.5;
       } else if (pages >= 76 && pages <= 100) {
         requiredTokens = pages * 0.4;
@@ -1803,6 +1840,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         });
       }
     });
+    getAudioDuration();
     checkOwnershipStatus();
     createRewardedAd();
   }
@@ -1913,7 +1951,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 
   String calculateRequiredTokens(int pages) {
     double requiredTokens = 0;
-    if (pages >= 24 && pages <= 75) {
+    if (pages <= 75) {
       requiredTokens = pages * 0.5;
     } else if (pages >= 76 && pages <= 100) {
       requiredTokens = pages * 0.4;
@@ -2091,24 +2129,61 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                         : const SizedBox(),
                                     Center(
                                         child: InkWell(
-                                      onTap: () {
+                                      onTap: () async {
                                         player.pause();
-                                        showModalBottomSheet(
-                                            context: context,
-                                            isScrollControlled: true,
-                                            builder: (BuildContext bc) {
-                                              return PdfViewerScreen(
-                                                pdfPath: isSongInLibrary
-                                                    ? HomeController.to
+                                        if (isSongInLibrary) {
+                                          // If the song is in the library, open the PDF file from the local storage
+                                          String localPdfPath =
+                                              '/storage/emulated/0/PianoTab/${widget.book.title}.pdf';
+                                          bool fileExists =
+                                              await File(localPdfPath).exists();
+
+                                          if (fileExists) {
+                                            showModalBottomSheet(
+                                              context: context,
+                                              isScrollControlled: true,
+                                              builder: (BuildContext bc) {
+                                                return PdfViewerScreen(
+                                                  pdfPath: localPdfPath,
+                                                  title: widget.book.title,
+                                                  type: 'local',
+                                                );
+                                              },
+                                            );
+                                          } else {
+                                            showModalBottomSheet(
+                                                context: context,
+                                                isScrollControlled: true,
+                                                builder: (BuildContext bc) {
+                                                  return PdfViewerScreen(
+                                                    pdfPath: HomeController.to
                                                         .getOriginalbookPdfSource(
-                                                            widget.book.detail)
-                                                    : HomeController.to
-                                                        .getSamplePdfSource(
                                                             widget.book.detail),
-                                                title: widget.book.title,
-                                                type: 'network',
-                                              );
-                                            });
+                                                    title: widget.book.title,
+                                                    type: 'network',
+                                                  );
+                                                });
+                                          }
+                                        } else {
+                                          showModalBottomSheet(
+                                              context: context,
+                                              isScrollControlled: true,
+                                              builder: (BuildContext bc) {
+                                                return PdfViewerScreen(
+                                                  pdfPath: isSongInLibrary
+                                                      ? HomeController.to
+                                                          .getOriginalbookPdfSource(
+                                                              widget
+                                                                  .book.detail)
+                                                      : HomeController.to
+                                                          .getSamplePdfSource(
+                                                              widget
+                                                                  .book.detail),
+                                                  title: widget.book.title,
+                                                  type: 'network',
+                                                );
+                                              });
+                                        }
                                       },
                                       child: Icon(
                                         CupertinoIcons.eye_fill,
@@ -2587,6 +2662,11 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                   inactiveColor:
                                                       MyColors.greyColor,
                                                   onChanged: (newValue) {
+                                                    final position = Duration(
+                                                        seconds:
+                                                            newValue.toInt());
+                                                    player.seek(position);
+                                                    player.resume();
                                                     setState(() {
                                                       value = newValue;
                                                     });
@@ -2959,10 +3039,16 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                         widget.pdfPath,
                         controller: _pdfViewController,
                       )
-                    : SfPdfViewer.asset(
-                        widget.pdfPath,
-                        controller: _pdfViewController,
-                      ),
+                    : widget.type == 'local'
+                        ? SfPdfViewer.file(
+                            File(
+                                '/storage/emulated/0/PianoTab/${widget.title}.pdf'),
+                            controller: _pdfViewController,
+                          )
+                        : SfPdfViewer.asset(
+                            widget.pdfPath,
+                            controller: _pdfViewController,
+                          ),
               ),
             ],
           ),
@@ -2997,7 +3083,7 @@ class _DownloadingDialogState extends State<DownloadingDialog> {
     ].request();
 
     // String path = await _getFilePath(fileName);
-    String path = '/storage/emulated/0/Download/';
+    String path = '/storage/emulated/0/PianoTab/';
     if (statuses[Permission.storage]!.isGranted) {
       await FlutterDownloader.enqueue(
         url: widget.pdfPath,
@@ -3204,6 +3290,9 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   }
 
   Future<void> showRewardedAd() async {
+    final isSongInLibrary = OfflineLibraryBox
+        .userBox!.values.first.offlineLibrary
+        .contains(widget.song.detail);
     if (_rewardedAd != null) {
       _rewardedAd!.fullScreenContentCallback =
           FullScreenContentCallback(onAdDismissedFullScreenContent: ((ad) {
@@ -3220,37 +3309,60 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
           print("You earned a reward");
         } else if (earnRewardOpenPDF) {
           await OfflineLibraryBox.updateLibrary(widget.song.detail);
-          showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              builder: (BuildContext bc) {
-                return PdfViewerScreen(
-                    pdfPath: HomeController.to
-                        .getOriginalsongPdfSource(widget.song.detail),
-                    title: widget.song.title,
-                    type: 'network');
-              });
-        } else if (earnToken) {
-          if (isLoggedIn == true) {
-            int newPoints = userPoints + 1;
-            await HomeController.to
-                .updatePoints(
-                    LoginBox.userBox!.values.first.authToken, newPoints)
-                .then((pointsUpdated) async {
-              var userdata = await HomeController.to
-                  .getuserData(LoginBox.userBox!.values.first.authToken);
-              print('Points updated in logged In mode');
+          if (isSongInLibrary) {
+            // If the song is in the library, open the PDF file from the local storage
+            String localPdfPath =
+                '/storage/emulated/0/PianoTab/${widget.song.title}.pdf';
+            bool fileExists = await File(localPdfPath).exists();
 
-              Get.snackbar("${widget.song.title} is added to the library", '');
-              // Perform additional actions with userdata
-            });
-          } else {
-            int newPoints = offlineUserPoints++;
-            await OfflineLibraryBox.updatePoints(newPoints.toString());
-            print('Points updated in logged off mode');
-            Get.snackbar("${widget.song.title} is Redeemed for 24 hours", '');
+            if (fileExists) {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (BuildContext bc) {
+                  return PdfViewerScreen(
+                    pdfPath: localPdfPath,
+                    title: widget.song.title,
+                    type: 'local',
+                  );
+                },
+              );
+            } else {
+              showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (BuildContext bc) {
+                    return PdfViewerScreen(
+                      pdfPath: HomeController.to
+                          .getOriginalbookPdfSource(widget.song.detail),
+                      title: widget.song.title,
+                      type: 'network',
+                    );
+                  });
+            }
+          } else if (earnToken) {
+            if (isLoggedIn == true) {
+              int newPoints = userPoints + 1;
+              await HomeController.to
+                  .updatePoints(
+                      LoginBox.userBox!.values.first.authToken, newPoints)
+                  .then((pointsUpdated) async {
+                var userdata = await HomeController.to
+                    .getuserData(LoginBox.userBox!.values.first.authToken);
+                print('Points updated in logged In mode');
+
+                Get.snackbar(
+                    "${widget.song.title} is added to the library", '');
+                // Perform additional actions with userdata
+              });
+            } else {
+              int newPoints = offlineUserPoints++;
+              await OfflineLibraryBox.updatePoints(newPoints.toString());
+              print('Points updated in logged off mode');
+              Get.snackbar("${widget.song.title} is Redeemed for 24 hours", '');
+            }
+            Get.snackbar('You have recieved a token', "");
           }
-          Get.snackbar('You have recieved a token', "");
         }
       });
       _rewardedAd = null;
@@ -3482,7 +3594,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                         : const SizedBox(),
                                     Center(
                                       child: InkWell(
-                                        onTap: () {
+                                        onTap: () async {
                                           if (!isSongInLibrary &&
                                               int.parse(widget.song.pages) ==
                                                   1) {
@@ -3532,14 +3644,55 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                             );
                                           } else {
                                             player.pause();
-                                            showModalBottomSheet(
-                                                context: context,
-                                                isScrollControlled: true,
-                                                builder: (BuildContext bc) {
-                                                  return PdfViewerScreen(
+                                            if (isSongInLibrary) {
+                                              // If the song is in the library, open the PDF file from the local storage
+                                              String localPdfPath =
+                                                  '/storage/emulated/0/PianoTab/${widget.song.title}.pdf';
+                                              bool fileExists =
+                                                  await File(localPdfPath)
+                                                      .exists();
+
+                                              if (fileExists) {
+                                                print(
+                                                    'opening from local storage');
+                                                showModalBottomSheet(
+                                                  context: context,
+                                                  isScrollControlled: true,
+                                                  builder: (BuildContext bc) {
+                                                    return PdfViewerScreen(
+                                                      pdfPath: localPdfPath,
+                                                      title: widget.song.title,
+                                                      type: 'local',
+                                                    );
+                                                  },
+                                                );
+                                              } else {
+                                                print('opening from network');
+                                                showModalBottomSheet(
+                                                    context: context,
+                                                    isScrollControlled: true,
+                                                    builder: (BuildContext bc) {
+                                                      return PdfViewerScreen(
+                                                        pdfPath: HomeController
+                                                            .to
+                                                            .getOriginalbookPdfSource(
+                                                                widget.song
+                                                                    .detail),
+                                                        title:
+                                                            widget.song.title,
+                                                        type: 'network',
+                                                      );
+                                                    });
+                                              }
+                                            } else {
+                                              showModalBottomSheet(
+                                                  context: context,
+                                                  isScrollControlled: true,
+                                                  builder: (BuildContext bc) {
+                                                    return PdfViewerScreen(
                                                       pdfPath: isSongInLibrary
                                                           ? HomeController.to
-                                                              .getOriginalsongPdfSource(
+                                                              .getOriginalbookPdfSource(
                                                                   widget.song
                                                                       .detail)
                                                           : HomeController.to
@@ -3547,8 +3700,10 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                                   widget.song
                                                                       .detail),
                                                       title: widget.song.title,
-                                                      type: 'network');
-                                                });
+                                                      type: 'network',
+                                                    );
+                                                  });
+                                            }
                                           }
                                         },
                                         child: Icon(
@@ -4037,6 +4192,11 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                 inactiveColor:
                                                     MyColors.greyColor,
                                                 onChanged: (newValue) {
+                                                  final position = Duration(
+                                                      seconds:
+                                                          newValue.toInt());
+                                                  player.seek(position);
+                                                  player.resume();
                                                   setState(() {
                                                     value = newValue;
                                                   });
@@ -4280,7 +4440,7 @@ class _CartScreenState extends State<CartScreen> {
   String calculateRequiredTokens(int pages, bool isBook) {
     if (isBook) {
       double requiredTokens = 0;
-      if (pages >= 24 && pages <= 75) {
+      if (pages <= 75) {
         requiredTokens = pages * 0.5;
       } else if (pages >= 76 && pages <= 100) {
         requiredTokens = pages * 0.4;

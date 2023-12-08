@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,6 +11,7 @@ import 'package:paino_tab/pages/song_page.dart';
 import 'package:paino_tab/screens/home_screen.dart';
 import 'package:paino_tab/utils/model.dart';
 import 'package:paino_tab/utils/widget.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../utils/colors.dart';
 
@@ -129,8 +132,16 @@ class _HomePageState extends State<HomePage> {
                   color: MyColors.blackColor,
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
-                  onTap: () {
+                  onTap: () async {
                     print(HomeController.to.popsng.length);
+
+                    final dir = Directory("storage/emulated/0/PianoTab");
+                    if ((await dir.exists())) {
+                      print("PianoTab directory exist");
+                    } else {
+                      print("PianoTab directory doesnot exist");
+                      dir.create();
+                    }
                   },
                 ),
                 const Divider(

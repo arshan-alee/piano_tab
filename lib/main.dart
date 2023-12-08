@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,6 +14,8 @@ import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
 import 'package:paino_tab/screens/splash_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +36,17 @@ void main() async {
   MobileAds.instance.updateRequestConfiguration(configuration);
   MobileAds.instance.initialize();
   FlutterDownloader.initialize();
+  final dir = Directory("storage/emulated/0/PianoTab");
+  var status = await Permission.storage.status;
+  if (!status.isGranted) {
+    await Permission.storage.request();
+  }
+  if ((await dir.exists())) {
+    print("PianoTab directory exist");
+  } else {
+    print("PianoTab directory doesnot exist");
+    dir.create();
+  }
   runApp(const MyApp());
 }
 

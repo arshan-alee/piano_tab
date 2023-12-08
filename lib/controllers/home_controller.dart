@@ -202,11 +202,8 @@ class HomeController extends GetxController {
   }
 
   List<Songs> getLibraryData(List<String> libraryItems) {
-    List<Songs> userlibrary = songs!
-        .where((song) =>
-            libraryItems.contains(song.songSku) ||
-            libraryItems.contains(song.bkSku))
-        .toList();
+    List<Songs> userlibrary =
+        songs!.where((song) => libraryItems.contains(song.songSku)).toList();
 
     return userlibrary;
   }

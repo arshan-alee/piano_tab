@@ -53,9 +53,11 @@ class _LibraryPageState extends State<LibraryPage> {
     if (favouriteItem) {
       isBook = favourites[selectedSongIndex].detail.startsWith("BK");
       selectedItem = favourites[selectedSongIndex];
+      print(favourites[selectedSongIndex].detail);
     } else if (ownedItem) {
       isBook = owned[selectedSongIndex].detail.startsWith("BK");
       selectedItem = owned[selectedSongIndex];
+      print(owned[selectedSongIndex].detail);
     }
 
     await showModalBottomSheet(

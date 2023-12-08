@@ -122,8 +122,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                     print(OfflineLibraryBox
                                         .userBox!.values.first
                                         .toJson());
-                                    print(UserDataBox
-                                        .userBox!.values.first.userDataLibrary);
+                                    print(UserDataBox.userBox!.values.first
+                                        .userDataLibrary.length);
+                                    print('Offline library');
+                                    print(OfflineLibraryBox.userBox!.values
+                                        .first.offlineLibrary.length);
                                     _pageController.animateToPage(0,
                                         duration:
                                             const Duration(milliseconds: 10),
