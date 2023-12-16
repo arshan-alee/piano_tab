@@ -1124,7 +1124,7 @@ class RecentReleasedWidget extends StatelessWidget {
       return '${requiredTokens.round()}'; // Round to the nearest integer
     } else {
       if (pages == 1) {
-        return 'Watch video';
+        return 'Watch to earn';
       } else if (pages >= 2 && pages <= 5) {
         return '${(pages * 3).round()}';
       } else {
@@ -1155,10 +1155,10 @@ class RecentReleasedWidget extends StatelessWidget {
     final String tokenText =
         calculateRequiredTokens(int.parse(list.pages), isBook);
     double tokenWidth = 45.w;
-    double tokenTextSize = 12.0.sp;
+    double tokenTextSize = MediaQuery.of(context).size.width * 0.028;
     if (tokenText.length > 6) {
-      tokenWidth = 85;
-      tokenTextSize = 8;
+      tokenWidth = 130.w;
+      tokenTextSize = MediaQuery.of(context).size.width * 0.028;
     }
 
     String price = calculatePrice(list.pages, list.amazonPrice, isBook);
@@ -1166,7 +1166,7 @@ class RecentReleasedWidget extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Container(
-        height: 250.h,
+        height: size.height * 0.35,
         width: 145.w,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10), color: MyColors.darkBlue),
@@ -1180,14 +1180,15 @@ class RecentReleasedWidget extends StatelessWidget {
                     ? Image.network(
                         list.imageUrl,
                         fit: BoxFit.cover,
+                        height: size.height * 0.29,
                       )
                     : Container(
-                        height: HomeController.to.index != 3 ? 165.h : 190.h,
+                        height: size.height * 0.29,
                         decoration: const BoxDecoration(
                             image: DecorationImage(
                                 image:
                                     AssetImage('assets/images/background.jpeg'),
-                                fit: BoxFit.fill)),
+                                fit: BoxFit.cover)),
                         child: Center(
                           child: CircleAvatar(
                             maxRadius: 40,
@@ -1203,17 +1204,22 @@ class RecentReleasedWidget extends StatelessWidget {
               ],
             ),
             Container(
-              height: HomeController.to.index != 3 ? 85.h : 60.h,
+              height: HomeController.to.index != 3
+                  ? size.height * 0.11
+                  : size.height * 0.07,
               width: 175.w,
               color: MyColors.darkBlue,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                padding: EdgeInsets.symmetric(
+                  horizontal: size.width * 0.0175,
+                  vertical: size.height * 0.0055,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextWidget(
                       text: list.title,
-                      fontSize: 13.sp,
+                      fontSize: MediaQuery.of(context).size.width * 0.032,
                     ),
                     SizedBox(
                       height: size.height * 0.005,
@@ -1223,7 +1229,7 @@ class RecentReleasedWidget extends StatelessWidget {
                       children: [
                         TextWidget(
                           text: 'Pages: ${list.pages}',
-                          fontSize: 10.sp,
+                          fontSize: MediaQuery.of(context).size.width * 0.026,
                           color: MyColors.grey,
                         ),
                         const Spacer(),
@@ -1241,7 +1247,32 @@ class RecentReleasedWidget extends StatelessWidget {
                       ],
                     ),
                     Visibility(
-                        visible: HomeController.to.index != 3,
+                        visible:
+                            isSongInLibrary && HomeController.to.index != 3,
+                        child: Column(
+                          children: [
+                            Divider(
+                              thickness: 0.8,
+                              color: MyColors.lightGrey,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Center(
+                                  child: TextWidget(
+                                    text: 'Owned',
+                                    fontSize:
+                                        MediaQuery.of(context).size.width *
+                                            0.028,
+                                  ),
+                                )
+                              ],
+                            )
+                          ],
+                        )),
+                    Visibility(
+                        visible:
+                            HomeController.to.index != 3 && !isSongInLibrary,
                         child: Column(
                           children: [
                             Divider(
@@ -1254,7 +1285,7 @@ class RecentReleasedWidget extends StatelessWidget {
                                     children: [
                                       CustomContainer(
                                         onpressed: () {},
-                                        height: 19.h,
+                                        height: size.height * 0.026,
                                         width: tokenWidth,
                                         color: MyColors.whiteColor,
                                         borderRadius: 40,
@@ -1267,7 +1298,7 @@ class RecentReleasedWidget extends StatelessWidget {
                                             const CircleAvatar(
                                               backgroundImage: AssetImage(
                                                   'assets/images/logo_2.png'),
-                                              maxRadius: 8,
+                                              maxRadius: 7,
                                             ),
                                             TextWidget(
                                               fontSize: tokenTextSize,
@@ -1285,7 +1316,7 @@ class RecentReleasedWidget extends StatelessWidget {
                                     children: [
                                       CustomContainer(
                                         onpressed: () {},
-                                        height: 19.h,
+                                        height: size.height * 0.026,
                                         width: tokenWidth,
                                         color: MyColors.whiteColor,
                                         borderRadius: 40,
@@ -1310,7 +1341,7 @@ class RecentReleasedWidget extends StatelessWidget {
                                       ),
                                       CustomContainer(
                                           onpressed: () {},
-                                          height: size.height * 0.028,
+                                          height: size.height * 0.026,
                                           width: size.width * 0.10,
                                           color: MyColors.whiteColor,
                                           borderRadius: 40,
@@ -1323,7 +1354,10 @@ class RecentReleasedWidget extends StatelessWidget {
                                               TextWidget(
                                                 text: '\$ $price',
                                                 color: MyColors.blackColor,
-                                                fontSize: 12.sp,
+                                                fontSize: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.028,
                                               )
                                             ],
                                           ))
@@ -2318,46 +2352,53 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                 const Spacer(),
                                                 InkWell(
                                                   onTap: () {
-                                                    setState(() {
-                                                      final favorites =
+                                                    if (!isSongInLibrary) {
+                                                      setState(() {
+                                                        final favorites =
+                                                            OfflineLibraryBox
+                                                                .userBox!
+                                                                .values
+                                                                .first
+                                                                .favourites;
+                                                        if (favorites.contains(
+                                                            widget
+                                                                .book.detail)) {
+                                                          // Remove from favorites
                                                           OfflineLibraryBox
+                                                              .removeFromFavorites(
+                                                                  widget.book
+                                                                      .detail);
+                                                          if (OfflineLibraryBox
                                                               .userBox!
                                                               .values
                                                               .first
-                                                              .favourites;
-                                                      if (favorites.contains(
-                                                          widget.book.detail)) {
-                                                        // Remove from favorites
-                                                        OfflineLibraryBox
-                                                            .removeFromFavorites(
-                                                                widget.book
-                                                                    .detail);
-                                                        if (OfflineLibraryBox
-                                                            .userBox!
-                                                            .values
-                                                            .first
-                                                            .isLoggedIn) {
-                                                          Get.snackbar(
-                                                              "Removed from favorites",
-                                                              "");
+                                                              .isLoggedIn) {
+                                                            Get.snackbar(
+                                                                "Removed from favorites",
+                                                                "");
+                                                          }
+                                                        } else {
+                                                          // Add to favorites
+                                                          OfflineLibraryBox
+                                                              .addToFavorites(
+                                                                  widget.book
+                                                                      .detail);
+                                                          if (OfflineLibraryBox
+                                                              .userBox!
+                                                              .values
+                                                              .first
+                                                              .isLoggedIn) {
+                                                            Get.snackbar(
+                                                                "Added to Favorites",
+                                                                "");
+                                                          }
                                                         }
-                                                      } else {
-                                                        // Add to favorites
-                                                        OfflineLibraryBox
-                                                            .addToFavorites(
-                                                                widget.book
-                                                                    .detail);
-                                                        if (OfflineLibraryBox
-                                                            .userBox!
-                                                            .values
-                                                            .first
-                                                            .isLoggedIn) {
-                                                          Get.snackbar(
-                                                              "Added to Favorites",
-                                                              "");
-                                                        }
-                                                      }
-                                                    });
+                                                      });
+                                                    } else {
+                                                      Get.snackbar(
+                                                          'Already in the Library',
+                                                          '');
+                                                    }
                                                   },
                                                   child: Icon(
                                                     OfflineLibraryBox
@@ -2368,9 +2409,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                             .contains(widget
                                                                 .book.detail)
                                                         ? CupertinoIcons
-                                                            .heart_fill
-                                                        : CupertinoIcons.heart,
-                                                    color: MyColors.red,
+                                                            .star_fill
+                                                        : CupertinoIcons.star,
+                                                    color: MyColors.yellowColor,
                                                   ),
                                                 )
 
@@ -2435,46 +2476,53 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                               children: [
                                                 InkWell(
                                                   onTap: () {
-                                                    setState(() {
-                                                      final favorites =
+                                                    if (!isSongInLibrary) {
+                                                      setState(() {
+                                                        final favorites =
+                                                            OfflineLibraryBox
+                                                                .userBox!
+                                                                .values
+                                                                .first
+                                                                .favourites;
+                                                        if (favorites.contains(
+                                                            widget
+                                                                .book.detail)) {
+                                                          // Remove from favorites
                                                           OfflineLibraryBox
+                                                              .removeFromFavorites(
+                                                                  widget.book
+                                                                      .detail);
+                                                          if (OfflineLibraryBox
                                                               .userBox!
                                                               .values
                                                               .first
-                                                              .favourites;
-                                                      if (favorites.contains(
-                                                          widget.book.detail)) {
-                                                        // Remove from favorites
-                                                        OfflineLibraryBox
-                                                            .removeFromFavorites(
-                                                                widget.book
-                                                                    .detail);
-                                                        if (OfflineLibraryBox
-                                                            .userBox!
-                                                            .values
-                                                            .first
-                                                            .isLoggedIn) {
-                                                          Get.snackbar(
-                                                              "Removed from favorites",
-                                                              "");
+                                                              .isLoggedIn) {
+                                                            Get.snackbar(
+                                                                "Removed from favorites",
+                                                                "");
+                                                          }
+                                                        } else {
+                                                          // Add to favorites
+                                                          OfflineLibraryBox
+                                                              .addToFavorites(
+                                                                  widget.book
+                                                                      .detail);
+                                                          if (OfflineLibraryBox
+                                                              .userBox!
+                                                              .values
+                                                              .first
+                                                              .isLoggedIn) {
+                                                            Get.snackbar(
+                                                                "Added to Favorites",
+                                                                "");
+                                                          }
                                                         }
-                                                      } else {
-                                                        // Add to favorites
-                                                        OfflineLibraryBox
-                                                            .addToFavorites(
-                                                                widget.book
-                                                                    .detail);
-                                                        if (OfflineLibraryBox
-                                                            .userBox!
-                                                            .values
-                                                            .first
-                                                            .isLoggedIn) {
-                                                          Get.snackbar(
-                                                              "Added to Favorites",
-                                                              "");
-                                                        }
-                                                      }
-                                                    });
+                                                      });
+                                                    } else {
+                                                      Get.snackbar(
+                                                          'Already in the Library',
+                                                          '');
+                                                    }
                                                   },
                                                   child: Icon(
                                                     OfflineLibraryBox
@@ -2485,9 +2533,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                             .contains(widget
                                                                 .book.detail)
                                                         ? CupertinoIcons
-                                                            .heart_fill
-                                                        : CupertinoIcons.heart,
-                                                    color: MyColors.red,
+                                                            .star_fill
+                                                        : CupertinoIcons.star,
+                                                    color: MyColors.yellowColor,
                                                   ),
                                                 ),
                                               ],
@@ -3536,7 +3584,8 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     }
     String songPrice = calculateSongPrice(widget.song.pages);
 
-    return Stack(
+    return SafeArea(
+        child: Stack(
       alignment: Alignment.bottomCenter,
       children: [
         Padding(
@@ -3833,45 +3882,52 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                               const Spacer(),
                                               InkWell(
                                                 onTap: () {
-                                                  setState(() {
-                                                    final favorites =
+                                                  if (!isSongInLibrary) {
+                                                    setState(() {
+                                                      final favorites =
+                                                          OfflineLibraryBox
+                                                              .userBox!
+                                                              .values
+                                                              .first
+                                                              .favourites;
+                                                      if (favorites.contains(
+                                                          widget.song.detail)) {
+                                                        // Remove from favorites
                                                         OfflineLibraryBox
+                                                            .removeFromFavorites(
+                                                                widget.song
+                                                                    .detail);
+                                                        if (OfflineLibraryBox
                                                             .userBox!
                                                             .values
                                                             .first
-                                                            .favourites;
-                                                    if (favorites.contains(
-                                                        widget.song.detail)) {
-                                                      // Remove from favorites
-                                                      OfflineLibraryBox
-                                                          .removeFromFavorites(
-                                                              widget
-                                                                  .song.detail);
-                                                      if (OfflineLibraryBox
-                                                          .userBox!
-                                                          .values
-                                                          .first
-                                                          .isLoggedIn) {
-                                                        Get.snackbar(
-                                                            "Removed from favorites",
-                                                            "");
+                                                            .isLoggedIn) {
+                                                          Get.snackbar(
+                                                              "Removed from favorites",
+                                                              "");
+                                                        }
+                                                      } else {
+                                                        // Add to favorites
+                                                        OfflineLibraryBox
+                                                            .addToFavorites(
+                                                                widget.song
+                                                                    .detail);
+                                                        if (OfflineLibraryBox
+                                                            .userBox!
+                                                            .values
+                                                            .first
+                                                            .isLoggedIn) {
+                                                          Get.snackbar(
+                                                              "Added to Favorites",
+                                                              "");
+                                                        }
                                                       }
-                                                    } else {
-                                                      // Add to favorites
-                                                      OfflineLibraryBox
-                                                          .addToFavorites(widget
-                                                              .song.detail);
-                                                      if (OfflineLibraryBox
-                                                          .userBox!
-                                                          .values
-                                                          .first
-                                                          .isLoggedIn) {
-                                                        Get.snackbar(
-                                                            "Added to Favorites",
-                                                            "");
-                                                      }
-                                                    }
-                                                  });
+                                                    });
+                                                  } else {
+                                                    Get.snackbar(
+                                                        'Already in the Library',
+                                                        '');
+                                                  }
                                                 },
                                                 child: Icon(
                                                   OfflineLibraryBox
@@ -3881,10 +3937,9 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                           .favourites
                                                           .contains(widget
                                                               .song.detail)
-                                                      ? CupertinoIcons
-                                                          .heart_fill
-                                                      : CupertinoIcons.heart,
-                                                  color: MyColors.red,
+                                                      ? CupertinoIcons.star_fill
+                                                      : CupertinoIcons.star,
+                                                  color: MyColors.yellowColor,
                                                 ),
                                               ),
                                               // CustomContainer(
@@ -3968,45 +4023,52 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                             children: [
                                               InkWell(
                                                 onTap: () {
-                                                  setState(() {
-                                                    final favorites =
+                                                  if (!isSongInLibrary) {
+                                                    setState(() {
+                                                      final favorites =
+                                                          OfflineLibraryBox
+                                                              .userBox!
+                                                              .values
+                                                              .first
+                                                              .favourites;
+                                                      if (favorites.contains(
+                                                          widget.song.detail)) {
+                                                        // Remove from favorites
                                                         OfflineLibraryBox
+                                                            .removeFromFavorites(
+                                                                widget.song
+                                                                    .detail);
+                                                        if (OfflineLibraryBox
                                                             .userBox!
                                                             .values
                                                             .first
-                                                            .favourites;
-                                                    if (favorites.contains(
-                                                        widget.song.detail)) {
-                                                      // Remove from favorites
-                                                      OfflineLibraryBox
-                                                          .removeFromFavorites(
-                                                              widget
-                                                                  .song.detail);
-                                                      if (OfflineLibraryBox
-                                                          .userBox!
-                                                          .values
-                                                          .first
-                                                          .isLoggedIn) {
-                                                        Get.snackbar(
-                                                            "Removed from favorites",
-                                                            "");
+                                                            .isLoggedIn) {
+                                                          Get.snackbar(
+                                                              "Removed from favorites",
+                                                              "");
+                                                        }
+                                                      } else {
+                                                        // Add to favorites
+                                                        OfflineLibraryBox
+                                                            .addToFavorites(
+                                                                widget.song
+                                                                    .detail);
+                                                        if (OfflineLibraryBox
+                                                            .userBox!
+                                                            .values
+                                                            .first
+                                                            .isLoggedIn) {
+                                                          Get.snackbar(
+                                                              "Added to Favorites",
+                                                              "");
+                                                        }
                                                       }
-                                                    } else {
-                                                      // Add to favorites
-                                                      OfflineLibraryBox
-                                                          .addToFavorites(widget
-                                                              .song.detail);
-                                                      if (OfflineLibraryBox
-                                                          .userBox!
-                                                          .values
-                                                          .first
-                                                          .isLoggedIn) {
-                                                        Get.snackbar(
-                                                            "Added to Favorites",
-                                                            "");
-                                                      }
-                                                    }
-                                                  });
+                                                    });
+                                                  } else {
+                                                    Get.snackbar(
+                                                        'Already in the Library',
+                                                        '');
+                                                  }
                                                 },
                                                 child: Icon(
                                                   OfflineLibraryBox
@@ -4016,10 +4078,9 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                           .favourites
                                                           .contains(widget
                                                               .song.detail)
-                                                      ? CupertinoIcons
-                                                          .heart_fill
-                                                      : CupertinoIcons.heart,
-                                                  color: MyColors.red,
+                                                      ? CupertinoIcons.star_fill
+                                                      : CupertinoIcons.star,
+                                                  color: MyColors.yellowColor,
                                                 ),
                                               ),
                                             ],
@@ -4394,7 +4455,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                   ));
             })
       ],
-    );
+    ));
   }
 }
 
@@ -4502,7 +4563,8 @@ class _CartScreenState extends State<CartScreen> {
 
   Widget loggedInView(Size size) {
     return Obx(() {
-      return Stack(
+      return SafeArea(
+          child: Stack(
         alignment: Alignment.bottomCenter,
         children: [
           Padding(
@@ -4761,13 +4823,13 @@ class _CartScreenState extends State<CartScreen> {
                     });
               })
         ],
-      );
+      ));
     });
   }
 
   Widget notLoggedInView(Size size) {
-    return Scaffold(
-      body: SafeArea(
+    return SafeArea(
+      child: Container(
         child: Padding(
           padding: const EdgeInsets.all(15),
           child: Column(
@@ -4784,7 +4846,7 @@ class _CartScreenState extends State<CartScreen> {
                         color: MyColors.primaryColor,
                       ),
                     ),
-                    title: 'You Cart'),
+                    title: 'Your Cart'),
               ),
               SizedBox(
                 height: size.height * 0.06,
@@ -4876,14 +4938,14 @@ class _CartItemState extends State<CartItem> {
         children: [
           Positioned(
             top: 0,
-            right: 0,
+            right: 4,
             child: InkWell(
               onTap: () {
                 widget.onRemove();
               },
               child: Icon(
                 Icons.delete,
-                color: MyColors.primaryColor,
+                color: MyColors.red,
               ),
             ),
           ),
@@ -4917,81 +4979,117 @@ class _CartItemState extends State<CartItem> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          TextWidget(
-                            text: widget.list.title,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            color: MyColors.blackColor,
-                          ),
-                        ],
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextWidget(
+                              text: widget.list.title,
+                              fontSize: size.width * 0.04,
+                              fontWeight: FontWeight.w700,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              color: MyColors.blackColor,
+                            ),
+                          ],
+                        ),
                       ),
                       SizedBox(height: size.height * 0.0175),
-                      Row(
-                        children: [
-                          TextWidget(
-                            text: 'SKU: ',
-                            fontSize: 11,
-                            fontWeight: FontWeight.w300,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            color: MyColors.blackColor,
-                          ),
-                          TextWidget(
-                            text: widget.list.detail,
-                            fontSize: 11,
-                            color: MyColors.blackColor,
-                            fontWeight: FontWeight.w300,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                        ],
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Row(
+                          children: [
+                            TextWidget(
+                              text: 'SKU: ',
+                              fontSize: size.width * 0.035,
+                              fontWeight: FontWeight.w300,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              color: MyColors.blackColor,
+                            ),
+                            TextWidget(
+                              text: widget.list.detail,
+                              fontSize: size.width * 0.035,
+                              color: MyColors.blackColor,
+                              fontWeight: FontWeight.w300,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ],
+                        ),
                       ),
                       SizedBox(height: size.height * 0.009),
-                      Row(
-                        children: [
-                          TextWidget(
-                            text: 'Artist: ',
-                            fontSize: 11,
-                            fontWeight: FontWeight.w300,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            color: MyColors.blackColor,
-                          ),
-                          TextWidget(
-                            text: widget.list.artist,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w300,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            color: MyColors.blackColor,
-                          ),
-                        ],
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Row(
+                          children: [
+                            TextWidget(
+                              text: 'Artist: ',
+                              fontSize: size.width * 0.033,
+                              fontWeight: FontWeight.w300,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              color: MyColors.blackColor,
+                            ),
+                            TextWidget(
+                              text: widget.list.artist,
+                              fontSize: size.width * 0.033,
+                              fontWeight: FontWeight.w300,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              color: MyColors.blackColor,
+                            ),
+                          ],
+                        ),
                       ),
                       SizedBox(height: size.height * 0.009),
-                      Row(
-                        children: [
-                          TextWidget(
-                            text: 'Pages:',
-                            fontSize: 11,
-                            fontWeight: FontWeight.w300,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            color: MyColors.blackColor,
-                          ),
-                          TextWidget(
-                            text: widget.list.pages,
-                            fontSize: 11,
-                            color: MyColors.blackColor,
-                            fontWeight: FontWeight.w300,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                        ],
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Row(
+                          children: [
+                            TextWidget(
+                              text: 'Pages:',
+                              fontSize: size.width * 0.033,
+                              fontWeight: FontWeight.w300,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              color: MyColors.blackColor,
+                            ),
+                            TextWidget(
+                              text: widget.list.pages,
+                              fontSize: size.width * 0.033,
+                              color: MyColors.blackColor,
+                              fontWeight: FontWeight.w300,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: size.height * 0.009),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Row(
+                          children: [
+                            TextWidget(
+                              text: 'Difficulty: ',
+                              fontSize: size.width * 0.033,
+                              fontWeight: FontWeight.w300,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              color: MyColors.blackColor,
+                            ),
+                            TextWidget(
+                              text: widget.list.difficulty,
+                              fontSize: size.width * 0.033,
+                              color: MyColors.blackColor,
+                              fontWeight: FontWeight.w300,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ],
+                        ),
                       ),
                       SizedBox(height: size.height * 0.019),
                       TextWidget(

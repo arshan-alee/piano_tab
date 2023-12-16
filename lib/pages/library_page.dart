@@ -85,7 +85,7 @@ class _LibraryPageState extends State<LibraryPage> {
             height: size.height * 0.015,
           ),
           Container(
-            height: size.height * 0.46,
+            height: size.height * 0.45,
             width: size.width,
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
             decoration: BoxDecoration(
@@ -96,7 +96,7 @@ class _LibraryPageState extends State<LibraryPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const TextWidget(
-                  text: 'Favorites',
+                  text: 'Wishlist',
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
                 ),
@@ -105,11 +105,12 @@ class _LibraryPageState extends State<LibraryPage> {
                   color: MyColors.blackColor.withOpacity(0.4),
                   thickness: 0.5,
                 ),
-                Expanded(
+                Container(
+                  height: size.height * 0.35,
                   child: favourites.isEmpty
                       ? Center(
                           child: TextWidget(
-                            text: 'Favorites are empty',
+                            text: 'Wishlist is empty',
                             fontSize: 18,
                           ),
                         )
@@ -170,7 +171,7 @@ class _LibraryPageState extends State<LibraryPage> {
                         crossAxisCount: 2,
                         mainAxisSpacing: 20,
                         crossAxisSpacing: 20,
-                        mainAxisExtent: 250.h,
+                        mainAxisExtent: size.height * 0.35,
                         childAspectRatio: 1.h),
                     itemCount: owned.length,
                     itemBuilder: (context, index) => InkWell(
