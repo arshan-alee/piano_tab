@@ -4919,23 +4919,21 @@ class _CartItemState extends State<CartItem> {
         calculatePrice(widget.list.pages, widget.list.amazonPrice, isBook);
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 5),
-      padding: EdgeInsets.symmetric(vertical: 5),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: MyColors.whiteColor,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
+        margin: const EdgeInsets.symmetric(vertical: 5),
+        padding: EdgeInsets.symmetric(vertical: 5),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: MyColors.whiteColor,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Stack(alignment: Alignment.bottomCenter, children: [
           Positioned(
             top: 0,
             right: 4,
@@ -4949,165 +4947,180 @@ class _CartItemState extends State<CartItem> {
               ),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Container(
-                    height: size.height * 0.18,
-                    width: size.width * 0.25,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: isBook
-                            ? NetworkImage(widget.list.imageUrl)
-                            : const AssetImage('assets/images/background.jpeg')
-                                as ImageProvider,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        height: size.height * 0.18,
+                        width: size.width * 0.25,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: isBook
+                                ? NetworkImage(widget.list.imageUrl)
+                                : const AssetImage(
+                                        'assets/images/background.jpeg')
+                                    as ImageProvider,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                          color: MyColors.darkBlue,
+                        ),
                       ),
-                      borderRadius: BorderRadius.circular(10),
-                      color: MyColors.darkBlue,
                     ),
                   ),
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            TextWidget(
-                              text: widget.list.title,
-                              fontSize: size.width * 0.04,
-                              fontWeight: FontWeight.w700,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              color: MyColors.blackColor,
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                TextWidget(
+                                  text: widget.list.title,
+                                  fontSize: size.width * 0.04,
+                                  fontWeight: FontWeight.w700,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  color: MyColors.blackColor,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                          SizedBox(height: size.height * 0.0175),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Row(
+                              children: [
+                                TextWidget(
+                                  text: 'SKU: ',
+                                  fontSize: size.width * 0.035,
+                                  fontWeight: FontWeight.w300,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  color: MyColors.blackColor,
+                                ),
+                                TextWidget(
+                                  text: widget.list.detail,
+                                  fontSize: size.width * 0.035,
+                                  color: MyColors.blackColor,
+                                  fontWeight: FontWeight.w300,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: size.height * 0.009),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Row(
+                              children: [
+                                TextWidget(
+                                  text: 'Artist: ',
+                                  fontSize: size.width * 0.033,
+                                  fontWeight: FontWeight.w300,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  color: MyColors.blackColor,
+                                ),
+                                TextWidget(
+                                  text: widget.list.artist,
+                                  fontSize: size.width * 0.033,
+                                  fontWeight: FontWeight.w300,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  color: MyColors.blackColor,
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: size.height * 0.009),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Row(
+                              children: [
+                                TextWidget(
+                                  text: 'Pages:',
+                                  fontSize: size.width * 0.033,
+                                  fontWeight: FontWeight.w300,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  color: MyColors.blackColor,
+                                ),
+                                TextWidget(
+                                  text: widget.list.pages,
+                                  fontSize: size.width * 0.033,
+                                  color: MyColors.blackColor,
+                                  fontWeight: FontWeight.w300,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: size.height * 0.009),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Row(
+                              children: [
+                                TextWidget(
+                                  text: 'Difficulty: ',
+                                  fontSize: size.width * 0.033,
+                                  fontWeight: FontWeight.w300,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  color: MyColors.blackColor,
+                                ),
+                                TextWidget(
+                                  text: widget.list.difficulty,
+                                  fontSize: size.width * 0.033,
+                                  color: MyColors.blackColor,
+                                  fontWeight: FontWeight.w300,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(height: size.height * 0.0175),
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Row(
-                          children: [
-                            TextWidget(
-                              text: 'SKU: ',
-                              fontSize: size.width * 0.035,
-                              fontWeight: FontWeight.w300,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              color: MyColors.blackColor,
-                            ),
-                            TextWidget(
-                              text: widget.list.detail,
-                              fontSize: size.width * 0.035,
-                              color: MyColors.blackColor,
-                              fontWeight: FontWeight.w300,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: size.height * 0.009),
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Row(
-                          children: [
-                            TextWidget(
-                              text: 'Artist: ',
-                              fontSize: size.width * 0.033,
-                              fontWeight: FontWeight.w300,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              color: MyColors.blackColor,
-                            ),
-                            TextWidget(
-                              text: widget.list.artist,
-                              fontSize: size.width * 0.033,
-                              fontWeight: FontWeight.w300,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              color: MyColors.blackColor,
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: size.height * 0.009),
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Row(
-                          children: [
-                            TextWidget(
-                              text: 'Pages:',
-                              fontSize: size.width * 0.033,
-                              fontWeight: FontWeight.w300,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              color: MyColors.blackColor,
-                            ),
-                            TextWidget(
-                              text: widget.list.pages,
-                              fontSize: size.width * 0.033,
-                              color: MyColors.blackColor,
-                              fontWeight: FontWeight.w300,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: size.height * 0.009),
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Row(
-                          children: [
-                            TextWidget(
-                              text: 'Difficulty: ',
-                              fontSize: size.width * 0.033,
-                              fontWeight: FontWeight.w300,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              color: MyColors.blackColor,
-                            ),
-                            TextWidget(
-                              text: widget.list.difficulty,
-                              fontSize: size.width * 0.033,
-                              color: MyColors.blackColor,
-                              fontWeight: FontWeight.w300,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: size.height * 0.019),
-                      TextWidget(
-                        text: 'Price : \$ $price',
-                        color: MyColors.blackColor,
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
+              SizedBox(height: size.height * 0.001),
+              Center(
+                  child: Padding(
+                      padding: EdgeInsets.only(bottom: 5),
+                      child: CustomContainer(
+                        onpressed: () {},
+                        height: size.height * 0.04,
+                        width: size.width * 0.35,
+                        color: MyColors.primaryColor,
+                        borderRadius: 5,
+                        borderColor: MyColors.primaryColor,
+                        borderWidth: 1.2,
+                        widget: TextWidget(
+                          text: 'Price : \$ $price',
+                          color: MyColors.whiteColor,
+                          fontSize: size.width * 0.033,
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      )))
             ],
           ),
-        ],
-      ),
-    );
+        ]));
   }
 }
