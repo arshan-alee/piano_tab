@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_paypal/flutter_paypal.dart';
@@ -3124,55 +3126,144 @@ class _DownloadingDialogState extends State<DownloadingDialog> {
   double progress = 0.0;
   late DocumentFileSavePlus documentFileSavePlus;
 
+  Future getAndroidSdkVersion() async {
+    try {
+      AndroidDeviceInfo androidInfo = await DeviceInfoPlugin().androidInfo;
+
+      if (androidInfo.version.sdkInt > 30) {
+        print('Executing code for Android version greater than 12');
+      }
+      if (androidInfo.version.sdkInt < 30) {
+        print('Executing code for Android version greater than 12');
+      }
+      return androidInfo.version.sdkInt;
+    } catch (e) {
+      print('Error retrieving Android version: $e');
+    }
+  }
+
   void startDownloading() async {
-    Map<Permission, PermissionStatus> statuses = await [
-      Permission.storage,
-      //add more permission to request here.
-    ].request();
+    // Map<Permission, PermissionStatus> statuses = await [
+    //   Permission.storage,
+    //   //add more permission to request here.
+    // ].request();
 
     // String path = await _getFilePath(fileName);
     String path = '/storage/emulated/0/PianoTab/';
-    if (statuses[Permission.storage]!.isGranted) {
-      await FlutterDownloader.enqueue(
-        url: widget.pdfPath,
-        savedDir: path,
-        fileName: '${widget.title}.pdf',
-        showNotification: true,
-        openFileFromNotification: true,
-      );
+    final dir = Directory("storage/emulated/0/PianoTab");
 
-      // FlutterDownloader.registerCallback((id, status, progress) {
-      //   print(
-      //       'Download task ($id) is in status ($status) and process ($progress)');
-      //   // setState(() {
-      //   //   downloadingprogress = progress;
-      //   // });
-      // });
+    var androidversion = await getAndroidSdkVersion();
 
-      await dio.get(
-        widget.pdfPath,
-        onReceiveProgress: (recivedBytes, totalBytes) {
-          setState(() {
-            progress = recivedBytes / totalBytes;
-          });
+    if (androidversion >= 30) {
+      var status = await Permission.manageExternalStorage.status;
+      if (!status.isGranted) {
+        await Permission.manageExternalStorage.request();
+      }
+      if (status.isGranted) {
+        if ((await dir.exists())) {
+          print("PianoTab directory exist");
+        } else {
+          print("PianoTab directory doesnot exist");
+          dir.create();
+        }
+      }
 
-          print(progress);
-        },
-        options: Options(
-            responseType: ResponseType.bytes,
-            followRedirects: false,
-            validateStatus: (status) {
-              return status! < 500;
-            }),
-      ).then((_) {
+      if (status.isGranted) {
+        await FlutterDownloader.enqueue(
+          url: widget.pdfPath,
+          savedDir: path,
+          fileName: '${widget.title}.pdf',
+          showNotification: true,
+          openFileFromNotification: true,
+        );
+
+        // FlutterDownloader.registerCallback((id, status, progress) {
+        //   print(
+        //       'Download task ($id) is in status ($status) and process ($progress)');
+        //   // setState(() {
+        //   //   downloadingprogress = progress;
+        //   // });
+        // });
+
+        await dio.get(
+          widget.pdfPath,
+          onReceiveProgress: (recivedBytes, totalBytes) {
+            setState(() {
+              progress = recivedBytes / totalBytes;
+            });
+
+            print(progress);
+          },
+          options: Options(
+              responseType: ResponseType.bytes,
+              followRedirects: false,
+              validateStatus: (status) {
+                return status! < 500;
+              }),
+        ).then((_) {
+          Navigator.pop(context);
+          Get.snackbar(
+              '${widget.title} has been downloaded to the Downloads', '');
+        });
+      } else {
         Navigator.pop(context);
-        Get.snackbar(
-            '${widget.title} has been downloaded to the Downloads', '');
-      });
+        await Permission.manageExternalStorage.request();
+      }
     } else {
-      Navigator.pop(context);
+      var status = await Permission.storage.status;
+      if (!status.isGranted) {
+        await Permission.storage.request();
+      }
+      if (status.isGranted) {
+        if ((await dir.exists())) {
+          print("PianoTab directory exist");
+        } else {
+          print("PianoTab directory doesnot exist");
+          dir.create();
+        }
+      }
 
-      Get.snackbar('Unable to download', '');
+      if (status.isGranted) {
+        await FlutterDownloader.enqueue(
+          url: widget.pdfPath,
+          savedDir: path,
+          fileName: '${widget.title}.pdf',
+          showNotification: true,
+          openFileFromNotification: true,
+        );
+
+        // FlutterDownloader.registerCallback((id, status, progress) {
+        //   print(
+        //       'Download task ($id) is in status ($status) and process ($progress)');
+        //   // setState(() {
+        //   //   downloadingprogress = progress;
+        //   // });
+        // });
+
+        await dio.get(
+          widget.pdfPath,
+          onReceiveProgress: (recivedBytes, totalBytes) {
+            setState(() {
+              progress = recivedBytes / totalBytes;
+            });
+
+            print(progress);
+          },
+          options: Options(
+              responseType: ResponseType.bytes,
+              followRedirects: false,
+              validateStatus: (status) {
+                return status! < 500;
+              }),
+        ).then((_) {
+          Navigator.pop(context);
+          Get.snackbar(
+              '${widget.title} has been downloaded to the Downloads', '');
+        });
+      } else {
+        Navigator.pop(context);
+        await Permission.storage.request();
+      }
     }
   }
 
@@ -5100,25 +5191,28 @@ class _CartItemState extends State<CartItem> {
               ),
               SizedBox(height: size.height * 0.001),
               Center(
-                  child: Padding(
-                      padding: EdgeInsets.only(bottom: 5),
-                      child: CustomContainer(
-                        onpressed: () {},
-                        height: size.height * 0.04,
-                        width: size.width * 0.35,
-                        color: MyColors.primaryColor,
-                        borderRadius: 5,
-                        borderColor: MyColors.primaryColor,
-                        borderWidth: 1.2,
-                        widget: TextWidget(
-                          text: 'Price : \$ $price',
-                          color: MyColors.whiteColor,
-                          fontSize: size.width * 0.033,
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                      )))
+                  child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 10),
+                child: Padding(
+                    padding: EdgeInsets.only(bottom: 5),
+                    child: CustomContainer(
+                      onpressed: () {},
+                      height: size.height * 0.04,
+                      width: size.width,
+                      color: MyColors.primaryColor,
+                      borderRadius: 5,
+                      borderColor: MyColors.primaryColor,
+                      borderWidth: 1.2,
+                      widget: TextWidget(
+                        text: 'Price : \$ $price',
+                        color: MyColors.whiteColor,
+                        fontSize: size.width * 0.033,
+                        fontWeight: FontWeight.bold,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    )),
+              ))
             ],
           ),
         ]));

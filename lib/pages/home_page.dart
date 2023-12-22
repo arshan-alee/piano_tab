@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -133,15 +134,7 @@ class _HomePageState extends State<HomePage> {
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
                   onTap: () async {
-                    print(HomeController.to.popsng.length);
-
-                    final dir = Directory("storage/emulated/0/PianoTab");
-                    if ((await dir.exists())) {
-                      print("PianoTab directory exist");
-                    } else {
-                      print("PianoTab directory doesnot exist");
-                      dir.create();
-                    }
+                    // print(HomeController.to.popsng.length);
                   },
                 ),
                 const Divider(

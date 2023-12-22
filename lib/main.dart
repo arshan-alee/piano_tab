@@ -36,17 +36,7 @@ void main() async {
   MobileAds.instance.updateRequestConfiguration(configuration);
   MobileAds.instance.initialize();
   FlutterDownloader.initialize();
-  final dir = Directory("storage/emulated/0/PianoTab");
-  var status = await Permission.storage.status;
-  if (!status.isGranted) {
-    await Permission.storage.request();
-  }
-  if ((await dir.exists())) {
-    print("PianoTab directory exist");
-  } else {
-    print("PianoTab directory doesnot exist");
-    dir.create();
-  }
+
   runApp(const MyApp());
 }
 

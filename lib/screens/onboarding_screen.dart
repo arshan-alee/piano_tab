@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:paino_tab/screens/home_screen.dart';
 
 class OnBoarding extends StatefulWidget {
@@ -47,7 +48,7 @@ class _OnBoardingState extends State<OnBoarding> {
                       },
                       itemBuilder: (context, index) => OnboardContent(
                           title: onboard_data[index].title,
-                          image: onboard_data[index].image,
+                          animationAsset: onboard_data[index].animationAsset,
                           description: onboard_data[index].description)),
                 ),
                 Stack(
@@ -158,19 +159,19 @@ class DotIndicator extends StatelessWidget {
 }
 
 class OnboardContent extends StatelessWidget {
-  final String title, image, description;
+  final String title, animationAsset, description;
   const OnboardContent({
-    super.key,
+    Key? key,
     required this.title,
-    required this.image,
+    required this.animationAsset,
     required this.description,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-        height: MediaQuery.of(context).size.height, // Set a fixed height
+        height: MediaQuery.of(context).size.height,
         child: Column(
           children: [
             SizedBox(height: MediaQuery.of(context).size.height * 0.05),
@@ -182,11 +183,13 @@ class OnboardContent extends StatelessWidget {
                 color: const Color.fromARGB(255, 1, 31, 56),
               ),
             ),
-            // SizedBox(height: MediaQuery.of(context).size.height * 0.01),
-            // Image.asset(
-            //   image,
-            //   height: MediaQuery.of(context).size.height * 0.4,
-            // ),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+            // Replace Image.asset with Lottie.asset
+            Lottie.asset(
+              animationAsset,
+              height: MediaQuery.of(context).size.height * 0.4,
+              // You can customize other properties here
+            ),
             SizedBox(height: MediaQuery.of(context).size.height * 0.01),
             Text(
               description,
@@ -204,36 +207,38 @@ class OnboardContent extends StatelessWidget {
 }
 
 class Onboard {
-  final String title, image, description;
+  final String title, animationAsset, description;
 
   Onboard(
-      {required this.title, required this.image, required this.description});
+      {required this.title,
+      required this.animationAsset,
+      required this.description});
 }
 
 final List<Onboard> onboard_data = [
   Onboard(
       title: "Unleash Your Inner Pianist",
-      image: 'assets/images/library.png',
+      animationAsset: 'assets/data/Unleash Your Inner Pianist.json',
       description:
           "Thanks for giving PianoTab a try! Experience a revolutionary, fun, and fast way to learn piano - visually! Say goodbye to confusing notes; we use LETTERS. It's easy on the eyes, just like your favorite video game, 'Guitar Hero.' Join us on a musical journey like never before."),
   Onboard(
       title: "Your Musical Playground Awaits!	",
-      image: 'assets/images/library.png',
+      animationAsset: 'assets/data/Your Musical Playground Awaits.json',
       description:
           "Search, filter, and play your favorite songs effortlessly. Our vast catalog lets you explore by genre, artist, or difficulty. Listen to audio clips and play along. Need a paperback book? Check our Amazon link for more. Your musical adventure begins here!"),
   Onboard(
       title: "Try, Be Amazed, and Download",
-      image: 'assets/images/library.png',
+      animationAsset: 'assets/data/Try_ Be Amazed_ and Download.json',
       description:
           "Immediate gratification! Preview and download a 1-page sample for free. See exactly what you're getting before diving in. Download and print PDFs to start playing right away. Your musical journey is just a click away."),
   Onboard(
       title: "Play, Earn, Repeat!",
-      image: 'assets/images/library.png',
+      animationAsset: 'assets/data/Play Earn Repeat.json',
       description:
           "Watch videos, earn tokens with every purchase (only if logged in), and rate us for extra rewards! Your dedication deserves recognition. Play and earn simultaneously, or skip the wait—purchase seamlessly with PayPal for instant access to the joy of playing."),
   Onboard(
       title: "Your Music, Your Way!",
-      image: 'assets/images/library.png',
+      animationAsset: 'assets/data/Your Music_ Your Way.json',
       description:
           "Create a free and easy account for a personalized experience! Sync hundreds of PianoTabs across platforms, store them on any device, and manage your shopping cart effortlessly. Enjoy secure payments via PayPal - your musical world, tailored just for you."),
 ];
