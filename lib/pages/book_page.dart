@@ -22,6 +22,7 @@ class _BookPageState extends State<BookPage> {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (BuildContext bc) {
         return BookDetailScreen(book: item);
       },

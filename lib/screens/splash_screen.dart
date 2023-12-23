@@ -7,8 +7,10 @@ import 'package:lottie/lottie.dart';
 import 'package:paino_tab/controllers/home_controller.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
 import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
+import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
 import 'package:paino_tab/screens/home_screen.dart';
 import 'package:paino_tab/screens/login_screen.dart';
+import 'package:paino_tab/screens/onboarding_screen.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tzdata;
 
@@ -26,14 +28,23 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     Get.put(HomeController());
     Future.delayed(
-      const Duration(seconds: 5),
+      const Duration(seconds: 12),
       () {
         HomeController.to.getSongs().then(
-          (value) {
+          (value) async {
             if (HomeController.to.status.value == 0) {
               var userBox = LoginBox.userBox!;
               if (userBox.values.isEmpty) {
-                Get.offAll(() => const LoginScreen());
+                await LoginBox.setDefault();
+                await UserDataBox.setDefault();
+                await OfflineLibraryBox.setDefault();
+                // HomeController.to.setEmail('');
+                // HomeController.to.setUserName('');
+                HomeController.to.index = 0;
+
+                Get.offAll(() => const OnBoarding(
+                      isLoggedIn: false,
+                    ));
               } else {
                 if (userBox.values.first.authToken == '') {
                   Get.offAll(() => const LoginScreen());

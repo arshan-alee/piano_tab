@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:open_file/open_file.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_paypal/flutter_paypal.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -639,8 +640,9 @@ class SkipButton extends StatelessWidget {
               // HomeController.to.setUserName('');
               HomeController.to.index = 0;
 
-              Get.offAll(() => const OnBoarding(
+              Get.offAll(() => const HomeScreen(
                     isLoggedIn: false,
+                    initialIndex: 0,
                   ));
             },
             height: size.height * 0.035,
@@ -1432,7 +1434,7 @@ class NewReleasesWidget extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Padding(
-                    padding: const EdgeInsets.all(9),
+                    padding: const EdgeInsets.all(8),
                     child: Container(
                       width: size.width * 0.32,
                       decoration: BoxDecoration(
@@ -1464,7 +1466,7 @@ class NewReleasesWidget extends StatelessWidget {
                           children: [
                             TextWidget(
                               text: list.title,
-                              fontSize: 12,
+                              fontSize: size.height * 0.018,
                               fontWeight: FontWeight.w500,
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
@@ -1576,7 +1578,7 @@ class NewReleasesWidget extends StatelessWidget {
                                 Expanded(
                                   child: TextWidget(
                                     text: 'Artist: ',
-                                    fontSize: 12,
+                                    fontSize: size.height * 0.016,
                                     fontWeight: FontWeight.w500,
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
@@ -1586,7 +1588,7 @@ class NewReleasesWidget extends StatelessWidget {
                                 Expanded(
                                   child: TextWidget(
                                     text: list.artist,
-                                    fontSize: 12,
+                                    fontSize: size.height * 0.016,
                                     fontWeight: FontWeight.w500,
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
@@ -1603,7 +1605,7 @@ class NewReleasesWidget extends StatelessWidget {
                                 Expanded(
                                   child: TextWidget(
                                     text: 'Genre: ',
-                                    fontSize: 12,
+                                    fontSize: size.height * 0.016,
                                     fontWeight: FontWeight.w500,
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
@@ -1613,7 +1615,7 @@ class NewReleasesWidget extends StatelessWidget {
                                 Expanded(
                                   child: TextWidget(
                                     text: list.genre,
-                                    fontSize: 12,
+                                    fontSize: size.height * 0.016,
                                     color: MyColors.blackColor,
                                     fontWeight: FontWeight.w500,
                                     overflow: TextOverflow.ellipsis,
@@ -1630,7 +1632,7 @@ class NewReleasesWidget extends StatelessWidget {
                                 Expanded(
                                   child: TextWidget(
                                     text: 'Difficulty: ',
-                                    fontSize: 12,
+                                    fontSize: size.height * 0.016,
                                     fontWeight: FontWeight.w500,
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
@@ -1640,7 +1642,7 @@ class NewReleasesWidget extends StatelessWidget {
                                 Expanded(
                                   child: TextWidget(
                                     text: list.difficulty,
-                                    fontSize: 12,
+                                    fontSize: size.height * 0.016,
                                     color: MyColors.blackColor,
                                     fontWeight: FontWeight.w500,
                                     overflow: TextOverflow.ellipsis,
@@ -1657,7 +1659,7 @@ class NewReleasesWidget extends StatelessWidget {
                                 Expanded(
                                   child: TextWidget(
                                     text: 'Pages:',
-                                    fontSize: 12,
+                                    fontSize: size.height * 0.016,
                                     fontWeight: FontWeight.w500,
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
@@ -1667,7 +1669,7 @@ class NewReleasesWidget extends StatelessWidget {
                                 Expanded(
                                   child: TextWidget(
                                     text: list.pages,
-                                    fontSize: 12,
+                                    fontSize: size.height * 0.016,
                                     color: MyColors.blackColor,
                                     fontWeight: FontWeight.w500,
                                     overflow: TextOverflow.ellipsis,
@@ -2178,6 +2180,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                             showModalBottomSheet(
                                               context: context,
                                               isScrollControlled: true,
+                                              useSafeArea: true,
                                               builder: (BuildContext bc) {
                                                 return PdfViewerScreen(
                                                   pdfPath: localPdfPath,
@@ -2190,6 +2193,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                             showModalBottomSheet(
                                                 context: context,
                                                 isScrollControlled: true,
+                                                useSafeArea: true,
                                                 builder: (BuildContext bc) {
                                                   return PdfViewerScreen(
                                                     pdfPath: HomeController.to
@@ -2204,6 +2208,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                           showModalBottomSheet(
                                               context: context,
                                               isScrollControlled: true,
+                                              useSafeArea: true,
                                               builder: (BuildContext bc) {
                                                 return PdfViewerScreen(
                                                   pdfPath: isSongInLibrary
@@ -2314,6 +2319,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                         context: context,
                                                         isScrollControlled:
                                                             true,
+                                                        useSafeArea: true,
                                                         builder:
                                                             (BuildContext bc) {
                                                           return CartScreen();
@@ -2354,53 +2360,46 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                 const Spacer(),
                                                 InkWell(
                                                   onTap: () {
-                                                    if (!isSongInLibrary) {
-                                                      setState(() {
-                                                        final favorites =
-                                                            OfflineLibraryBox
-                                                                .userBox!
-                                                                .values
-                                                                .first
-                                                                .favourites;
-                                                        if (favorites.contains(
-                                                            widget
-                                                                .book.detail)) {
-                                                          // Remove from favorites
+                                                    setState(() {
+                                                      final favorites =
                                                           OfflineLibraryBox
-                                                              .removeFromFavorites(
-                                                                  widget.book
-                                                                      .detail);
-                                                          if (OfflineLibraryBox
                                                               .userBox!
                                                               .values
                                                               .first
-                                                              .isLoggedIn) {
-                                                            Get.snackbar(
-                                                                "Removed from favorites",
-                                                                "");
-                                                          }
-                                                        } else {
-                                                          // Add to favorites
-                                                          OfflineLibraryBox
-                                                              .addToFavorites(
-                                                                  widget.book
-                                                                      .detail);
-                                                          if (OfflineLibraryBox
-                                                              .userBox!
-                                                              .values
-                                                              .first
-                                                              .isLoggedIn) {
-                                                            Get.snackbar(
-                                                                "Added to Favorites",
-                                                                "");
-                                                          }
+                                                              .favourites;
+                                                      if (favorites.contains(
+                                                          widget.book.detail)) {
+                                                        // Remove from favorites
+                                                        OfflineLibraryBox
+                                                            .removeFromFavorites(
+                                                                widget.book
+                                                                    .detail);
+                                                        if (OfflineLibraryBox
+                                                            .userBox!
+                                                            .values
+                                                            .first
+                                                            .isLoggedIn) {
+                                                          Get.snackbar(
+                                                              "Removed from favorites",
+                                                              "");
                                                         }
-                                                      });
-                                                    } else {
-                                                      Get.snackbar(
-                                                          'Already in the Library',
-                                                          '');
-                                                    }
+                                                      } else {
+                                                        // Add to favorites
+                                                        OfflineLibraryBox
+                                                            .addToFavorites(
+                                                                widget.book
+                                                                    .detail);
+                                                        if (OfflineLibraryBox
+                                                            .userBox!
+                                                            .values
+                                                            .first
+                                                            .isLoggedIn) {
+                                                          Get.snackbar(
+                                                              "Added to Favorites",
+                                                              "");
+                                                        }
+                                                      }
+                                                    });
                                                   },
                                                   child: Icon(
                                                     OfflineLibraryBox
@@ -2474,74 +2473,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                 // )
                                               ],
                                             )
-                                          : Row(
-                                              children: [
-                                                InkWell(
-                                                  onTap: () {
-                                                    if (!isSongInLibrary) {
-                                                      setState(() {
-                                                        final favorites =
-                                                            OfflineLibraryBox
-                                                                .userBox!
-                                                                .values
-                                                                .first
-                                                                .favourites;
-                                                        if (favorites.contains(
-                                                            widget
-                                                                .book.detail)) {
-                                                          // Remove from favorites
-                                                          OfflineLibraryBox
-                                                              .removeFromFavorites(
-                                                                  widget.book
-                                                                      .detail);
-                                                          if (OfflineLibraryBox
-                                                              .userBox!
-                                                              .values
-                                                              .first
-                                                              .isLoggedIn) {
-                                                            Get.snackbar(
-                                                                "Removed from favorites",
-                                                                "");
-                                                          }
-                                                        } else {
-                                                          // Add to favorites
-                                                          OfflineLibraryBox
-                                                              .addToFavorites(
-                                                                  widget.book
-                                                                      .detail);
-                                                          if (OfflineLibraryBox
-                                                              .userBox!
-                                                              .values
-                                                              .first
-                                                              .isLoggedIn) {
-                                                            Get.snackbar(
-                                                                "Added to Favorites",
-                                                                "");
-                                                          }
-                                                        }
-                                                      });
-                                                    } else {
-                                                      Get.snackbar(
-                                                          'Already in the Library',
-                                                          '');
-                                                    }
-                                                  },
-                                                  child: Icon(
-                                                    OfflineLibraryBox
-                                                            .userBox!
-                                                            .values
-                                                            .first
-                                                            .favourites
-                                                            .contains(widget
-                                                                .book.detail)
-                                                        ? CupertinoIcons
-                                                            .star_fill
-                                                        : CupertinoIcons.star,
-                                                    color: MyColors.yellowColor,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                          : SizedBox(),
                                       Column(
                                         children: [
                                           SizedBox(
@@ -2914,6 +2846,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                 showModalBottomSheet(
                                   context: context,
                                   isScrollControlled: true,
+                                  useSafeArea: true,
                                   builder: (BuildContext bc) {
                                     return CartScreen();
                                   },
@@ -3159,6 +3092,7 @@ class _DownloadingDialogState extends State<DownloadingDialog> {
       if (!status.isGranted) {
         await Permission.manageExternalStorage.request();
       }
+      status = await Permission.manageExternalStorage.status;
       if (status.isGranted) {
         if ((await dir.exists())) {
           print("PianoTab directory exist");
@@ -3166,9 +3100,7 @@ class _DownloadingDialogState extends State<DownloadingDialog> {
           print("PianoTab directory doesnot exist");
           dir.create();
         }
-      }
 
-      if (status.isGranted) {
         await FlutterDownloader.enqueue(
           url: widget.pdfPath,
           savedDir: path,
@@ -3202,8 +3134,11 @@ class _DownloadingDialogState extends State<DownloadingDialog> {
               }),
         ).then((_) {
           Navigator.pop(context);
-          Get.snackbar(
-              '${widget.title} has been downloaded to the Downloads', '');
+          Get.snackbar('${widget.title} has been downloaded', '');
+          // onTap: (_) {
+          //   // Open the file manager to the specified folder
+          //   OpenFile.open('/storage/emulated/0/PianoTab/',type: FileType.directory);
+          // });
         });
       } else {
         Navigator.pop(context);
@@ -3214,6 +3149,7 @@ class _DownloadingDialogState extends State<DownloadingDialog> {
       if (!status.isGranted) {
         await Permission.storage.request();
       }
+      status = await Permission.storage.status;
       if (status.isGranted) {
         if ((await dir.exists())) {
           print("PianoTab directory exist");
@@ -3221,9 +3157,7 @@ class _DownloadingDialogState extends State<DownloadingDialog> {
           print("PianoTab directory doesnot exist");
           dir.create();
         }
-      }
 
-      if (status.isGranted) {
         await FlutterDownloader.enqueue(
           url: widget.pdfPath,
           savedDir: path,
@@ -3258,7 +3192,19 @@ class _DownloadingDialogState extends State<DownloadingDialog> {
         ).then((_) {
           Navigator.pop(context);
           Get.snackbar(
-              '${widget.title} has been downloaded to the Downloads', '');
+            '${widget.title} has been downloaded', '',
+            //     onTap: (_) async {
+            //   // Open the file manager to the specified folder
+            //   String folderPath = '/storage/emulated/0/PianoTab/';
+            //   String url = 'file://$folderPath';
+
+            //   if (await canLaunchUrl(Uri.parse(url))) {
+            //     await launchUrl(Uri.parse(url));
+            //   } else {
+            //     print('Could not launch file manager.');
+            //   }
+            // }
+          );
         });
       } else {
         Navigator.pop(context);
@@ -3458,6 +3404,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
+                useSafeArea: true,
                 builder: (BuildContext bc) {
                   return PdfViewerScreen(
                     pdfPath: localPdfPath,
@@ -3470,6 +3417,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
               showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
+                  useSafeArea: true,
                   builder: (BuildContext bc) {
                     return PdfViewerScreen(
                       pdfPath: HomeController.to
@@ -3798,6 +3746,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                 showModalBottomSheet(
                                                   context: context,
                                                   isScrollControlled: true,
+                                                  useSafeArea: true,
                                                   builder: (BuildContext bc) {
                                                     return PdfViewerScreen(
                                                       pdfPath: localPdfPath,
@@ -3811,6 +3760,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                 showModalBottomSheet(
                                                     context: context,
                                                     isScrollControlled: true,
+                                                    useSafeArea: true,
                                                     builder: (BuildContext bc) {
                                                       return PdfViewerScreen(
                                                         pdfPath: HomeController
@@ -3828,6 +3778,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                               showModalBottomSheet(
                                                   context: context,
                                                   isScrollControlled: true,
+                                                  useSafeArea: true,
                                                   builder: (BuildContext bc) {
                                                     return PdfViewerScreen(
                                                       pdfPath: isSongInLibrary
@@ -3916,54 +3867,66 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                               SizedBox(
                                                 width: size.width * 0.01,
                                               ),
-                                              CustomContainer(
-                                                onpressed: () async {
-                                                  if (isLoggedIn) {
-                                                    var _ = await HomeController
-                                                        .addToCart(widget.song);
+                                              Visibility(
+                                                visible: int.parse(
+                                                        widget.song.pages) !=
+                                                    1,
+                                                child: CustomContainer(
+                                                  onpressed: () async {
+                                                    if (isLoggedIn) {
+                                                      var _ =
+                                                          await HomeController
+                                                              .addToCart(
+                                                                  widget.song);
 
-                                                    setState(() {
-                                                      HomeController
-                                                              .to
-                                                              .totalCartItemCount
-                                                              .value =
-                                                          HomeController.to
-                                                              .cartItems.length;
-                                                    });
+                                                      setState(() {
+                                                        HomeController
+                                                                .to
+                                                                .totalCartItemCount
+                                                                .value =
+                                                            HomeController
+                                                                .to
+                                                                .cartItems
+                                                                .length;
+                                                      });
 
-                                                    showModalBottomSheet(
-                                                      context: context,
-                                                      isScrollControlled: true,
-                                                      builder:
-                                                          (BuildContext bc) {
-                                                        return CartScreen();
-                                                      },
-                                                    );
-                                                    if (_) {
-                                                      Get.snackbar(
-                                                          "Added to Cart", "");
+                                                      showModalBottomSheet(
+                                                        context: context,
+                                                        isScrollControlled:
+                                                            true,
+                                                        useSafeArea: true,
+                                                        builder:
+                                                            (BuildContext bc) {
+                                                          return CartScreen();
+                                                        },
+                                                      );
+                                                      if (_) {
+                                                        Get.snackbar(
+                                                            "Added to Cart",
+                                                            "");
+                                                      } else {
+                                                        Get.snackbar(
+                                                            "Already in Cart",
+                                                            "");
+                                                      }
                                                     } else {
                                                       Get.snackbar(
-                                                          "Already in Cart",
+                                                          "You need to Sign In to Add item to cart",
                                                           "");
                                                     }
-                                                  } else {
-                                                    Get.snackbar(
-                                                        "You need to Sign In to Add item to cart",
-                                                        "");
-                                                  }
-                                                },
-                                                height: size.height * 0.04,
-                                                width: size.width * 0.15,
-                                                color: MyColors.primaryColor,
-                                                borderRadius: 10,
-                                                borderColor:
-                                                    MyColors.transparent,
-                                                borderWidth: 0,
-                                                widget: Center(
-                                                  child: TextWidget(
-                                                    text: '\$ $songPrice',
-                                                    fontSize: 14,
+                                                  },
+                                                  height: size.height * 0.04,
+                                                  width: size.width * 0.15,
+                                                  color: MyColors.primaryColor,
+                                                  borderRadius: 10,
+                                                  borderColor:
+                                                      MyColors.transparent,
+                                                  borderWidth: 0,
+                                                  widget: Center(
+                                                    child: TextWidget(
+                                                      text: '\$ $songPrice',
+                                                      fontSize: 14,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
@@ -4110,72 +4073,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                               // )
                                             ],
                                           )
-                                        : Row(
-                                            children: [
-                                              InkWell(
-                                                onTap: () {
-                                                  if (!isSongInLibrary) {
-                                                    setState(() {
-                                                      final favorites =
-                                                          OfflineLibraryBox
-                                                              .userBox!
-                                                              .values
-                                                              .first
-                                                              .favourites;
-                                                      if (favorites.contains(
-                                                          widget.song.detail)) {
-                                                        // Remove from favorites
-                                                        OfflineLibraryBox
-                                                            .removeFromFavorites(
-                                                                widget.song
-                                                                    .detail);
-                                                        if (OfflineLibraryBox
-                                                            .userBox!
-                                                            .values
-                                                            .first
-                                                            .isLoggedIn) {
-                                                          Get.snackbar(
-                                                              "Removed from favorites",
-                                                              "");
-                                                        }
-                                                      } else {
-                                                        // Add to favorites
-                                                        OfflineLibraryBox
-                                                            .addToFavorites(
-                                                                widget.song
-                                                                    .detail);
-                                                        if (OfflineLibraryBox
-                                                            .userBox!
-                                                            .values
-                                                            .first
-                                                            .isLoggedIn) {
-                                                          Get.snackbar(
-                                                              "Added to Favorites",
-                                                              "");
-                                                        }
-                                                      }
-                                                    });
-                                                  } else {
-                                                    Get.snackbar(
-                                                        'Already in the Library',
-                                                        '');
-                                                  }
-                                                },
-                                                child: Icon(
-                                                  OfflineLibraryBox
-                                                          .userBox!
-                                                          .values
-                                                          .first
-                                                          .favourites
-                                                          .contains(widget
-                                                              .song.detail)
-                                                      ? CupertinoIcons.star_fill
-                                                      : CupertinoIcons.star,
-                                                  color: MyColors.yellowColor,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
+                                        : SizedBox(),
                                     Column(
                                       children: [
                                         SizedBox(
@@ -4507,6 +4405,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                               showModalBottomSheet(
                                 context: context,
                                 isScrollControlled: true,
+                                useSafeArea: true,
                                 builder: (BuildContext bc) {
                                   return CartScreen();
                                 },

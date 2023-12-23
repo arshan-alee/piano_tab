@@ -49,6 +49,7 @@ class _SearchPageState extends State<SearchPage> {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (BuildContext bc) {
         if (isBook) {
           return BookDetailScreen(book: item);

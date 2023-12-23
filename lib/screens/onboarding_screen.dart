@@ -191,14 +191,12 @@ class OnboardContent extends StatelessWidget {
               // You can customize other properties here
             ),
             SizedBox(height: MediaQuery.of(context).size.height * 0.01),
-            Text(
-              description,
-              textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium!
-                  .copyWith(color: Color.fromARGB(255, 3, 67, 119)),
-            ),
+            Text(description,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20,
+                  color: const Color.fromARGB(255, 1, 31, 56),
+                )),
           ],
         ),
       ),

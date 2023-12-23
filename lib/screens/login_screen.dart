@@ -180,7 +180,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           var message = LoginBox.userBox!.values.first.message;
                           Get.snackbar(message, '');
                           HomeController.to.index = 0;
-                          Get.offAll(() => const OnBoarding(isLoggedIn: true));
+                          Get.offAll(() => HomeScreen(
+                                isLoggedIn: OfflineLibraryBox
+                                    .userBox!.values.first.isLoggedIn,
+                                initialIndex: 0,
+                              ));
 
                           final userDataLibrary =
                               UserDataBox.userBox!.values.first.userDataLibrary;

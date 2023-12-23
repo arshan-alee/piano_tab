@@ -970,7 +970,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                           duration: const Duration(milliseconds: 300),
                           height: artist == true
                               ? size.height * 0.3
-                              : size.height * 0.05,
+                              : size.height * 0.04,
                           child: SingleChildScrollView(
                             child: Column(
                               children: [
@@ -984,7 +984,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                         });
                                       },
                                       child: SizedBox(
-                                        height: size.height * 0.05,
+                                        height: size.height * 0.04,
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
@@ -1084,7 +1084,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                     duration: const Duration(milliseconds: 300),
                                     height: pages == true
                                         ? size.height * 0.3
-                                        : size.height * 0.05,
+                                        : size.height * 0.04,
                                     child: SingleChildScrollView(
                                       child: Column(
                                         children: [
@@ -1099,7 +1099,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                                   });
                                                 },
                                                 child: SizedBox(
-                                                  height: size.height * 0.05,
+                                                  height: size.height * 0.04,
                                                   child: Row(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
@@ -1209,7 +1209,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                             const Duration(milliseconds: 300),
                                         height: section == true
                                             ? size.height * 0.3
-                                            : size.height * 0.05,
+                                            : size.height * 0.04,
                                         child: SingleChildScrollView(
                                           child: Column(
                                             children: [
@@ -1226,7 +1226,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                                     },
                                                     child: SizedBox(
                                                       height:
-                                                          size.height * 0.05,
+                                                          size.height * 0.04,
                                                       child: Row(
                                                         mainAxisAlignment:
                                                             MainAxisAlignment
@@ -1342,7 +1342,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                           duration: const Duration(milliseconds: 300),
                           height: genre == true
                               ? size.height * 0.2
-                              : size.height * 0.05,
+                              : size.height * 0.04,
                           child: SingleChildScrollView(
                             child: Column(
                               children: [
@@ -1356,7 +1356,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                         });
                                       },
                                       child: SizedBox(
-                                        height: size.height * 0.05,
+                                        height: size.height * 0.04,
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
@@ -1453,7 +1453,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                           duration: const Duration(milliseconds: 300),
                           height: difficulty == true
                               ? size.height * 0.2
-                              : size.height * 0.05,
+                              : size.height * 0.04,
                           child: SingleChildScrollView(
                             child: Column(
                               children: [
@@ -1467,7 +1467,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                         });
                                       },
                                       child: SizedBox(
-                                        height: size.height * 0.05,
+                                        height: size.height * 0.04,
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,

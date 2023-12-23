@@ -63,6 +63,7 @@ class _LibraryPageState extends State<LibraryPage> {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (BuildContext bc) {
         if (isBook) {
           return BookDetailScreen(book: selectedItem);

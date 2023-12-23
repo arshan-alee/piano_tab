@@ -232,6 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     showModalBottomSheet(
                                       context: context,
                                       isScrollControlled: true,
+                                      useSafeArea: true,
                                       builder: (BuildContext bc) {
                                         return CartScreen();
                                       },

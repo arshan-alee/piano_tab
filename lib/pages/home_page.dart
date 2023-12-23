@@ -103,6 +103,7 @@ class _HomePageState extends State<HomePage> {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (BuildContext bc) {
         if (isBook) {
           return BookDetailScreen(book: selectedItem);
@@ -145,7 +146,7 @@ class _HomePageState extends State<HomePage> {
                   height: size.height * 0.02,
                 ),
                 SizedBox(
-                  height: size.height * 0.27,
+                  height: size.height * 0.25,
                   width: size.width,
                   child: ListView.separated(
                     separatorBuilder: (context, index) => SizedBox(

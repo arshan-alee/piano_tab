@@ -63,6 +63,7 @@ dependencies:
   permission_handler:
   flutter_downloader: 
   device_info_plus:
+  open_file:
   
 
 

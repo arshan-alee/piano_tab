@@ -24,6 +24,7 @@ class _SongPageState extends State<SongPage> {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (BuildContext bc) {
         return SongDetailScreen(song: item);
       },
