@@ -72,47 +72,73 @@ class _CustomDrawerState extends State<CustomDrawer> {
     RewardedInterstitialAd.load(
       adUnitId: AdMobService.rewardedInterstitialAdUnitId!,
       request: const AdRequest(),
-      rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
-        onAdLoaded: (ad) async {
-          setState(() {
-            _rewardedAd = ad;
-            print(' ad is loading');
-            EasyLoading.dismiss();
-          });
-          await OfflineLibraryBox.updateAdsWatched(
-              OfflineLibraryBox.userBox!.values.first.adsWatched + 1);
-        },
-        onAdFailedToLoad: (error) async {
-          setState(() {
-            _rewardedAd = null;
-            EasyLoading.dismiss();
-          });
-          if (OfflineLibraryBox.userBox!.values.first.adsWatched < 10) {
-            if (isLoggedIn == true) {
-              int newPoints = userPoints + 1;
-              await HomeController.to
-                  .updatePoints(
-                      LoginBox.userBox!.values.first.authToken, newPoints)
-                  .then((pointsUpdated) async {
-                var userdata = await HomeController.to
-                    .getuserData(LoginBox.userBox!.values.first.authToken);
-                print('Points updated in logged In mode');
-                // Perform additional actions with userdata
-              });
-            } else {
-              int newPoints = offlineUserPoints++;
-              await OfflineLibraryBox.updatePoints(newPoints.toString());
-              print('Points updated in logged off mode');
-            }
+      rewardedInterstitialAdLoadCallback:
+          RewardedInterstitialAdLoadCallback(onAdLoaded: (ad) async {
+        setState(() {
+          _rewardedAd = ad;
+          print(' ad is loading');
+          EasyLoading.dismiss();
+        });
+      }, onAdFailedToLoad: (error) async {
+        setState(() {
+          _rewardedAd = null;
+          EasyLoading.dismiss();
+        });
 
-            Get.snackbar(
-                "Seems like the Ad failed to load but here's a token on us",
-                'You have recieved a token');
-            await OfflineLibraryBox.updateAdsWatched(
-                OfflineLibraryBox.userBox!.values.first.adsWatched + 1);
+        // if (adsWatched < 10) {
+        // // //   if (adsWatched == 0) {
+        // // //     String timestamp = DateTime.now().toIso8601String();
+        // // //     await HomeController.to.setTimestamp(timestamp);
+        // // //   }
+        // // //   if (isLoggedIn == true) {
+        // // //     int newPoints = userPoints + 1;
+        // // //     await HomeController.to
+        // // //         .updatePoints(
+        // // //             LoginBox.userBox!.values.first.authToken, newPoints)
+        // // //         .then((pointsUpdated) async {
+        // // //       var userdata = await HomeController.to
+        // // //           .getuserData(LoginBox.userBox!.values.first.authToken);
+        // // //       print('Points updated in logged In mode');
+        // // //       // Perform additional actions with userdata
+        // // //     });
+        // //   } else {
+        // //     int newPoints = offlineUserPoints++;
+        // //     await OfflineLibraryBox.updatePoints(newPoints.toString());
+        // //     print('Points updated in logged off mode');
+        //   }
+        int adsWatched = HomeController.to.getAdsWatched();
+        if (adsWatched < 10) {
+          if (isLoggedIn == true) {
+            int newPoints = userPoints + 1;
+            await HomeController.to
+                .updatePoints(
+                    LoginBox.userBox!.values.first.authToken, newPoints)
+                .then((pointsUpdated) async {
+              var userdata = await HomeController.to
+                  .getuserData(LoginBox.userBox!.values.first.authToken);
+              print('Points updated in logged In mode');
+            });
+          } else {
+            int offlineUserPoints =
+                int.tryParse(OfflineLibraryBox.userBox!.values.first.points) ??
+                    0;
+            int newPoints = offlineUserPoints++;
+            await OfflineLibraryBox.updatePoints(newPoints.toString());
+            print('Points updated in logged off mode');
           }
-        },
-      ),
+          setState(() {
+            HomeController.to.totalPoints.value = isLoggedIn
+                ? UserDataBox.userBox!.values.first.points
+                : OfflineLibraryBox.userBox!.values.first.points;
+          });
+          await HomeController.to.setAdsWatched(adsWatched + 1);
+          Get.snackbar(
+              "Seems like the Ad failed to load but here's a token on us",
+              'You have recieved a token');
+        } else {
+          Get.snackbar('You have reached the total Ads limit for today!', "");
+        }
+      }),
     );
   }
 
@@ -132,8 +158,17 @@ class _CustomDrawerState extends State<CustomDrawer> {
           print("You earned a reward");
 
           // Your code to update points and user data
-
+          int adsWatched = HomeController.to.getAdsWatched();
+          if (adsWatched == 0) {
+            DateTime currentTime = DateTime.now();
+            DateTime timestampAfter24Hours =
+                currentTime.add(Duration(hours: 24));
+            String newTimestamp = timestampAfter24Hours.toIso8601String();
+            await HomeController.to.setTimestamp(newTimestamp);
+          }
           if (isLoggedIn == true) {
+            int userPoints =
+                int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
             int newPoints = userPoints + 1;
             await HomeController.to
                 .updatePoints(
@@ -145,10 +180,19 @@ class _CustomDrawerState extends State<CustomDrawer> {
               // Perform additional actions with userdata
             });
           } else {
+            int offlineUserPoints =
+                int.tryParse(OfflineLibraryBox.userBox!.values.first.points) ??
+                    0;
             int newPoints = offlineUserPoints + 1;
             await OfflineLibraryBox.updatePoints(newPoints.toString());
             print('Points updated in logged off mode');
           }
+          setState(() {
+            HomeController.to.totalPoints.value = isLoggedIn
+                ? UserDataBox.userBox!.values.first.points
+                : OfflineLibraryBox.userBox!.values.first.points;
+          });
+          await HomeController.to.setAdsWatched(adsWatched + 1);
           Get.snackbar('You have recieved a token', "");
         },
       );
@@ -185,20 +229,27 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     ),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(16),
-                      child: Container(
-                        height: size.height * 0.155,
-                        width: size.width * 0.6,
-                        decoration: const BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: AssetImage(
-                                    'assets/images/background.jpeg'))),
-                        child: Center(
-                          child: CircleAvatar(
-                            backgroundImage:
-                                const AssetImage('assets/images/new_logo.png'),
-                            maxRadius: 40,
-                            backgroundColor: MyColors.whiteColor,
+                      child: GestureDetector(
+                        onTap: () {
+                          int adsWatched = HomeController.to.getAdsWatched();
+                          print(adsWatched);
+                          print(HomeController.to.getTimestamp());
+                        },
+                        child: Container(
+                          height: size.height * 0.155,
+                          width: size.width * 0.6,
+                          decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: AssetImage(
+                                      'assets/images/background.jpeg'))),
+                          child: Center(
+                            child: CircleAvatar(
+                              backgroundImage: const AssetImage(
+                                  'assets/images/new_logo.png'),
+                              maxRadius: 40,
+                              backgroundColor: MyColors.whiteColor,
+                            ),
                           ),
                         ),
                       ),
@@ -710,18 +761,36 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                       color:
                                                           MyColors.blackColor,
                                                       fontSize: 18,
-                                                      onTap: () {
-                                                        if (OfflineLibraryBox
-                                                                .userBox!
-                                                                .values
-                                                                .first
-                                                                .adsWatched <
-                                                            10) {
-                                                          showRewardedAd();
+                                                      onTap: () async {
+                                                        int adsWatched =
+                                                            HomeController.to
+                                                                .getAdsWatched();
+                                                        String
+                                                            currentTimestamp =
+                                                            DateTime.now()
+                                                                .toIso8601String();
+
+                                                        String
+                                                            retrievedTimeStamp =
+                                                            HomeController.to
+                                                                .getTimestamp();
+
+                                                        if (currentTimestamp
+                                                                .compareTo(
+                                                                    retrievedTimeStamp) <
+                                                            0) {
+                                                          if (adsWatched < 10) {
+                                                            showRewardedAd();
+                                                          } else {
+                                                            Get.snackbar(
+                                                                'You have reached the total Ads limit for today!',
+                                                                "");
+                                                          }
                                                         } else {
-                                                          Get.snackbar(
-                                                              'You have reached the total Ads limit for today!',
-                                                              "");
+                                                          await HomeController
+                                                              .to
+                                                              .setAdsWatched(0);
+                                                          showRewardedAd();
                                                         }
                                                       },
                                                     ),
@@ -752,10 +821,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                             text: 'Follow us on',
                             color: MyColors.blackColor,
                             fontSize: 16,
-                            onTap: () {
-                              print(OfflineLibraryBox
-                                  .userBox!.values.first.adsWatched);
-                            },
+                            onTap: () {},
                           ),
                           Divider(
                             height: 12,
@@ -970,7 +1036,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                           duration: const Duration(milliseconds: 300),
                           height: artist == true
                               ? size.height * 0.3
-                              : size.height * 0.04,
+                              : size.height * 0.03,
                           child: SingleChildScrollView(
                             child: Column(
                               children: [
@@ -984,7 +1050,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                         });
                                       },
                                       child: SizedBox(
-                                        height: size.height * 0.04,
+                                        height: size.height * 0.03,
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
@@ -1084,7 +1150,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                     duration: const Duration(milliseconds: 300),
                                     height: pages == true
                                         ? size.height * 0.3
-                                        : size.height * 0.04,
+                                        : size.height * 0.03,
                                     child: SingleChildScrollView(
                                       child: Column(
                                         children: [
@@ -1099,7 +1165,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                                   });
                                                 },
                                                 child: SizedBox(
-                                                  height: size.height * 0.04,
+                                                  height: size.height * 0.03,
                                                   child: Row(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
@@ -1209,7 +1275,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                             const Duration(milliseconds: 300),
                                         height: section == true
                                             ? size.height * 0.3
-                                            : size.height * 0.04,
+                                            : size.height * 0.03,
                                         child: SingleChildScrollView(
                                           child: Column(
                                             children: [
@@ -1226,7 +1292,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                                     },
                                                     child: SizedBox(
                                                       height:
-                                                          size.height * 0.04,
+                                                          size.height * 0.03,
                                                       child: Row(
                                                         mainAxisAlignment:
                                                             MainAxisAlignment
@@ -1342,7 +1408,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                           duration: const Duration(milliseconds: 300),
                           height: genre == true
                               ? size.height * 0.2
-                              : size.height * 0.04,
+                              : size.height * 0.03,
                           child: SingleChildScrollView(
                             child: Column(
                               children: [
@@ -1356,7 +1422,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                         });
                                       },
                                       child: SizedBox(
-                                        height: size.height * 0.04,
+                                        height: size.height * 0.03,
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
@@ -1453,7 +1519,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                           duration: const Duration(milliseconds: 300),
                           height: difficulty == true
                               ? size.height * 0.2
-                              : size.height * 0.04,
+                              : size.height * 0.03,
                           child: SingleChildScrollView(
                             child: Column(
                               children: [
@@ -1467,7 +1533,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                                         });
                                       },
                                       child: SizedBox(
-                                        height: size.height * 0.04,
+                                        height: size.height * 0.03,
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,

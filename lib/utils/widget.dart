@@ -6,13 +6,13 @@ import 'dart:ui';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:open_file/open_file.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_paypal/flutter_paypal.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:http/http.dart' as http;
 import 'package:audioplayers/audioplayers.dart';
+import 'package:android_intent_plus/android_intent.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -63,6 +63,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
   @override
   void initState() {
     super.initState();
+    HomeController.to.totalPoints.value = isLoggedIn
+        ? UserDataBox.userBox!.values.first.points
+        : OfflineLibraryBox.userBox!.values.first.points;
     createRewardedAd();
   }
 
@@ -82,16 +85,17 @@ class _CustomAppBarState extends State<CustomAppBar> {
             print(' ad is loading');
             EasyLoading.dismiss();
           });
-          await OfflineLibraryBox.updateAdsWatched(
-              OfflineLibraryBox.userBox!.values.first.adsWatched + 1);
         },
         onAdFailedToLoad: (error) async {
           setState(() {
             _rewardedAd = null;
             EasyLoading.dismiss();
           });
-          if (OfflineLibraryBox.userBox!.values.first.adsWatched < 10) {
+          int adsWatched = HomeController.to.getAdsWatched();
+          if (adsWatched < 10) {
             if (isLoggedIn == true) {
+              int userPoints =
+                  int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
               int newPoints = userPoints + 1;
               await HomeController.to
                   .updatePoints(
@@ -103,14 +107,25 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 // Perform additional actions with userdata
               });
             } else {
+              int offlineUserPoints = int.tryParse(
+                      OfflineLibraryBox.userBox!.values.first.points) ??
+                  0;
               int newPoints = offlineUserPoints++;
               await OfflineLibraryBox.updatePoints(newPoints.toString());
               print('Points updated in logged off mode');
             }
+            setState(() {
+              HomeController.to.totalPoints.value = isLoggedIn
+                  ? UserDataBox.userBox!.values.first.points
+                  : OfflineLibraryBox.userBox!.values.first.points;
+            });
+            await HomeController.to.setAdsWatched(adsWatched + 1);
 
             Get.snackbar(
                 "Seems like the Ad failed to load but here's a token on us",
                 'You have recieved a token');
+          } else {
+            Get.snackbar('You have reached the total Ads limit for today!', "");
           }
         },
       ),
@@ -133,8 +148,17 @@ class _CustomAppBarState extends State<CustomAppBar> {
           print("You earned a reward");
 
           // Your code to update points and user data
-
+          int adsWatched = HomeController.to.getAdsWatched();
+          if (adsWatched == 0) {
+            DateTime currentTime = DateTime.now();
+            DateTime timestampAfter24Hours =
+                currentTime.add(Duration(hours: 24));
+            String newTimestamp = timestampAfter24Hours.toIso8601String();
+            await HomeController.to.setTimestamp(newTimestamp);
+          }
           if (isLoggedIn == true) {
+            int userPoints =
+                int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
             int newPoints = userPoints + 1;
             await HomeController.to
                 .updatePoints(
@@ -146,10 +170,19 @@ class _CustomAppBarState extends State<CustomAppBar> {
               // Perform additional actions with userdata
             });
           } else {
+            int offlineUserPoints =
+                int.tryParse(OfflineLibraryBox.userBox!.values.first.points) ??
+                    0;
             int newPoints = offlineUserPoints++;
             await OfflineLibraryBox.updatePoints(newPoints.toString());
             print('Points updated in logged off mode');
           }
+          setState(() {
+            HomeController.to.totalPoints.value = isLoggedIn
+                ? UserDataBox.userBox!.values.first.points
+                : OfflineLibraryBox.userBox!.values.first.points;
+          });
+          await HomeController.to.setAdsWatched(adsWatched + 1);
           Get.snackbar('You have recieved a token', "");
         },
       );
@@ -221,17 +254,19 @@ class _CustomAppBarState extends State<CustomAppBar> {
                         ],
                       ),
                     ),
-                    Expanded(
-                      flex: 2,
-                      child: TextWidget(
-                        text: isLoggedIn
-                            ? UserDataBox.userBox!.values.first.points
-                            : OfflineLibraryBox.userBox!.values.first.points,
-                        fontSize: 11,
-                        color: MyColors.primaryColor,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    )
+                    ValueListenableBuilder(
+                        valueListenable: HomeController.to.totalPoints,
+                        builder: (context, val, c) {
+                          return Expanded(
+                            flex: 2,
+                            child: TextWidget(
+                              text: val,
+                              fontSize: 11,
+                              color: MyColors.primaryColor,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          );
+                        })
                   ],
                 )),
           ],
@@ -276,23 +311,22 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 Container(
                   height: size.height * 0.135,
                   width: size.width * 0.24,
-                  decoration: const BoxDecoration(
-                      image: DecorationImage(
-                          image: AssetImage('assets/images/reward.png'))),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 4),
-                        child: TextWidget(
-                          text: isLoggedIn
-                              ? UserDataBox.userBox!.values.first.points
-                              : OfflineLibraryBox.userBox!.values.first.points,
-                          color: MyColors.blackColor,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 12,
-                        ),
-                      ),
+                      ValueListenableBuilder(
+                          valueListenable: HomeController.to.totalPoints,
+                          builder: (context, val, c) {
+                            return Padding(
+                              padding: EdgeInsets.only(left: 4),
+                              child: TextWidget(
+                                text: val,
+                                fontSize: 30,
+                                color: MyColors.blackColor,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            );
+                          }),
                       SizedBox(
                         height: size.height * 0.016,
                       ),
@@ -303,14 +337,24 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   height: size.height * 0.01,
                 ),
                 CustomContainer(
-                    onpressed: () {
-                      if (OfflineLibraryBox.userBox!.values.first.adsWatched <
-                          10) {
-                        showRewardedAd();
+                    onpressed: () async {
+                      int adsWatched = HomeController.to.getAdsWatched();
+                      String currentTimestamp =
+                          DateTime.now().toIso8601String();
+
+                      String retrievedTimeStamp =
+                          HomeController.to.getTimestamp();
+                      if (currentTimestamp.compareTo(retrievedTimeStamp) < 0) {
+                        if (adsWatched < 10) {
+                          showRewardedAd();
+                        } else {
+                          Get.snackbar(
+                              'You have reached the total Ads limit for today',
+                              "");
+                        }
                       } else {
-                        Get.snackbar(
-                            'You have reached the total Ads limit for today',
-                            "");
+                        await HomeController.to.setAdsWatched(0);
+                        showRewardedAd();
                       }
                       // int newpoints = userPoints + 1;
                     },
@@ -1427,7 +1471,7 @@ class NewReleasesWidget extends StatelessWidget {
             color: MyColors.whiteColor,
           ),
           child: Padding(
-            padding: const EdgeInsets.all(10),
+            padding: EdgeInsets.all(size.height * 0.012),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -1455,233 +1499,225 @@ class NewReleasesWidget extends StatelessWidget {
 
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 13),
-                  child: Stack(
-                    alignment: Alignment.bottomCenter,
-                    children: [
-                      Container(
-                        height: size.height * 0.28,
-                        width: size.width * 0.37,
-                        child: Column(
-                          // mainAxisAlignment: MainAxisAlignment.start,
+                  child: Container(
+                    height: size.height * 0.24,
+                    width: size.width * 0.37,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextWidget(
+                          text: list.title,
+                          fontSize: size.height * 0.018,
+                          fontWeight: FontWeight.w500,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          color: MyColors.blackColor,
+                        ),
+                        SizedBox(
+                          height: size.height * 0.015,
+                        ),
+                        isBook
+                            ? Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  CustomContainer(
+                                    onpressed: () {},
+                                    height: size.height * 0.032,
+                                    width: size.width * 0.18,
+                                    color: MyColors.primaryColor,
+                                    borderRadius: 8,
+                                    borderColor: MyColors.primaryColor,
+                                    borderWidth: 1.5,
+                                    widget: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        CircleAvatar(
+                                          backgroundColor: MyColors.transparent,
+                                          backgroundImage: const AssetImage(
+                                              'assets/images/amazon.png'),
+                                          maxRadius: 8,
+                                        ),
+                                        TextWidget(
+                                          text: list.amazonPrice,
+                                          color: MyColors.whiteColor,
+                                          fontSize: 12,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  CustomContainer(
+                                    onpressed: () {},
+                                    height: size.height * 0.032,
+                                    width: size.width * 0.18,
+                                    color: MyColors.whiteColor,
+                                    borderRadius: 8,
+                                    borderColor: MyColors.primaryColor,
+                                    borderWidth: 1.5,
+                                    widget: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        CircleAvatar(
+                                          backgroundColor: MyColors.transparent,
+                                          backgroundImage: const AssetImage(
+                                              'assets/images/logo_2.png'),
+                                          maxRadius: 8,
+                                        ),
+                                        TextWidget(
+                                          text:
+                                              tokenText, // Convert pages to int
+                                          color: MyColors.blueColor,
+                                          fontSize: 12,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  CustomContainer(
+                                    onpressed: () {},
+                                    height: size.height * 0.032,
+                                    width: size.width * 0.18,
+                                    color: MyColors.whiteColor,
+                                    borderRadius: 8,
+                                    borderColor: MyColors.primaryColor,
+                                    borderWidth: 1.5,
+                                    widget: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        CircleAvatar(
+                                          backgroundColor: MyColors.transparent,
+                                          backgroundImage: const AssetImage(
+                                              'assets/images/logo_2.png'),
+                                          maxRadius: 8,
+                                        ),
+                                        TextWidget(
+                                          text:
+                                              tokenText, // Convert pages to int
+                                          color: MyColors.blueColor,
+                                          fontSize: 12,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                        SizedBox(
+                          height: size.height * 0.015,
+                        ),
+                        Row(
                           children: [
-                            TextWidget(
-                              text: list.title,
-                              fontSize: size.height * 0.018,
-                              fontWeight: FontWeight.w500,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              color: MyColors.blackColor,
+                            Expanded(
+                              child: TextWidget(
+                                text: 'Artist: ',
+                                fontSize: size.height * 0.016,
+                                fontWeight: FontWeight.w500,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                color: MyColors.blackColor,
+                              ),
                             ),
-                            SizedBox(
-                              height: size.height * 0.0175,
-                            ),
-                            isBook
-                                ? Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      CustomContainer(
-                                        onpressed: () {},
-                                        height: size.height * 0.032,
-                                        width: size.width * 0.18,
-                                        color: MyColors.primaryColor,
-                                        borderRadius: 8,
-                                        borderColor: MyColors.primaryColor,
-                                        borderWidth: 1.5,
-                                        widget: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            CircleAvatar(
-                                              backgroundColor:
-                                                  MyColors.transparent,
-                                              backgroundImage: const AssetImage(
-                                                  'assets/images/amazon.png'),
-                                              maxRadius: 8,
-                                            ),
-                                            TextWidget(
-                                              text: list.amazonPrice,
-                                              color: MyColors.whiteColor,
-                                              fontSize: 12,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      CustomContainer(
-                                        onpressed: () {},
-                                        height: size.height * 0.032,
-                                        width: size.width * 0.18,
-                                        color: MyColors.whiteColor,
-                                        borderRadius: 8,
-                                        borderColor: MyColors.primaryColor,
-                                        borderWidth: 1.5,
-                                        widget: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            CircleAvatar(
-                                              backgroundColor:
-                                                  MyColors.transparent,
-                                              backgroundImage: const AssetImage(
-                                                  'assets/images/logo_2.png'),
-                                              maxRadius: 8,
-                                            ),
-                                            TextWidget(
-                                              text:
-                                                  tokenText, // Convert pages to int
-                                              color: MyColors.blueColor,
-                                              fontSize: 12,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                : Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      CustomContainer(
-                                        onpressed: () {},
-                                        height: size.height * 0.032,
-                                        width: size.width * 0.18,
-                                        color: MyColors.whiteColor,
-                                        borderRadius: 8,
-                                        borderColor: MyColors.primaryColor,
-                                        borderWidth: 1.5,
-                                        widget: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            CircleAvatar(
-                                              backgroundColor:
-                                                  MyColors.transparent,
-                                              backgroundImage: const AssetImage(
-                                                  'assets/images/logo_2.png'),
-                                              maxRadius: 8,
-                                            ),
-                                            TextWidget(
-                                              text:
-                                                  tokenText, // Convert pages to int
-                                              color: MyColors.blueColor,
-                                              fontSize: 12,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                            SizedBox(
-                              height: size.height * 0.0175,
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: TextWidget(
-                                    text: 'Artist: ',
-                                    fontSize: size.height * 0.016,
-                                    fontWeight: FontWeight.w500,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    color: MyColors.blackColor,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: TextWidget(
-                                    text: list.artist,
-                                    fontSize: size.height * 0.016,
-                                    fontWeight: FontWeight.w500,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    color: MyColors.blackColor,
-                                  ),
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              height: size.height * 0.009,
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: TextWidget(
-                                    text: 'Genre: ',
-                                    fontSize: size.height * 0.016,
-                                    fontWeight: FontWeight.w500,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    color: MyColors.blackColor,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: TextWidget(
-                                    text: list.genre,
-                                    fontSize: size.height * 0.016,
-                                    color: MyColors.blackColor,
-                                    fontWeight: FontWeight.w500,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                  ),
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              height: size.height * 0.009,
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: TextWidget(
-                                    text: 'Difficulty: ',
-                                    fontSize: size.height * 0.016,
-                                    fontWeight: FontWeight.w500,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    color: MyColors.blackColor,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: TextWidget(
-                                    text: list.difficulty,
-                                    fontSize: size.height * 0.016,
-                                    color: MyColors.blackColor,
-                                    fontWeight: FontWeight.w500,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                  ),
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              height: size.height * 0.009,
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: TextWidget(
-                                    text: 'Pages:',
-                                    fontSize: size.height * 0.016,
-                                    fontWeight: FontWeight.w500,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    color: MyColors.blackColor,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: TextWidget(
-                                    text: list.pages,
-                                    fontSize: size.height * 0.016,
-                                    color: MyColors.blackColor,
-                                    fontWeight: FontWeight.w500,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                  ),
-                                )
-                              ],
-                            ),
+                            Expanded(
+                              child: TextWidget(
+                                text: list.artist,
+                                fontSize: size.height * 0.016,
+                                fontWeight: FontWeight.w500,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                color: MyColors.blackColor,
+                              ),
+                            )
                           ],
                         ),
-                      ),
-                    ],
+                        SizedBox(
+                          height: size.height * 0.008,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextWidget(
+                                text: 'Genre: ',
+                                fontSize: size.height * 0.016,
+                                fontWeight: FontWeight.w500,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                color: MyColors.blackColor,
+                              ),
+                            ),
+                            Expanded(
+                              child: TextWidget(
+                                text: list.genre,
+                                fontSize: size.height * 0.016,
+                                color: MyColors.blackColor,
+                                fontWeight: FontWeight.w500,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            )
+                          ],
+                        ),
+                        SizedBox(
+                          height: size.height * 0.008,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextWidget(
+                                text: 'Difficulty: ',
+                                fontSize: size.height * 0.016,
+                                fontWeight: FontWeight.w500,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                color: MyColors.blackColor,
+                              ),
+                            ),
+                            Expanded(
+                              child: TextWidget(
+                                text: list.difficulty,
+                                fontSize: size.height * 0.016,
+                                color: MyColors.blackColor,
+                                fontWeight: FontWeight.w500,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            )
+                          ],
+                        ),
+                        SizedBox(
+                          height: size.height * 0.008,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextWidget(
+                                text: 'Pages:',
+                                fontSize: size.height * 0.016,
+                                fontWeight: FontWeight.w500,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                color: MyColors.blackColor,
+                              ),
+                            ),
+                            Expanded(
+                              child: TextWidget(
+                                text: list.pages,
+                                fontSize: size.height * 0.016,
+                                color: MyColors.blackColor,
+                                fontWeight: FontWeight.w500,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -1899,16 +1935,17 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             print(' ad is loading');
             EasyLoading.dismiss();
           });
-          await OfflineLibraryBox.updateAdsWatched(
-              OfflineLibraryBox.userBox!.values.first.adsWatched + 1);
         },
         onAdFailedToLoad: (error) async {
           setState(() {
             _rewardedAd = null;
             EasyLoading.dismiss();
           });
-          if (OfflineLibraryBox.userBox!.values.first.adsWatched < 10) {
+          int adsWatched = HomeController.to.getAdsWatched();
+          if (adsWatched < 10) {
             if (isLoggedIn == true) {
+              int userPoints =
+                  int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
               int newPoints = userPoints + 1;
               await HomeController.to
                   .updatePoints(
@@ -1920,14 +1957,24 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                 // Perform additional actions with userdata
               });
             } else {
+              int offlineUserPoints = int.tryParse(
+                      OfflineLibraryBox.userBox!.values.first.points) ??
+                  0;
               int newPoints = offlineUserPoints++;
               await OfflineLibraryBox.updatePoints(newPoints.toString());
               print('Points updated in logged off mode');
             }
-
+            setState(() {
+              HomeController.to.totalPoints.value = isLoggedIn
+                  ? UserDataBox.userBox!.values.first.points
+                  : OfflineLibraryBox.userBox!.values.first.points;
+            });
+            await HomeController.to.setAdsWatched(adsWatched + 1);
             Get.snackbar(
                 "Seems like the Ad failed to load but here's a token on us",
                 'You have recieved a token');
+          } else {
+            Get.snackbar('You have reached the total Ads limit for today!', "");
           }
         },
       ),
@@ -1946,11 +1993,20 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
       })));
 
       await _rewardedAd!.show(onUserEarnedReward: (ad, reward) async {
+        int adsWatched = HomeController.to.getAdsWatched();
+        if (adsWatched == 0) {
+          DateTime currentTime = DateTime.now();
+          DateTime timestampAfter24Hours = currentTime.add(Duration(hours: 24));
+          String newTimestamp = timestampAfter24Hours.toIso8601String();
+          await HomeController.to.setTimestamp(newTimestamp);
+        }
         if (earnReward) {
           await OfflineLibraryBox.updateLibrary(widget.book.detail);
           print("You earned a reward");
         } else if (earnToken) {
           if (isLoggedIn == true) {
+            int userPoints =
+                int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
             int newPoints = userPoints + 1;
             await HomeController.to
                 .updatePoints(
@@ -1962,10 +2018,19 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
               // Perform additional actions with userdata
             });
           } else {
+            int offlineUserPoints =
+                int.tryParse(OfflineLibraryBox.userBox!.values.first.points) ??
+                    0;
             int newPoints = offlineUserPoints++;
             await OfflineLibraryBox.updatePoints(newPoints.toString());
             print('Points updated in logged off mode');
           }
+          setState(() {
+            HomeController.to.totalPoints.value = isLoggedIn
+                ? UserDataBox.userBox!.values.first.points
+                : OfflineLibraryBox.userBox!.values.first.points;
+          });
+          await HomeController.to.setAdsWatched(adsWatched + 1);
           Get.snackbar('You have recieved a token', "");
         }
       });
@@ -2056,10 +2121,20 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         },
       );
       if (userWantsToWatchVideo) {
-        if (OfflineLibraryBox.userBox!.values.first.adsWatched < 10) {
-          showRewardedAd();
+        int adsWatched = HomeController.to.getAdsWatched();
+        String currentTimestamp = DateTime.now().toIso8601String();
+
+        String retrievedTimeStamp = HomeController.to.getTimestamp();
+
+        if (currentTimestamp.compareTo(retrievedTimeStamp) < 0) {
+          if (adsWatched < 10) {
+            showRewardedAd();
+          } else {
+            Get.snackbar('You have reached the total Ads limit for today!', "");
+          }
         } else {
-          Get.snackbar('You have reached the total Ads limit for today', "");
+          await HomeController.to.setAdsWatched(0);
+          showRewardedAd();
         }
       }
     }
@@ -2068,6 +2143,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         OfflineLibraryBox.userBox!.values.first.offlineLibrary);
     print(a);
     if (OfflineLibraryBox.userBox!.values.first.isLoggedIn == true) {
+      int userPoints =
+          int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
       int newPoints = userPoints - requiredTokens;
       var submitted = HomeController.to
           .updateLibrary(LoginBox.userBox!.values.first.authToken, a);
@@ -2075,6 +2152,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
           .updatePoints(LoginBox.userBox!.values.first.authToken, newPoints);
       var userdata = await HomeController.to
           .getuserData(LoginBox.userBox!.values.first.authToken);
+      setState(() {
+        HomeController.to.totalPoints.value =
+            UserDataBox.userBox!.values.first.points;
+      });
     }
   }
 
@@ -2395,7 +2476,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                             .first
                                                             .isLoggedIn) {
                                                           Get.snackbar(
-                                                              "Added to Favorites",
+                                                              "Added to Wish List",
                                                               "");
                                                         }
                                                       }
@@ -2703,8 +2784,16 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                   final path = '${temp.path}/image.jpg';
                                   File(path).writeAsBytesSync(bytes);
                                   final XFile xfile = XFile(path);
-                                  await Share.shareXFiles([xfile],
-                                      text: '${widget.book.title}');
+                                  String text = '';
+
+                                  if (Platform.isAndroid) {
+                                    text =
+                                        'Checkout ${widget.book.title} on Play Store: https://play.google.com/store/apps/details?id=com.pianotab.app';
+                                  } else if (Platform.isIOS) {
+                                    text =
+                                        'Checkout \'${widget.book.title}\' on App Store: https://apps.apple.com/pk/app/piano-tab/id1330123889';
+                                  }
+                                  await Share.shareXFiles([xfile], text: text);
                                 },
                                 height: size.height * 0.04,
                                 width: size.width * 0.22,
@@ -3134,11 +3223,17 @@ class _DownloadingDialogState extends State<DownloadingDialog> {
               }),
         ).then((_) {
           Navigator.pop(context);
-          Get.snackbar('${widget.title} has been downloaded', '');
-          // onTap: (_) {
-          //   // Open the file manager to the specified folder
-          //   OpenFile.open('/storage/emulated/0/PianoTab/',type: FileType.directory);
-          // });
+          Get.snackbar('${widget.title} has been downloaded', '', onTap: (_) {
+            // AndroidIntent intent = AndroidIntent(
+            //   action: 'action_view',
+            //   package: 'com.android.fileexplorer',
+            //   data: 'file:///storage/emulated/0/PianoTab/',
+            // );
+            // await intent.launch();
+
+            //   // Open the file manager to the specified folder
+            //   OpenFile.open('/storage/emulated/0/PianoTab/');
+          });
         });
       } else {
         Navigator.pop(context);
@@ -3336,16 +3431,17 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
             print(' ad is loading');
             EasyLoading.dismiss();
           });
-          await OfflineLibraryBox.updateAdsWatched(
-              OfflineLibraryBox.userBox!.values.first.adsWatched + 1);
         },
         onAdFailedToLoad: (error) async {
           setState(() {
             _rewardedAd = null;
             EasyLoading.dismiss();
           });
-          if (OfflineLibraryBox.userBox!.values.first.adsWatched < 10) {
+          int adsWatched = HomeController.to.getAdsWatched();
+          if (adsWatched < 10) {
             if (isLoggedIn == true) {
+              int userPoints =
+                  int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
               int newPoints = userPoints + 1;
               await HomeController.to
                   .updatePoints(
@@ -3357,17 +3453,24 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                 // Perform additional actions with userdata
               });
             } else {
+              int offlineUserPoints = int.tryParse(
+                      OfflineLibraryBox.userBox!.values.first.points) ??
+                  0;
               int newPoints = offlineUserPoints++;
               await OfflineLibraryBox.updatePoints(newPoints.toString());
               print('Points updated in logged off mode');
             }
-
+            setState(() {
+              HomeController.to.totalPoints.value = isLoggedIn
+                  ? UserDataBox.userBox!.values.first.points
+                  : OfflineLibraryBox.userBox!.values.first.points;
+            });
+            await HomeController.to.setAdsWatched(adsWatched + 1);
             Get.snackbar(
                 "Seems like the Ad failed to load but here's a token on us",
                 'You have recieved a token');
-
-            await OfflineLibraryBox.updateAdsWatched(
-                OfflineLibraryBox.userBox!.values.first.adsWatched + 1);
+          } else {
+            Get.snackbar('You have reached the total Ads limit for today!', "");
           }
         },
       ),
@@ -3389,6 +3492,13 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
       })));
 
       await _rewardedAd!.show(onUserEarnedReward: (ad, reward) async {
+        int adsWatched = HomeController.to.getAdsWatched();
+        if (adsWatched == 0) {
+          DateTime currentTime = DateTime.now();
+          DateTime timestampAfter24Hours = currentTime.add(Duration(hours: 24));
+          String newTimestamp = timestampAfter24Hours.toIso8601String();
+          await HomeController.to.setTimestamp(newTimestamp);
+        }
         if (earnReward) {
           await OfflineLibraryBox.updateLibrary(widget.song.detail);
           print("You earned a reward");
@@ -3429,6 +3539,8 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
             }
           } else if (earnToken) {
             if (isLoggedIn == true) {
+              int userPoints =
+                  int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
               int newPoints = userPoints + 1;
               await HomeController.to
                   .updatePoints(
@@ -3443,11 +3555,20 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                 // Perform additional actions with userdata
               });
             } else {
+              int offlineUserPoints = int.tryParse(
+                      OfflineLibraryBox.userBox!.values.first.points) ??
+                  0;
               int newPoints = offlineUserPoints++;
               await OfflineLibraryBox.updatePoints(newPoints.toString());
               print('Points updated in logged off mode');
               Get.snackbar("${widget.song.title} is Redeemed for 24 hours", '');
             }
+            setState(() {
+              HomeController.to.totalPoints.value = isLoggedIn
+                  ? UserDataBox.userBox!.values.first.points
+                  : OfflineLibraryBox.userBox!.values.first.points;
+            });
+            await HomeController.to.setAdsWatched(adsWatched + 1);
             Get.snackbar('You have recieved a token', "");
           }
         }
@@ -3521,10 +3642,20 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         },
       );
       if (userWantsToWatchVideo) {
-        if (OfflineLibraryBox.userBox!.values.first.adsWatched < 10) {
-          showRewardedAd();
+        int adsWatched = HomeController.to.getAdsWatched();
+        String currentTimestamp = DateTime.now().toIso8601String();
+
+        String retrievedTimeStamp = HomeController.to.getTimestamp();
+
+        if (currentTimestamp.compareTo(retrievedTimeStamp) < 0) {
+          if (adsWatched < 10) {
+            showRewardedAd();
+          } else {
+            Get.snackbar('You have reached the total Ads limit for today!', "");
+          }
         } else {
-          Get.snackbar('You have reached the total Ads limit for today', "");
+          await HomeController.to.setAdsWatched(0);
+          showRewardedAd();
         }
       }
     } else if (requiredTokens <= userPoints) {
@@ -3568,10 +3699,20 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         },
       );
       if (userWantsToWatchVideo) {
-        if (OfflineLibraryBox.userBox!.values.first.adsWatched < 10) {
-          showRewardedAd();
+        int adsWatched = HomeController.to.getAdsWatched();
+        String currentTimestamp = DateTime.now().toIso8601String();
+
+        String retrievedTimeStamp = HomeController.to.getTimestamp();
+
+        if (currentTimestamp.compareTo(retrievedTimeStamp) < 0) {
+          if (adsWatched < 10) {
+            showRewardedAd();
+          } else {
+            Get.snackbar('You have reached the total Ads limit for today!', "");
+          }
         } else {
-          Get.snackbar('You have reached the total Ads limit for today', "");
+          await HomeController.to.setAdsWatched(0);
+          showRewardedAd();
         }
       }
     }
@@ -3580,13 +3721,20 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         OfflineLibraryBox.userBox!.values.first.offlineLibrary);
     print(a);
     if (OfflineLibraryBox.userBox!.values.first.isLoggedIn == true) {
+      int userPoints =
+          int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
       int newPoints = userPoints - requiredTokens;
       var submitted = HomeController.to
           .updateLibrary(LoginBox.userBox!.values.first.authToken, a);
+
       var pointsUpdated = HomeController.to
           .updatePoints(LoginBox.userBox!.values.first.authToken, newPoints);
       var userdata = await HomeController.to
           .getuserData(LoginBox.userBox!.values.first.authToken);
+      setState(() {
+        HomeController.to.totalPoints.value =
+            UserDataBox.userBox!.values.first.points;
+      });
     }
   }
 
@@ -3617,8 +3765,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     double tokenWidth = size.width * 0.2;
     double tokenTextSize = 14.0;
     if (tokenText.length > 6) {
-      tokenHeight = size.height * 0.05;
-      tokenWidth = size.width * 0.25;
+      tokenWidth = size.width * 0.4;
       tokenTextSize = 8.5;
     }
     String songPrice = calculateSongPrice(widget.song.pages);
@@ -3706,20 +3853,38 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                     ),
                                                     TextButton(
                                                       child: const Text('Yes'),
-                                                      onPressed: () {
+                                                      onPressed: () async {
                                                         earnRewardOpenPDF =
                                                             true;
-                                                        if (OfflineLibraryBox
-                                                                .userBox!
-                                                                .values
-                                                                .first
-                                                                .adsWatched <
-                                                            10) {
-                                                          showRewardedAd();
+                                                        int adsWatched =
+                                                            HomeController.to
+                                                                .getAdsWatched();
+                                                        String
+                                                            currentTimestamp =
+                                                            DateTime.now()
+                                                                .toIso8601String();
+
+                                                        String
+                                                            retrievedTimeStamp =
+                                                            HomeController.to
+                                                                .getTimestamp();
+
+                                                        if (currentTimestamp
+                                                                .compareTo(
+                                                                    retrievedTimeStamp) <
+                                                            0) {
+                                                          if (adsWatched < 10) {
+                                                            showRewardedAd();
+                                                          } else {
+                                                            Get.snackbar(
+                                                                'You have reached the total Ads limit for today!',
+                                                                "");
+                                                          }
                                                         } else {
-                                                          Get.snackbar(
-                                                              'You have reached the total Ads limit for today',
-                                                              "");
+                                                          await HomeController
+                                                              .to
+                                                              .setAdsWatched(0);
+                                                          showRewardedAd();
                                                         }
                                                         Navigator.of(
                                                                 dialogContext)
@@ -3765,7 +3930,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                       return PdfViewerScreen(
                                                         pdfPath: HomeController
                                                             .to
-                                                            .getOriginalbookPdfSource(
+                                                            .getOriginalsongPdfSource(
                                                                 widget.song
                                                                     .detail),
                                                         title:
@@ -3783,7 +3948,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                     return PdfViewerScreen(
                                                       pdfPath: isSongInLibrary
                                                           ? HomeController.to
-                                                              .getOriginalbookPdfSource(
+                                                              .getOriginalsongPdfSource(
                                                                   widget.song
                                                                       .detail)
                                                           : HomeController.to
@@ -3845,11 +4010,6 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                       maxRadius: 8,
                                                     ),
                                                     Container(
-                                                      constraints:
-                                                          BoxConstraints(
-                                                        maxWidth: size.width *
-                                                            0.15, // Adjust based on your layout
-                                                      ),
                                                       child: Text(
                                                         tokenText,
                                                         style: TextStyle(
@@ -3972,7 +4132,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                             .first
                                                             .isLoggedIn) {
                                                           Get.snackbar(
-                                                              "Added to Favorites",
+                                                              "Added to Wish List",
                                                               "");
                                                         }
                                                       }
@@ -4294,18 +4454,17 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                         children: [
                           CustomContainer(
                               onpressed: () async {
-                                final url = Uri.parse(widget.song.imageUrl);
-                                final response = await http.get(url);
-                                final bytes = response.bodyBytes;
-                                final temp = await getTemporaryDirectory();
-                                final path = '${temp.path}/image.jpg';
-                                File(path).writeAsBytesSync(bytes);
-                                final XFile xfile = XFile(path);
-                                await Share.shareXFiles([xfile],
-                                    text:
-                                        'Checkout ${widget.song.title} on Play Store');
-                                // 'Checkout ${widget.song.title} on Play Store:https://play.google.com/store/apps/details?id=com.pianotab.app');
-                                // : 'Checkout \'${widget.song.title}\' on App Store: https://apps.apple.com/pk/app/piano-tab/id1330123889');
+                                String text = '';
+
+                                if (Platform.isAndroid) {
+                                  text =
+                                      'Checkout ${widget.song.title} on Play Store: https://play.google.com/store/apps/details?id=com.pianotab.app';
+                                } else if (Platform.isIOS) {
+                                  text =
+                                      'Checkout \'${widget.song.title}\' on App Store: https://apps.apple.com/pk/app/piano-tab/id1330123889';
+                                }
+
+                                await Share.share(text);
                               },
                               height: size.height * 0.04,
                               width: size.width * 0.22,
@@ -4713,6 +4872,10 @@ class _CartScreenState extends State<CartScreen> {
                                         OfflineLibraryBox.userBox!.values.first
                                             .offlineLibrary);
                                     print(a);
+
+                                    int userPoints = int.tryParse(UserDataBox
+                                            .userBox!.values.first.points) ??
+                                        0;
                                     int newPoints = userPoints + token;
                                     var submitted = await HomeController.to
                                         .updateLibrary(
@@ -4727,6 +4890,11 @@ class _CartScreenState extends State<CartScreen> {
                                     var userdata = await HomeController.to
                                         .getuserData(LoginBox
                                             .userBox!.values.first.authToken);
+                                    setState(() {
+                                      HomeController.to.totalPoints.value =
+                                          UserDataBox
+                                              .userBox!.values.first.points;
+                                    });
 
                                     await HomeController.emptyCart();
 

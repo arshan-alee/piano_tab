@@ -225,7 +225,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             TextWidget(
-                              text: 'Wishlist',
+                              text: 'Wish List',
                               color: MyColors.blackColor,
                               fontSize: 22,
                             ),
@@ -251,7 +251,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           child: favourites.isEmpty
                               ? Center(
                                   child: TextWidget(
-                                    text: 'Wishlist is empty',
+                                    text: 'Wish List is empty',
                                     fontSize: 18,
                                     color: MyColors.grey,
                                   ),

@@ -97,7 +97,7 @@ class _LibraryPageState extends State<LibraryPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const TextWidget(
-                  text: 'Wishlist',
+                  text: 'Wish List',
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
                 ),
@@ -111,7 +111,7 @@ class _LibraryPageState extends State<LibraryPage> {
                   child: favourites.isEmpty
                       ? Center(
                           child: TextWidget(
-                            text: 'Wishlist is empty',
+                            text: 'Wish List is empty',
                             fontSize: 18,
                           ),
                         )

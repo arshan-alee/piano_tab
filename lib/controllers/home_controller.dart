@@ -22,6 +22,7 @@ class HomeController extends GetxController {
 
   var totalAmount = ValueNotifier(0);
   var totalTokensAwarded = ValueNotifier(0);
+  var totalPoints = ValueNotifier('');
 
   RxList<ListItemModel> filteredBk = <ListItemModel>[].obs;
   RxList<ListItemModel> filteredSng = <ListItemModel>[].obs;
@@ -50,6 +51,34 @@ class HomeController extends GetxController {
   String selectedGenres = "All";
   String selectedDifficulty = "All";
   String selectedSectionOfSongs = "All";
+
+  late SharedPreferences _prefs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _initSharedPreferences();
+  }
+
+  void _initSharedPreferences() async {
+    _prefs = await SharedPreferences.getInstance();
+  }
+
+  Future<void> setTimestamp(String timestamp) async {
+    await _prefs.setString('timestamp', timestamp);
+  }
+
+  String getTimestamp() {
+    return _prefs.getString('timestamp') ?? '';
+  }
+
+  Future<void> setAdsWatched(int adswatched) async {
+    await _prefs.setInt('adswatched', adswatched);
+  }
+
+  int getAdsWatched() {
+    return _prefs.getInt('adswatched') ?? 0;
+  }
 
   Future<int> getSongs() async {
     try {

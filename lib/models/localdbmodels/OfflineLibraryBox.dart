@@ -96,19 +96,6 @@ class OfflineLibraryBox {
     }
   }
 
-  static Future<void> updateAdsWatched(int ads) async {
-    box = await Hive.openBox<OfflineLibrary>(boxName);
-    final offlineLibrary = box!.get(boxName);
-
-    if (offlineLibrary == null) {
-      final newOfflineLibrary = OfflineLibrary(adsWatched: ads);
-      await box!.put(boxName, newOfflineLibrary);
-    } else {
-      offlineLibrary.adsWatched = ads;
-      await box!.put(boxName, offlineLibrary);
-    }
-  }
-
   static Box<OfflineLibrary>? get userBox {
     if (box == null) {
       throw Exception("Offline Library box has not been initialized.");
@@ -123,8 +110,7 @@ class OfflineLibraryBox {
           points: '0',
           offlineLibrary: [],
           favourites: [],
-          rating: 0.0,
-          adsWatched: 0);
+          rating: 0.0);
       await box!.clear();
       await box!.put(boxName, defaultModel);
     }

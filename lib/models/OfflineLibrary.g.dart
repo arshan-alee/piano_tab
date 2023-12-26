@@ -22,14 +22,13 @@ class OfflineLibraryAdapter extends TypeAdapter<OfflineLibrary> {
       offlineLibrary: (fields[2] as List?)?.cast<String>(),
       favourites: (fields[3] as List?)?.cast<String>(),
       rating: fields[4] as double?,
-      adsWatched: fields[5] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, OfflineLibrary obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.isLoggedIn)
       ..writeByte(1)
@@ -39,9 +38,7 @@ class OfflineLibraryAdapter extends TypeAdapter<OfflineLibrary> {
       ..writeByte(3)
       ..write(obj.favourites)
       ..writeByte(4)
-      ..write(obj.rating)
-      ..writeByte(5)
-      ..write(obj.adsWatched);
+      ..write(obj.rating);
   }
 
   @override
