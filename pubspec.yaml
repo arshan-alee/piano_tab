@@ -64,6 +64,7 @@ dependencies:
   flutter_downloader: 
   device_info_plus:
   android_intent_plus:
+  flutter_countdown_timer:
   
 
 

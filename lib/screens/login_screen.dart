@@ -176,6 +176,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         print(UserDataBox.userBox!.values.first.toJson());
                         if (_ && _data) {
                           await OfflineLibraryBox.setDefault();
+
+                          await HomeController.to.setAdsWatched(0);
                           OfflineLibraryBox.updateIsLoggedIn(true);
                           var message = LoginBox.userBox!.values.first.message;
                           Get.snackbar(message, '');

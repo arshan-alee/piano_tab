@@ -19,7 +19,7 @@ class HomeController extends GetxController {
 
   RxList<ListItemModel> cartItems = <ListItemModel>[].obs;
   var totalCartItemCount = ValueNotifier(0);
-
+  RxInt adsWatched = 0.obs;
   var totalAmount = ValueNotifier(0);
   var totalTokensAwarded = ValueNotifier(0);
   var totalPoints = ValueNotifier('');

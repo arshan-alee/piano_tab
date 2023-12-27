@@ -5,6 +5,7 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_paypal/flutter_paypal.dart';
@@ -66,6 +67,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
     HomeController.to.totalPoints.value = isLoggedIn
         ? UserDataBox.userBox!.values.first.points
         : OfflineLibraryBox.userBox!.values.first.points;
+    HomeController.to.adsWatched.value = HomeController.to.getAdsWatched();
     createRewardedAd();
   }
 
@@ -279,6 +281,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
   }
 
   Future<dynamic> showAlertDialog(BuildContext context, Size size) {
+    int adsWatched = HomeController.to.getAdsWatched();
+    String retrievedTimeStamp = HomeController.to.getTimestamp();
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -315,7 +319,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                     shape: BoxShape.circle,
                     border: Border.all(
                       color:
-                          MyColors.blackColor, // Set your desired stroke color
+                          MyColors.blueColor, // Set your desired stroke color
                       width: 2.0, // Set the stroke width
                     ),
                   ),
@@ -328,7 +332,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                           return TextWidget(
                             text: val,
                             fontSize: 30,
-                            color: MyColors.blackColor,
+                            color: MyColors.blueColor,
                             fontWeight: FontWeight.w500,
                           );
                         },
@@ -362,15 +366,31 @@ class _CustomAppBarState extends State<CustomAppBar> {
                       // int newpoints = userPoints + 1;
                     },
                     height: size.height * 0.038,
-                    width: size.width * 0.25,
-                    color: MyColors.primaryColor,
+                    width: size.width * 0.28,
+                    color: adsWatched < 10
+                        ? MyColors.primaryColor
+                        : MyColors.darkGrey,
                     borderRadius: 20,
                     borderColor: MyColors.transparent,
                     borderWidth: 0,
-                    widget: const Center(
-                      child: TextWidget(
-                        text: 'Earn more',
-                        fontSize: 12,
+                    widget: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Center(
+                        child: adsWatched < 10
+                            ? TextWidget(
+                                text:
+                                    'Earn more (${HomeController.to.adsWatched}/10)',
+                                fontSize: 12,
+                              )
+                            : CountdownTimer(
+                                endTime: DateTime.parse(retrievedTimeStamp)
+                                    .millisecondsSinceEpoch,
+                                textStyle: TextStyle(
+                                  fontSize: 12,
+                                  color: MyColors
+                                      .whiteColor, // Set your desired color
+                                ),
+                              ),
                       ),
                     )),
                 SizedBox(
