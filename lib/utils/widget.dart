@@ -3227,7 +3227,7 @@ class _DownloadingDialogState extends State<DownloadingDialog> {
               builder: (BuildContext context) {
                 return AlertDialog(
                   title: Text(
-                      '${widget.title} has been downloaded in PianotTab folder in internal storage'),
+                      '${widget.title} has been downloaded in PianoTab folder in internal storage'),
                   content:
                       Text(''), // Add any additional content here if needed
                   actions: [
@@ -3302,20 +3302,38 @@ class _DownloadingDialogState extends State<DownloadingDialog> {
               }),
         ).then((_) {
           Navigator.pop(context);
-          Get.snackbar(
-            '${widget.title} has been downloaded', '',
-            //     onTap: (_) async {
-            //   // Open the file manager to the specified folder
-            //   String folderPath = '/storage/emulated/0/PianoTab/';
-            //   String url = 'file://$folderPath';
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text(
+                      '${widget.title} has been downloaded in PianoTab folder in internal storage'),
+                  content:
+                      Text(''), // Add any additional content here if needed
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: Text('OK'),
+                    ),
+                  ],
+                );
+              });
+          // Get.snackbar(
+          // '${widget.title} has been downloaded', '',
+          //     onTap: (_) async {
+          //   // Open the file manager to the specified folder
+          //   String folderPath = '/storage/emulated/0/PianoTab/';
+          //   String url = 'file://$folderPath';
 
-            //   if (await canLaunchUrl(Uri.parse(url))) {
-            //     await launchUrl(Uri.parse(url));
-            //   } else {
-            //     print('Could not launch file manager.');
-            //   }
-            // }
-          );
+          //   if (await canLaunchUrl(Uri.parse(url))) {
+          //     await launchUrl(Uri.parse(url));
+          //   } else {
+          //     print('Could not launch file manager.');
+          //   }
+          // }
+          // );
         });
       } else {
         Navigator.pop(context);
