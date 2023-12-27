@@ -173,7 +173,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
             int offlineUserPoints =
                 int.tryParse(OfflineLibraryBox.userBox!.values.first.points) ??
                     0;
-            int newPoints = offlineUserPoints++;
+            int newPoints = offlineUserPoints + 1;
             await OfflineLibraryBox.updatePoints(newPoints.toString());
             print('Points updated in logged off mode');
           }
@@ -311,24 +311,27 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 Container(
                   height: size.height * 0.135,
                   width: size.width * 0.24,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color:
+                          MyColors.blackColor, // Set your desired stroke color
+                      width: 2.0, // Set the stroke width
+                    ),
+                  ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ValueListenableBuilder(
-                          valueListenable: HomeController.to.totalPoints,
-                          builder: (context, val, c) {
-                            return Padding(
-                              padding: EdgeInsets.only(left: 4),
-                              child: TextWidget(
-                                text: val,
-                                fontSize: 30,
-                                color: MyColors.blackColor,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            );
-                          }),
-                      SizedBox(
-                        height: size.height * 0.016,
+                        valueListenable: HomeController.to.totalPoints,
+                        builder: (context, val, c) {
+                          return TextWidget(
+                            text: val,
+                            fontSize: 30,
+                            color: MyColors.blackColor,
+                            fontWeight: FontWeight.w500,
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -1461,7 +1464,7 @@ class NewReleasesWidget extends StatelessWidget {
       borderRadius: BorderRadius.circular(20.r),
       child: SizedBox(
         child: Container(
-          width: size.width * 0.92, // Set the fixed width
+          width: size.width * 0.88, // Set the fixed width
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20.r),
             border: Border.all(
@@ -2786,13 +2789,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                   final XFile xfile = XFile(path);
                                   String text = '';
 
-                                  if (Platform.isAndroid) {
-                                    text =
-                                        'Checkout ${widget.book.title} on Play Store: https://play.google.com/store/apps/details?id=com.pianotab.app';
-                                  } else if (Platform.isIOS) {
-                                    text =
-                                        'Checkout \'${widget.book.title}\' on App Store: https://apps.apple.com/pk/app/piano-tab/id1330123889';
-                                  }
+                                  text =
+                                      'Checkout ${widget.book.title} in the PianoTab app at  https://pianotab.com';
+
                                   await Share.shareXFiles([xfile], text: text);
                                 },
                                 height: size.height * 0.04,
@@ -3223,17 +3222,34 @@ class _DownloadingDialogState extends State<DownloadingDialog> {
               }),
         ).then((_) {
           Navigator.pop(context);
-          Get.snackbar('${widget.title} has been downloaded', '', onTap: (_) {
-            // AndroidIntent intent = AndroidIntent(
-            //   action: 'action_view',
-            //   package: 'com.android.fileexplorer',
-            //   data: 'file:///storage/emulated/0/PianoTab/',
-            // );
-            // await intent.launch();
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text(
+                      '${widget.title} has been downloaded in PianotTab folder in internal storage'),
+                  content:
+                      Text(''), // Add any additional content here if needed
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: Text('OK'),
+                    ),
+                  ],
+                );
+                // Get.snackbar('${widget.title} has been downloaded', '', onTap: (_) {
+                // AndroidIntent intent = AndroidIntent(
+                //   action: 'action_view',
+                //   package: 'com.android.fileexplorer',
+                //   data: 'file:///storage/emulated/0/PianoTab/',
+                // );
+                // await intent.launch();
 
-            //   // Open the file manager to the specified folder
-            //   OpenFile.open('/storage/emulated/0/PianoTab/');
-          });
+                //   // Open the file manager to the specified folder
+                //   OpenFile.open('/storage/emulated/0/PianoTab/');
+              });
         });
       } else {
         Navigator.pop(context);
@@ -4456,13 +4472,8 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                               onpressed: () async {
                                 String text = '';
 
-                                if (Platform.isAndroid) {
-                                  text =
-                                      'Checkout ${widget.song.title} on Play Store: https://play.google.com/store/apps/details?id=com.pianotab.app';
-                                } else if (Platform.isIOS) {
-                                  text =
-                                      'Checkout \'${widget.song.title}\' on App Store: https://apps.apple.com/pk/app/piano-tab/id1330123889';
-                                }
+                                text =
+                                    'Checkout ${widget.song.title} in the PianoTab app at  https://pianotab.com';
 
                                 await Share.share(text);
                               },
