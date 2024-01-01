@@ -122,7 +122,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
             int offlineUserPoints =
                 int.tryParse(OfflineLibraryBox.userBox!.values.first.points) ??
                     0;
-            int newPoints = offlineUserPoints++;
+            int newPoints = offlineUserPoints + 1;
             await OfflineLibraryBox.updatePoints(newPoints.toString());
             print('Points updated in logged off mode');
           }
@@ -132,11 +132,49 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 : OfflineLibraryBox.userBox!.values.first.points;
           });
           await HomeController.to.setAdsWatched(adsWatched + 1);
-          Get.snackbar(
-              "Seems like the Ad failed to load but here's a token on us",
-              'You have recieved a token');
+
+          HomeController.to.adsWatched.value =
+              HomeController.to.getAdsWatched();
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('You have recieved a token'),
+                  content: Text(
+                      'Seems like the Ad failed to load but here\'s a token on us'), // Add any additional content here if needed
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: Text('OK'),
+                    ),
+                  ],
+                );
+              });
+          // Get.snackbar(
+          //     "Seems like the Ad failed to load but here's a token on us",
+          //     'You have recieved a token');
         } else {
-          Get.snackbar('You have reached the total Ads limit for today!', "");
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title:
+                      Text('You have reached the total Ads limit for today!'),
+                  content:
+                      Text(''), // Add any additional content here if needed
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: Text('OK'),
+                    ),
+                  ],
+                );
+              });
+          // Get.snackbar('You have reached the total Ads limit for today!', "");
         }
       }),
     );
@@ -193,7 +231,27 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 : OfflineLibraryBox.userBox!.values.first.points;
           });
           await HomeController.to.setAdsWatched(adsWatched + 1);
-          Get.snackbar('You have recieved a token', "");
+
+          HomeController.to.adsWatched.value =
+              HomeController.to.getAdsWatched();
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('You have recieved a token'),
+                  content:
+                      Text(''), // Add any additional content here if needed
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: Text('OK'),
+                    ),
+                  ],
+                );
+              });
+          // Get.snackbar('You have recieved a token', "");
         },
       );
       _rewardedAd = null;
@@ -782,14 +840,45 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                           if (adsWatched < 10) {
                                                             showRewardedAd();
                                                           } else {
-                                                            Get.snackbar(
-                                                                'You have reached the total Ads limit for today!',
-                                                                "");
+                                                            showDialog(
+                                                                context:
+                                                                    context,
+                                                                builder:
+                                                                    (BuildContext
+                                                                        context) {
+                                                                  return AlertDialog(
+                                                                    title: Text(
+                                                                        'You have reached the total Ads limit for today!'),
+                                                                    content: Text(
+                                                                        ''), // Add any additional content here if needed
+                                                                    actions: [
+                                                                      TextButton(
+                                                                        onPressed:
+                                                                            () {
+                                                                          Navigator.of(context)
+                                                                              .pop(); // Close the dialog
+                                                                        },
+                                                                        child: Text(
+                                                                            'OK'),
+                                                                      ),
+                                                                    ],
+                                                                  );
+                                                                });
+                                                            // Get.snackbar(
+                                                            //     'You have reached the total Ads limit for today!',
+                                                            //     "");
                                                           }
                                                         } else {
                                                           await HomeController
                                                               .to
                                                               .setAdsWatched(0);
+
+                                                          HomeController
+                                                                  .to
+                                                                  .adsWatched
+                                                                  .value =
+                                                              HomeController.to
+                                                                  .getAdsWatched();
                                                           showRewardedAd();
                                                         }
                                                       },

@@ -63,8 +63,9 @@ dependencies:
   permission_handler:
   flutter_downloader: 
   device_info_plus:
-  android_intent_plus:
+  in_app_review:
   flutter_countdown_timer:
+  file_picker: 
   
 
 

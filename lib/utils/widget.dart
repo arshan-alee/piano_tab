@@ -4,16 +4,17 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_paypal/flutter_paypal.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:http/http.dart' as http;
 import 'package:audioplayers/audioplayers.dart';
-import 'package:android_intent_plus/android_intent.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -112,7 +113,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
               int offlineUserPoints = int.tryParse(
                       OfflineLibraryBox.userBox!.values.first.points) ??
                   0;
-              int newPoints = offlineUserPoints++;
+              int newPoints = offlineUserPoints + 1;
               await OfflineLibraryBox.updatePoints(newPoints.toString());
               print('Points updated in logged off mode');
             }
@@ -123,11 +124,48 @@ class _CustomAppBarState extends State<CustomAppBar> {
             });
             await HomeController.to.setAdsWatched(adsWatched + 1);
 
-            Get.snackbar(
-                "Seems like the Ad failed to load but here's a token on us",
-                'You have recieved a token');
+            HomeController.to.adsWatched.value =
+                HomeController.to.getAdsWatched();
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('You have recieved a token'),
+                    content: Text(
+                        "Seems like the Ad failed to load but here's a token on us"), // Add any additional content here if needed
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  );
+                });
+            // Get.snackbar(
+            //     "Seems like the Ad failed to load but here's a token on us",
+            //     'You have recieved a token');
           } else {
-            Get.snackbar('You have reached the total Ads limit for today!', "");
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title:
+                        Text("You have reached the total Ads limit for today!"),
+                    content:
+                        Text(''), // Add any additional content here if needed
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  );
+                });
+            // Get.snackbar('You have reached the total Ads limit for today!', "");
           }
         },
       ),
@@ -185,7 +223,27 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 : OfflineLibraryBox.userBox!.values.first.points;
           });
           await HomeController.to.setAdsWatched(adsWatched + 1);
-          Get.snackbar('You have recieved a token', "");
+
+          HomeController.to.adsWatched.value =
+              HomeController.to.getAdsWatched();
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text("You have recieved a token!"),
+                  content:
+                      Text(''), // Add any additional content here if needed
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: Text('OK'),
+                    ),
+                  ],
+                );
+              });
+          // Get.snackbar('You have recieved a token', "");
         },
       );
       _rewardedAd = null;
@@ -256,19 +314,15 @@ class _CustomAppBarState extends State<CustomAppBar> {
                         ],
                       ),
                     ),
-                    ValueListenableBuilder(
-                        valueListenable: HomeController.to.totalPoints,
-                        builder: (context, val, c) {
-                          return Expanded(
-                            flex: 2,
-                            child: TextWidget(
-                              text: val,
-                              fontSize: 11,
-                              color: MyColors.primaryColor,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          );
-                        })
+                    Obx(() => Expanded(
+                          flex: 2,
+                          child: TextWidget(
+                            text: HomeController.to.totalPoints.value,
+                            fontSize: 11,
+                            color: MyColors.primaryColor,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ))
                   ],
                 )),
           ],
@@ -283,6 +337,16 @@ class _CustomAppBarState extends State<CustomAppBar> {
   Future<dynamic> showAlertDialog(BuildContext context, Size size) {
     int adsWatched = HomeController.to.getAdsWatched();
     String retrievedTimeStamp = HomeController.to.getTimestamp();
+
+    void _openAppReview() async {
+      final InAppReview inAppReview = InAppReview.instance;
+      if (await inAppReview.isAvailable()) {
+        inAppReview.openStoreListing(
+          appStoreId: 'com.facebook.katana',
+        );
+      }
+    }
+
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -326,17 +390,12 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      ValueListenableBuilder(
-                        valueListenable: HomeController.to.totalPoints,
-                        builder: (context, val, c) {
-                          return TextWidget(
-                            text: val,
+                      Obx(() => TextWidget(
+                            text: HomeController.to.totalPoints.value,
                             fontSize: 30,
                             color: MyColors.blueColor,
                             fontWeight: FontWeight.w500,
-                          );
-                        },
-                      ),
+                          ))
                     ],
                   ),
                 ),
@@ -355,12 +414,34 @@ class _CustomAppBarState extends State<CustomAppBar> {
                         if (adsWatched < 10) {
                           showRewardedAd();
                         } else {
-                          Get.snackbar(
-                              'You have reached the total Ads limit for today',
-                              "");
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text(
+                                      'You have reached the total Ads limit for today'),
+                                  content: Text(
+                                      ''), // Add any additional content here if needed
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .pop(); // Close the dialog
+                                      },
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              });
+                          // Get.snackbar(
+                          //     'You have reached the total Ads limit for today',
+                          //     "");
                         }
                       } else {
                         await HomeController.to.setAdsWatched(0);
+
+                        HomeController.to.adsWatched.value =
+                            HomeController.to.getAdsWatched();
                         showRewardedAd();
                       }
                       // int newpoints = userPoints + 1;
@@ -377,11 +458,11 @@ class _CustomAppBarState extends State<CustomAppBar> {
                       padding: const EdgeInsets.all(4.0),
                       child: Center(
                         child: adsWatched < 10
-                            ? TextWidget(
-                                text:
-                                    'Earn more (${HomeController.to.adsWatched}/10)',
-                                fontSize: 12,
-                              )
+                            ? Obx(() => TextWidget(
+                                  text:
+                                      'Earn more (${HomeController.to.adsWatched}/10)',
+                                  fontSize: 12,
+                                ))
                             : CountdownTimer(
                                 endTime: DateTime.parse(retrievedTimeStamp)
                                     .millisecondsSinceEpoch,
@@ -479,6 +560,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                     children: [
                       InkWell(
                         onTap: () {
+                          _openAppReview();
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
@@ -1521,7 +1603,7 @@ class NewReleasesWidget extends StatelessWidget {
                 ), // Add your content here
 
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 13),
+                  padding: const EdgeInsets.symmetric(horizontal: 11),
                   child: Container(
                     height: size.height * 0.24,
                     width: size.width * 0.37,
@@ -1983,7 +2065,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
               int offlineUserPoints = int.tryParse(
                       OfflineLibraryBox.userBox!.values.first.points) ??
                   0;
-              int newPoints = offlineUserPoints++;
+              int newPoints = offlineUserPoints + 1;
               await OfflineLibraryBox.updatePoints(newPoints.toString());
               print('Points updated in logged off mode');
             }
@@ -1993,11 +2075,49 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                   : OfflineLibraryBox.userBox!.values.first.points;
             });
             await HomeController.to.setAdsWatched(adsWatched + 1);
-            Get.snackbar(
-                "Seems like the Ad failed to load but here's a token on us",
-                'You have recieved a token');
+
+            HomeController.to.adsWatched.value =
+                HomeController.to.getAdsWatched();
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('You have recieved a token'),
+                    content: Text(
+                        'Seems like the Ad failed to load but here\'s a token on us'), // Add any additional content here if needed
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  );
+                });
+            // Get.snackbar(
+            //     "Seems like the Ad failed to load but here's a token on us",
+            //     'You have recieved a token');
           } else {
-            Get.snackbar('You have reached the total Ads limit for today!', "");
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title:
+                        Text('You have reached the total Ads limit for today!'),
+                    content:
+                        Text(''), // Add any additional content here if needed
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  );
+                });
+            // Get.snackbar('You have reached the total Ads limit for today!', "");
           }
         },
       ),
@@ -2054,7 +2174,27 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                 : OfflineLibraryBox.userBox!.values.first.points;
           });
           await HomeController.to.setAdsWatched(adsWatched + 1);
-          Get.snackbar('You have recieved a token', "");
+
+          HomeController.to.adsWatched.value =
+              HomeController.to.getAdsWatched();
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('You have recieved a token'),
+                  content:
+                      Text(''), // Add any additional content here if needed
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: Text('OK'),
+                    ),
+                  ],
+                );
+              });
+          // Get.snackbar('You have recieved a token', "");
         }
       });
       _rewardedAd = null;
@@ -2110,9 +2250,41 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
       var _data = HomeController.to
           .getuserData(LoginBox.userBox!.values.first.authToken);
       if (_) {
-        Get.snackbar("${widget.book.title} is added to library", '');
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('${widget.book.title} is added to library'),
+                content: Text(''), // Add any additional content here if needed
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            });
+        // Get.snackbar("${widget.book.title} is added to library", '');
       } else {
-        Get.snackbar("Failed to update library", '');
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Failed to update library'),
+                content: Text(''), // Add any additional content here if needed
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            });
+        // Get.snackbar("Failed to update library", '');
       }
     } else {
       bool userWantsToWatchVideo = await showDialog(
@@ -2153,10 +2325,31 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
           if (adsWatched < 10) {
             showRewardedAd();
           } else {
-            Get.snackbar('You have reached the total Ads limit for today!', "");
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title:
+                        Text('You have reached the total Ads limit for today!'),
+                    content:
+                        Text(''), // Add any additional content here if needed
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  );
+                });
+            // Get.snackbar('You have reached the total Ads limit for today!', "");
           }
         } else {
           await HomeController.to.setAdsWatched(0);
+
+          HomeController.to.adsWatched.value =
+              HomeController.to.getAdsWatched();
           showRewardedAd();
         }
       }
@@ -2430,18 +2623,89 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                         },
                                                       );
                                                       if (_) {
-                                                        Get.snackbar(
-                                                            "Added to Cart",
-                                                            "");
+                                                        showDialog(
+                                                            context: context,
+                                                            builder:
+                                                                (BuildContext
+                                                                    context) {
+                                                              return AlertDialog(
+                                                                title: Text(
+                                                                    'Added to Cart'),
+                                                                content: Text(
+                                                                    ''), // Add any additional content here if needed
+                                                                actions: [
+                                                                  TextButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop(); // Close the dialog
+                                                                    },
+                                                                    child: Text(
+                                                                        'OK'),
+                                                                  ),
+                                                                ],
+                                                              );
+                                                            });
+                                                        // Get.snackbar(
+                                                        // "Added to Cart",
+                                                        // "");
                                                       } else {
-                                                        Get.snackbar(
-                                                            "Already in Cart",
-                                                            "");
+                                                        showDialog(
+                                                            context: context,
+                                                            builder:
+                                                                (BuildContext
+                                                                    context) {
+                                                              return AlertDialog(
+                                                                title: Text(
+                                                                    'Already in Cart'),
+                                                                content: Text(
+                                                                    ''), // Add any additional content here if needed
+                                                                actions: [
+                                                                  TextButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop(); // Close the dialog
+                                                                    },
+                                                                    child: Text(
+                                                                        'OK'),
+                                                                  ),
+                                                                ],
+                                                              );
+                                                            });
+                                                        // Get.snackbar(
+                                                        //     "Already in Cart",
+                                                        //     "");
                                                       }
                                                     } else {
-                                                      Get.snackbar(
-                                                          "You need to Sign In to Add item to cart",
-                                                          "");
+                                                      showDialog(
+                                                          context: context,
+                                                          builder: (BuildContext
+                                                              context) {
+                                                            return AlertDialog(
+                                                              title: Text(
+                                                                  'You need to Sign In to Add item to cart'),
+                                                              content: Text(
+                                                                  ''), // Add any additional content here if needed
+                                                              actions: [
+                                                                TextButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop(); // Close the dialog
+                                                                  },
+                                                                  child: Text(
+                                                                      'OK'),
+                                                                ),
+                                                              ],
+                                                            );
+                                                          });
+                                                      // Get.snackbar(
+                                                      //     "You need to Sign In to Add item to cart",
+                                                      //     "");
                                                     }
                                                   },
                                                   height: size.height * 0.04,
@@ -2483,9 +2747,32 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                             .values
                                                             .first
                                                             .isLoggedIn) {
-                                                          Get.snackbar(
-                                                              "Removed from favorites",
-                                                              "");
+                                                          showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return AlertDialog(
+                                                                  title: Text(
+                                                                      'Removed from Wish List'),
+                                                                  content: Text(
+                                                                      ''), // Add any additional content here if needed
+                                                                  actions: [
+                                                                    TextButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        Navigator.of(context)
+                                                                            .pop(); // Close the dialog
+                                                                      },
+                                                                      child: Text(
+                                                                          'OK'),
+                                                                    ),
+                                                                  ],
+                                                                );
+                                                              });
+                                                          // Get.snackbar(
+                                                          //     "Removed from favorites",
+                                                          //     "");
                                                         }
                                                       } else {
                                                         // Add to favorites
@@ -2498,26 +2785,52 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                             .values
                                                             .first
                                                             .isLoggedIn) {
-                                                          Get.snackbar(
-                                                              "Added to Wish List",
-                                                              "");
+                                                          showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return AlertDialog(
+                                                                  title: Text(
+                                                                      'Added to Wish List'),
+                                                                  content: Text(
+                                                                      ''), // Add any additional content here if needed
+                                                                  actions: [
+                                                                    TextButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        Navigator.of(context)
+                                                                            .pop(); // Close the dialog
+                                                                      },
+                                                                      child: Text(
+                                                                          'OK'),
+                                                                    ),
+                                                                  ],
+                                                                );
+                                                              });
+                                                          // Get.snackbar(
+                                                          //     "Added to Wish List",
+                                                          //     "");
                                                         }
                                                       }
                                                     });
                                                   },
-                                                  child: Icon(
-                                                    OfflineLibraryBox
-                                                            .userBox!
-                                                            .values
-                                                            .first
-                                                            .favourites
-                                                            .contains(widget
-                                                                .book.detail)
-                                                        ? CupertinoIcons
-                                                            .star_fill
-                                                        : CupertinoIcons.star,
-                                                    color: MyColors.yellowColor,
-                                                  ),
+                                                  child: OfflineLibraryBox
+                                                          .userBox!
+                                                          .values
+                                                          .first
+                                                          .favourites
+                                                          .contains(widget
+                                                              .book.detail)
+                                                      ? Icon(
+                                                          CupertinoIcons
+                                                              .star_fill,
+                                                          color: MyColors
+                                                              .yellowColor)
+                                                      : Icon(
+                                                          CupertinoIcons.star,
+                                                          color: MyColors
+                                                              .blueColor),
                                                 )
 
                                                 // CustomContainer(
@@ -2936,63 +3249,60 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
               ],
             ),
           ),
-          ValueListenableBuilder(
-              valueListenable: HomeController.to.totalCartItemCount,
-              builder: (context, val, c) {
-                return Visibility(
-                    visible: val > 0,
-                    child: Positioned(
-                      bottom: 90,
-                      right: 15,
-                      child: Stack(
-                        children: [
-                          Material(
-                            elevation: 6,
-                            shape: CircleBorder(),
-                            child: FloatingActionButton(
-                              onPressed: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  useSafeArea: true,
-                                  builder: (BuildContext bc) {
-                                    return CartScreen();
-                                  },
-                                );
-                              },
-                              backgroundColor: MyColors.primaryColor,
-                              child: Icon(
-                                Icons.shopping_cart,
-                                color: MyColors.whiteColor,
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            top: 0,
-                            right: 0,
-                            child: Container(
-                              width: 20,
-                              height: 20,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: MyColors.primaryColor,
-                                  width: 2.0,
-                                ),
-                                color: MyColors.whiteColor,
-                              ),
-                              child: Center(
-                                child: TextWidget(
-                                  text: val.toString(),
-                                  color: MyColors.primaryColor,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+          Obx(() => Visibility(
+              visible: HomeController.to.totalCartItemCount > 0,
+              child: Positioned(
+                bottom: 90,
+                right: 15,
+                child: Stack(
+                  children: [
+                    Material(
+                      elevation: 6,
+                      shape: CircleBorder(),
+                      child: FloatingActionButton(
+                        onPressed: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            useSafeArea: true,
+                            builder: (BuildContext bc) {
+                              return CartScreen();
+                            },
+                          );
+                        },
+                        backgroundColor: MyColors.primaryColor,
+                        child: Icon(
+                          Icons.shopping_cart,
+                          color: MyColors.whiteColor,
+                        ),
                       ),
-                    ));
-              })
+                    ),
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Container(
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: MyColors.primaryColor,
+                            width: 2.0,
+                          ),
+                          color: MyColors.whiteColor,
+                        ),
+                        child: Center(
+                          child: TextWidget(
+                            text:
+                                HomeController.to.totalCartItemCount.toString(),
+                            color: MyColors.primaryColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )))
         ],
       ),
     );
@@ -3086,6 +3396,20 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
     FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
   }
 
+  Future<String?> _pickDirectory() async {
+    String? result;
+
+    try {
+      // Use file_picker to pick a directory
+      result = await FilePicker.platform
+          .getDirectoryPath(initialDirectory: '/storage/emulated/0/');
+    } catch (e) {
+      print("Error picking directory: $e");
+    }
+
+    return result;
+  }
+
   @override
   Widget build(BuildContext context) {
     // Apply the secure flag when building the screen
@@ -3104,14 +3428,17 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                   IconButton(
                     icon: const Icon(Icons.file_download),
                     onPressed: () async {
-                      showDialog(
-                        context: context,
-                        builder: (context) => DownloadingDialog(
-                          pdfPath: widget.pdfPath,
-                          title:
-                              widget.title, // Pass the PDF path to the dialog
-                        ),
-                      );
+                      String? selectedPath = await _pickDirectory();
+                      if (selectedPath != null) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => DownloadingDialog(
+                            pdfPath: widget.pdfPath,
+                            title: widget.title,
+                            selectedPath: selectedPath,
+                          ),
+                        );
+                      }
                     },
                   ),
                   IconButton(
@@ -3152,10 +3479,12 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
 class DownloadingDialog extends StatefulWidget {
   final String pdfPath;
   final String title;
+  final String selectedPath;
 
   DownloadingDialog({
     required this.pdfPath,
     required this.title,
+    required this.selectedPath,
   });
 
   @override
@@ -3190,7 +3519,7 @@ class _DownloadingDialogState extends State<DownloadingDialog> {
     // ].request();
 
     // String path = await _getFilePath(fileName);
-    String path = '/storage/emulated/0/PianoTab/';
+    String path = widget.selectedPath;
     final dir = Directory("storage/emulated/0/PianoTab");
 
     var androidversion = await getAndroidSdkVersion();
@@ -3510,7 +3839,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
               int offlineUserPoints = int.tryParse(
                       OfflineLibraryBox.userBox!.values.first.points) ??
                   0;
-              int newPoints = offlineUserPoints++;
+              int newPoints = offlineUserPoints + 1;
               await OfflineLibraryBox.updatePoints(newPoints.toString());
               print('Points updated in logged off mode');
             }
@@ -3520,11 +3849,49 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                   : OfflineLibraryBox.userBox!.values.first.points;
             });
             await HomeController.to.setAdsWatched(adsWatched + 1);
-            Get.snackbar(
-                "Seems like the Ad failed to load but here's a token on us",
-                'You have recieved a token');
+
+            HomeController.to.adsWatched.value =
+                HomeController.to.getAdsWatched();
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('You have recieved a token'),
+                    content: Text(
+                        'Seems like the Ad failed to load but here\'s a token on us'), // Add any additional content here if needed
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  );
+                });
+            // Get.snackbar(
+            //     "Seems like the Ad failed to load but here's a token on us",
+            //     'You have recieved a token');
           } else {
-            Get.snackbar('You have reached the total Ads limit for today!', "");
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title:
+                        Text('You have reached the total Ads limit for today!'),
+                    content:
+                        Text(''), // Add any additional content here if needed
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  );
+                });
+            // Get.snackbar('You have reached the total Ads limit for today!', "");
           }
         },
       ),
@@ -3603,9 +3970,26 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                 var userdata = await HomeController.to
                     .getuserData(LoginBox.userBox!.values.first.authToken);
                 print('Points updated in logged In mode');
-
-                Get.snackbar(
-                    "${widget.song.title} is added to the library", '');
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text(
+                            "${widget.song.title} is added to the library"),
+                        content: Text(
+                            ''), // Add any additional content here if needed
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Close the dialog
+                            },
+                            child: Text('OK'),
+                          ),
+                        ],
+                      );
+                    });
+                // Get.snackbar(
+                //     "${widget.song.title} is added to the library", '');
                 // Perform additional actions with userdata
               });
             } else {
@@ -3615,7 +3999,25 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
               int newPoints = offlineUserPoints++;
               await OfflineLibraryBox.updatePoints(newPoints.toString());
               print('Points updated in logged off mode');
-              Get.snackbar("${widget.song.title} is Redeemed for 24 hours", '');
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title:
+                          Text("${widget.song.title} is Redeemed for 24 hours"),
+                      content:
+                          Text(''), // Add any additional content here if needed
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                          },
+                          child: Text('OK'),
+                        ),
+                      ],
+                    );
+                  });
+              // Get.snackbar("${widget.song.title} is Redeemed for 24 hours", '');
             }
             setState(() {
               HomeController.to.totalPoints.value = isLoggedIn
@@ -3623,7 +4025,27 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                   : OfflineLibraryBox.userBox!.values.first.points;
             });
             await HomeController.to.setAdsWatched(adsWatched + 1);
-            Get.snackbar('You have recieved a token', "");
+
+            HomeController.to.adsWatched.value =
+                HomeController.to.getAdsWatched();
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('You have recieved a token'),
+                    content:
+                        Text(''), // Add any additional content here if needed
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  );
+                });
+            // Get.snackbar('You have recieved a token', "");
           }
         }
       });
@@ -3663,7 +4085,23 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     if (isSongInLibrary) {
       // Show a snackbar saying "Already in the library"
       if (isLoggedIn) {
-        Get.snackbar("Already in the library", '');
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Already in the library"),
+                content: Text(''), // Add any additional content here if needed
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            });
+        // Get.snackbar("Already in the library", '');
       }
     } else if (tokenText == 'Watch video and redeem') {
       bool userWantsToWatchVideo = await showDialog(
@@ -3705,10 +4143,31 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
           if (adsWatched < 10) {
             showRewardedAd();
           } else {
-            Get.snackbar('You have reached the total Ads limit for today!', "");
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title:
+                        Text('You have reached the total Ads limit for today!'),
+                    content:
+                        Text(''), // Add any additional content here if needed
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  );
+                });
+            // Get.snackbar('You have reached the total Ads limit for today!', "");
           }
         } else {
           await HomeController.to.setAdsWatched(0);
+
+          HomeController.to.adsWatched.value =
+              HomeController.to.getAdsWatched();
           showRewardedAd();
         }
       }
@@ -3717,10 +4176,42 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
       var _data = HomeController.to
           .getuserData(LoginBox.userBox!.values.first.authToken);
       if (isLoggedIn) {
-        Get.snackbar("${widget.song.title} is added to the library", '');
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('${widget.song.title} is added to the library'),
+                content: Text(''), // Add any additional content here if needed
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            });
+        // Get.snackbar("${widget.song.title} is added to the library", '');
       } else {
         // Prompt the user to create an account
-        Get.snackbar("Create an account to add items to the library", '');
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Create an account to add items to the library"),
+                content: Text(''), // Add any additional content here if needed
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            });
+        // Get.snackbar("Create an account to add items to the library", '');
       }
     } else {
       bool userWantsToWatchVideo = await showDialog(
@@ -3728,7 +4219,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         builder: (BuildContext dialogContext) {
           return AlertDialog(
             title: const Text('Not Enough Tokens'),
-            content: const Text('Watch a video to earn a reward?'),
+            content: const Text('Watch a video to earn a token?'),
             actions: <Widget>[
               TextButton(
                 child: const Text('No'),
@@ -3762,10 +4253,48 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
           if (adsWatched < 10) {
             showRewardedAd();
           } else {
-            Get.snackbar('You have reached the total Ads limit for today!', "");
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('${widget.song.title} is added to the library'),
+                    content:
+                        Text(''), // Add any additional content here if needed
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  );
+                });
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title:
+                        Text('You have reached the total Ads limit for today!'),
+                    content:
+                        Text(''), // Add any additional content here if needed
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  );
+                });
+            // Get.snackbar('You have reached the total Ads limit for today!', "");
           }
         } else {
           await HomeController.to.setAdsWatched(0);
+
+          HomeController.to.adsWatched.value =
+              HomeController.to.getAdsWatched();
           showRewardedAd();
         }
       }
@@ -3895,7 +4424,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                   title: const Text(
                                                       'Watch a Video'),
                                                   content: const Text(
-                                                      'Watch a video to earn a reward?'),
+                                                      'Watch a video to earn a token?'),
                                                   actions: <Widget>[
                                                     TextButton(
                                                       child: const Text('No'),
@@ -3930,14 +4459,45 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                           if (adsWatched < 10) {
                                                             showRewardedAd();
                                                           } else {
-                                                            Get.snackbar(
-                                                                'You have reached the total Ads limit for today!',
-                                                                "");
+                                                            showDialog(
+                                                                context:
+                                                                    context,
+                                                                builder:
+                                                                    (BuildContext
+                                                                        context) {
+                                                                  return AlertDialog(
+                                                                    title: Text(
+                                                                        'You have reached the total Ads limit for today!'),
+                                                                    content: Text(
+                                                                        ''), // Add any additional content here if needed
+                                                                    actions: [
+                                                                      TextButton(
+                                                                        onPressed:
+                                                                            () {
+                                                                          Navigator.of(context)
+                                                                              .pop(); // Close the dialog
+                                                                        },
+                                                                        child: Text(
+                                                                            'OK'),
+                                                                      ),
+                                                                    ],
+                                                                  );
+                                                                });
+                                                            // Get.snackbar(
+                                                            //     'You have reached the total Ads limit for today!',
+                                                            //     "");
                                                           }
                                                         } else {
                                                           await HomeController
                                                               .to
                                                               .setAdsWatched(0);
+
+                                                          HomeController
+                                                                  .to
+                                                                  .adsWatched
+                                                                  .value =
+                                                              HomeController.to
+                                                                  .getAdsWatched();
                                                           showRewardedAd();
                                                         }
                                                         Navigator.of(
@@ -4115,18 +4675,89 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                         },
                                                       );
                                                       if (_) {
-                                                        Get.snackbar(
-                                                            "Added to Cart",
-                                                            "");
+                                                        showDialog(
+                                                            context: context,
+                                                            builder:
+                                                                (BuildContext
+                                                                    context) {
+                                                              return AlertDialog(
+                                                                title: Text(
+                                                                    'Added to Cart'),
+                                                                content: Text(
+                                                                    ''), // Add any additional content here if needed
+                                                                actions: [
+                                                                  TextButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop(); // Close the dialog
+                                                                    },
+                                                                    child: Text(
+                                                                        'OK'),
+                                                                  ),
+                                                                ],
+                                                              );
+                                                            });
+                                                        // Get.snackbar(
+                                                        //     "Added to Cart",
+                                                        //     "");
                                                       } else {
-                                                        Get.snackbar(
-                                                            "Already in Cart",
-                                                            "");
+                                                        showDialog(
+                                                            context: context,
+                                                            builder:
+                                                                (BuildContext
+                                                                    context) {
+                                                              return AlertDialog(
+                                                                title: Text(
+                                                                    'Already in Cart'),
+                                                                content: Text(
+                                                                    ''), // Add any additional content here if needed
+                                                                actions: [
+                                                                  TextButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop(); // Close the dialog
+                                                                    },
+                                                                    child: Text(
+                                                                        'OK'),
+                                                                  ),
+                                                                ],
+                                                              );
+                                                            });
+                                                        // Get.snackbar(
+                                                        //     "Already in Cart",
+                                                        //     "");
                                                       }
                                                     } else {
-                                                      Get.snackbar(
-                                                          "You need to Sign In to Add item to cart",
-                                                          "");
+                                                      showDialog(
+                                                          context: context,
+                                                          builder: (BuildContext
+                                                              context) {
+                                                            return AlertDialog(
+                                                              title: Text(
+                                                                  'You need to Sign In to Add item to cart'),
+                                                              content: Text(
+                                                                  ''), // Add any additional content here if needed
+                                                              actions: [
+                                                                TextButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop(); // Close the dialog
+                                                                  },
+                                                                  child: Text(
+                                                                      'OK'),
+                                                                ),
+                                                              ],
+                                                            );
+                                                          });
+                                                      // Get.snackbar(
+                                                      //     "You need to Sign In to Add item to cart",
+                                                      //     "");
                                                     }
                                                   },
                                                   height: size.height * 0.04,
@@ -4170,9 +4801,32 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                             .values
                                                             .first
                                                             .isLoggedIn) {
-                                                          Get.snackbar(
-                                                              "Removed from favorites",
-                                                              "");
+                                                          showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return AlertDialog(
+                                                                  title: Text(
+                                                                      'Removed from Wish List'),
+                                                                  content: Text(
+                                                                      ''), // Add any additional content here if needed
+                                                                  actions: [
+                                                                    TextButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        Navigator.of(context)
+                                                                            .pop(); // Close the dialog
+                                                                      },
+                                                                      child: Text(
+                                                                          'OK'),
+                                                                    ),
+                                                                  ],
+                                                                );
+                                                              });
+                                                          // Get.snackbar(
+                                                          //     "Removed from favorites",
+                                                          //     "");
                                                         }
                                                       } else {
                                                         // Add to favorites
@@ -4185,30 +4839,78 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                             .values
                                                             .first
                                                             .isLoggedIn) {
-                                                          Get.snackbar(
-                                                              "Added to Wish List",
-                                                              "");
+                                                          showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return AlertDialog(
+                                                                  title: Text(
+                                                                      'Added to Wish List'),
+                                                                  content: Text(
+                                                                      ''), // Add any additional content here if needed
+                                                                  actions: [
+                                                                    TextButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        Navigator.of(context)
+                                                                            .pop(); // Close the dialog
+                                                                      },
+                                                                      child: Text(
+                                                                          'OK'),
+                                                                    ),
+                                                                  ],
+                                                                );
+                                                              });
+                                                          // Get.snackbar(
+                                                          //     "Added to Wish List",
+                                                          //     "");
                                                         }
                                                       }
                                                     });
                                                   } else {
-                                                    Get.snackbar(
-                                                        'Already in the Library',
-                                                        '');
+                                                    showDialog(
+                                                        context: context,
+                                                        builder: (BuildContext
+                                                            context) {
+                                                          return AlertDialog(
+                                                            title: Text(
+                                                                'Already in the Library'),
+                                                            content: Text(
+                                                                ''), // Add any additional content here if needed
+                                                            actions: [
+                                                              TextButton(
+                                                                onPressed: () {
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop(); // Close the dialog
+                                                                },
+                                                                child:
+                                                                    Text('OK'),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        });
+                                                    // Get.snackbar(
+                                                    //     'Already in the Library',
+                                                    //     '');
                                                   }
                                                 },
-                                                child: Icon(
-                                                  OfflineLibraryBox
-                                                          .userBox!
-                                                          .values
-                                                          .first
-                                                          .favourites
-                                                          .contains(widget
-                                                              .song.detail)
-                                                      ? CupertinoIcons.star_fill
-                                                      : CupertinoIcons.star,
-                                                  color: MyColors.yellowColor,
-                                                ),
+                                                child: OfflineLibraryBox
+                                                        .userBox!
+                                                        .values
+                                                        .first
+                                                        .favourites
+                                                        .contains(
+                                                            widget.song.detail)
+                                                    ? Icon(
+                                                        CupertinoIcons
+                                                            .star_fill,
+                                                        color: MyColors
+                                                            .yellowColor)
+                                                    : Icon(CupertinoIcons.star,
+                                                        color:
+                                                            MyColors.blueColor),
                                               ),
                                               // CustomContainer(
                                               //   onpressed: () {},
@@ -4595,63 +5297,59 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
             ],
           ),
         ),
-        ValueListenableBuilder(
-            valueListenable: HomeController.to.totalCartItemCount,
-            builder: (context, val, c) {
-              return Visibility(
-                  visible: val > 0,
-                  child: Positioned(
-                    bottom: 90,
-                    right: 15,
-                    child: Stack(
-                      children: [
-                        Material(
-                          elevation: 6,
-                          shape: CircleBorder(),
-                          child: FloatingActionButton(
-                            onPressed: () {
-                              showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: true,
-                                useSafeArea: true,
-                                builder: (BuildContext bc) {
-                                  return CartScreen();
-                                },
-                              );
-                            },
-                            backgroundColor: MyColors.primaryColor,
-                            child: Icon(
-                              Icons.shopping_cart,
-                              color: MyColors.whiteColor,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          top: 0,
-                          right: 0,
-                          child: Container(
-                            width: 20,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: MyColors.primaryColor,
-                                width: 2.0,
-                              ),
-                              color: MyColors.whiteColor,
-                            ),
-                            child: Center(
-                              child: TextWidget(
-                                text: val.toString(),
-                                color: MyColors.primaryColor,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+        Obx(() => Visibility(
+            visible: HomeController.to.totalCartItemCount > 0,
+            child: Positioned(
+              bottom: 90,
+              right: 15,
+              child: Stack(
+                children: [
+                  Material(
+                    elevation: 6,
+                    shape: CircleBorder(),
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          useSafeArea: true,
+                          builder: (BuildContext bc) {
+                            return CartScreen();
+                          },
+                        );
+                      },
+                      backgroundColor: MyColors.primaryColor,
+                      child: Icon(
+                        Icons.shopping_cart,
+                        color: MyColors.whiteColor,
+                      ),
                     ),
-                  ));
-            })
+                  ),
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: MyColors.primaryColor,
+                          width: 2.0,
+                        ),
+                        color: MyColors.whiteColor,
+                      ),
+                      child: Center(
+                        child: TextWidget(
+                          text: HomeController.to.totalCartItemCount.toString(),
+                          color: MyColors.primaryColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )))
       ],
     ));
   }
@@ -4810,8 +5508,27 @@ class _CartScreenState extends State<CartScreen> {
                                   calculateTotalAmount();
                                   calculateTotalTokens();
                                   if (_) {
-                                    Get.snackbar(
-                                        "Item removed from the cart", '');
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: Text(
+                                                'Item removed from the cart'),
+                                            content: Text(
+                                                ''), // Add any additional content here if needed
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context)
+                                                      .pop(); // Close the dialog
+                                                },
+                                                child: Text('OK'),
+                                              ),
+                                            ],
+                                          );
+                                        });
+                                    // Get.snackbar(
+                                    //     "Item removed from the cart", '');
                                   }
                                 },
                               );
@@ -4826,209 +5543,222 @@ class _CartScreenState extends State<CartScreen> {
               ],
             ),
           ),
-          ValueListenableBuilder(
-              valueListenable: HomeController.to.totalAmount,
-              builder: (context, amount, c) {
-                return ValueListenableBuilder(
-                    valueListenable: HomeController.to.totalTokensAwarded,
-                    builder: (context, token, c) {
-                      return Positioned(
-                          bottom: 0,
-                          right: 0,
-                          left: 0,
-                          child: InkWell(
-                            onTap: () {
-                              String transactionsJson = jsonEncode([
-                                {
-                                  "amount": {
-                                    "total": amount.toString(),
-                                    "currency": "USD",
-                                    "details": {
-                                      "subtotal": amount.toString(),
-                                      "shipping": '0',
-                                      "shipping_discount": 0
+          Obx(() => Positioned(
+              bottom: 0,
+              right: 0,
+              left: 0,
+              child: InkWell(
+                onTap: () {
+                  String transactionsJson = jsonEncode([
+                    {
+                      "amount": {
+                        "total": HomeController.to.totalAmount.toString(),
+                        "currency": "USD",
+                        "details": {
+                          "subtotal": HomeController.to.totalAmount.toString(),
+                          "shipping": '0',
+                          "shipping_discount": 0
+                        },
+                        "description": "The payment transaction description.",
+                        "item_list": {
+                          "items": [
+                            {
+                              "name": "A demo product",
+                              "quantity": 1,
+                              "price": '10.12',
+                              "currency": "USD"
+                            }
+                          ],
+                        }
+                      },
+                    }
+                  ]);
+
+                  print("Transactions JSON: $transactionsJson");
+                  Get.to(UsePaypal(
+                    sandboxMode: true,
+                    clientId:
+                        "ATN1ojtdC_jqrMRvAll4ZplkSCuYse4s_o592nubbS-VjubMp2mBIlBgg1qXhSkxrxcFCqe2RxygL7_R",
+                    secretKey:
+                        "EJH5ZtrISXwW3HkfiGJ8eI4PnR0vUPz7gPpaZtNMNKPGB1nkRygPa3H7A09IdpxhnrASDq1-LdIWFjBl",
+                    returnURL: "https://samplesite.com/return",
+                    cancelURL: "https://samplesite.com/cancel",
+                    transactions: [
+                      {
+                        "amount": {
+                          "total": HomeController.to.totalAmount.toString(),
+                          "currency": "USD",
+                          "details": {
+                            "subtotal":
+                                HomeController.to.totalAmount.toString(),
+                            "shipping": '0',
+                            "shipping_discount": 0
+                          }
+                        },
+                        "description": "The payment transaction description.",
+                        // "payment_options": {
+                        //   "allowed_payment_method":
+                        //       "INSTANT_FUNDING_SOURCE"
+                        // },
+                        "item_list": {
+                          "items": getItemsDetails(),
+
+                          // shipping address is not required though
+                          // "shipping_address": {
+                          //   "recipient_name": "Jane Foster",
+                          //   "line1": "Travis County",
+                          //   "line2": "",
+                          //   "city": "Austin",
+                          //   "country_code": "US",
+                          //   "postal_code": "73301",
+                          //   "phone": "+00000000",
+                          //   "state": "Texas"
+                          // },
+                        }
+                      }
+                    ],
+                    note: "Contact us for any questions on your order.",
+                    onSuccess: (Map params) async {
+                      if (mounted) {
+                        print("onSuccess: $params");
+                        for (var cartItem in HomeController.to.cartItems) {
+                          await OfflineLibraryBox.updateLibrary(
+                              cartItem.detail);
+                        }
+                        var a = OfflineLibrary.encodeOfflineLibrary(
+                            OfflineLibraryBox
+                                .userBox!.values.first.offlineLibrary);
+                        print(a);
+
+                        int userPoints = int.tryParse(
+                                UserDataBox.userBox!.values.first.points) ??
+                            0;
+                        int newPoints = userPoints +
+                            HomeController.to.totalTokensAwarded.value;
+                        var submitted = await HomeController.to.updateLibrary(
+                            LoginBox.userBox!.values.first.authToken, a);
+                        var pointsUpdated = await HomeController.to
+                            .updatePoints(
+                                LoginBox.userBox!.values.first.authToken,
+                                newPoints);
+                        var userdata = await HomeController.to.getuserData(
+                            LoginBox.userBox!.values.first.authToken);
+                        setState(() {
+                          HomeController.to.totalPoints.value =
+                              UserDataBox.userBox!.values.first.points;
+                        });
+
+                        await HomeController.emptyCart();
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text(
+                                    'You\'ve been awarded ${HomeController.to.totalTokensAwarded} tokens'),
+                                content: Text(
+                                    ''), // Add any additional content here if needed
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context)
+                                          .pop(); // Close the dialog
                                     },
-                                    "description":
-                                        "The payment transaction description.",
-                                    "item_list": {
-                                      "items": [
-                                        {
-                                          "name": "A demo product",
-                                          "quantity": 1,
-                                          "price": '10.12',
-                                          "currency": "USD"
-                                        }
-                                      ],
-                                    }
-                                  },
-                                }
-                              ]);
-
-                              print("Transactions JSON: $transactionsJson");
-                              Get.to(UsePaypal(
-                                sandboxMode: true,
-                                clientId:
-                                    "ATN1ojtdC_jqrMRvAll4ZplkSCuYse4s_o592nubbS-VjubMp2mBIlBgg1qXhSkxrxcFCqe2RxygL7_R",
-                                secretKey:
-                                    "EJH5ZtrISXwW3HkfiGJ8eI4PnR0vUPz7gPpaZtNMNKPGB1nkRygPa3H7A09IdpxhnrASDq1-LdIWFjBl",
-                                returnURL: "https://samplesite.com/return",
-                                cancelURL: "https://samplesite.com/cancel",
-                                transactions: [
-                                  {
-                                    "amount": {
-                                      "total": amount.toString(),
-                                      "currency": "USD",
-                                      "details": {
-                                        "subtotal": amount.toString(),
-                                        "shipping": '0',
-                                        "shipping_discount": 0
-                                      }
-                                    },
-                                    "description":
-                                        "The payment transaction description.",
-                                    // "payment_options": {
-                                    //   "allowed_payment_method":
-                                    //       "INSTANT_FUNDING_SOURCE"
-                                    // },
-                                    "item_list": {
-                                      "items": getItemsDetails(),
-
-                                      // shipping address is not required though
-                                      // "shipping_address": {
-                                      //   "recipient_name": "Jane Foster",
-                                      //   "line1": "Travis County",
-                                      //   "line2": "",
-                                      //   "city": "Austin",
-                                      //   "country_code": "US",
-                                      //   "postal_code": "73301",
-                                      //   "phone": "+00000000",
-                                      //   "state": "Texas"
-                                      // },
-                                    }
-                                  }
-                                ],
-                                note:
-                                    "Contact us for any questions on your order.",
-                                onSuccess: (Map params) async {
-                                  if (mounted) {
-                                    print("onSuccess: $params");
-                                    for (var cartItem
-                                        in HomeController.to.cartItems) {
-                                      await OfflineLibraryBox.updateLibrary(
-                                          cartItem.detail);
-                                    }
-                                    var a = OfflineLibrary.encodeOfflineLibrary(
-                                        OfflineLibraryBox.userBox!.values.first
-                                            .offlineLibrary);
-                                    print(a);
-
-                                    int userPoints = int.tryParse(UserDataBox
-                                            .userBox!.values.first.points) ??
-                                        0;
-                                    int newPoints = userPoints + token;
-                                    var submitted = await HomeController.to
-                                        .updateLibrary(
-                                            LoginBox.userBox!.values.first
-                                                .authToken,
-                                            a);
-                                    var pointsUpdated = await HomeController.to
-                                        .updatePoints(
-                                            LoginBox.userBox!.values.first
-                                                .authToken,
-                                            newPoints);
-                                    var userdata = await HomeController.to
-                                        .getuserData(LoginBox
-                                            .userBox!.values.first.authToken);
-                                    setState(() {
-                                      HomeController.to.totalPoints.value =
-                                          UserDataBox
-                                              .userBox!.values.first.points;
-                                    });
-
-                                    await HomeController.emptyCart();
-
-                                    Get.snackbar(
-                                        "You've been awarded $token tokens",
-                                        '');
-
-                                    setState(() {
-                                      HomeController
-                                              .to.totalCartItemCount.value =
-                                          HomeController.to.cartItems.length;
-                                    });
-                                    calculateTotalAmount();
-                                  } else {
-                                    Get.snackbar(
-                                        "Problem occured in making the payment",
-                                        '');
-                                  }
-                                },
-                                onError: (error) {
-                                  print("onError: $error");
-                                },
-                                onCancel: (params) {
-                                  print('cancelled: $params');
-                                },
-                              ));
-                            },
-                            child: Container(
-                              height: 100,
-                              decoration: BoxDecoration(
-                                color: MyColors.grey,
-                              ),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    height: 50,
-                                    margin:
-                                        EdgeInsets.symmetric(horizontal: 15),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        TextWidget(
-                                          text: 'Total Amount : ',
-                                          color: MyColors
-                                              .blackColor, // Set the text color
-                                        ),
-                                        Spacer(),
-                                        TextWidget(
-                                          text: " \$ $amount",
-                                          color: MyColors
-                                              .blackColor, // Set the text color
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                      color: MyColors.bottomColor,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        TextWidget(
-                                          text: 'Pay with ',
-                                          color: MyColors
-                                              .whiteColor, // Set the text color
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Image.asset(
-                                              'assets/images/paypal.png',
-                                              height: 45),
-                                        ),
-                                      ],
-                                    ),
+                                    child: Text('OK'),
                                   ),
                                 ],
-                              ),
+                              );
+                            });
+                        // Get.snackbar(
+                        //     "You've been awarded $token tokens",
+                        //     '');
+
+                        setState(() {
+                          HomeController.to.totalCartItemCount.value =
+                              HomeController.to.cartItems.length;
+                        });
+                        calculateTotalAmount();
+                      } else {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text(
+                                    'Problem occured in making the payment'),
+                                content: Text(
+                                    ''), // Add any additional content here if needed
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context)
+                                          .pop(); // Close the dialog
+                                    },
+                                    child: Text('OK'),
+                                  ),
+                                ],
+                              );
+                            });
+                        // Get.snackbar(
+                        //     "Problem occured in making the payment",
+                        //     '');
+                      }
+                    },
+                    onError: (error) {
+                      print("onError: $error");
+                    },
+                    onCancel: (params) {
+                      print('cancelled: $params');
+                    },
+                  ));
+                },
+                child: Container(
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: MyColors.grey,
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 50,
+                        margin: EdgeInsets.symmetric(horizontal: 15),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextWidget(
+                              text: 'Total Amount : ',
+                              color: MyColors.blackColor, // Set the text color
                             ),
-                          ));
-                    });
-              })
+                            Spacer(),
+                            TextWidget(
+                              text: " \$ ${HomeController.to.totalAmount}",
+                              color: MyColors.blackColor, // Set the text color
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: MyColors.bottomColor,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextWidget(
+                              text: 'Pay with ',
+                              color: MyColors.whiteColor, // Set the text color
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Image.asset('assets/images/paypal.png',
+                                  height: 45),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )))
         ],
       ));
     });

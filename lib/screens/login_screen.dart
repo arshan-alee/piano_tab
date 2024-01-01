@@ -180,7 +180,25 @@ class _LoginScreenState extends State<LoginScreen> {
                           await HomeController.to.setAdsWatched(0);
                           OfflineLibraryBox.updateIsLoggedIn(true);
                           var message = LoginBox.userBox!.values.first.message;
-                          Get.snackbar(message, '');
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text(message),
+                                  content: Text(
+                                      ''), // Add any additional content here if needed
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .pop(); // Close the dialog
+                                      },
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              });
+                          // Get.snackbar(message, '');
                           HomeController.to.index = 0;
                           Get.offAll(() => HomeScreen(
                                 isLoggedIn: OfflineLibraryBox
@@ -204,6 +222,24 @@ class _LoginScreenState extends State<LoginScreen> {
                           print(OfflineLibraryBox
                               .userBox!.values.first.isLoggedIn);
                         } else {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text("Invalid Credentials"),
+                                  content: Text(
+                                      ''), // Add any additional content here if needed
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .pop(); // Close the dialog
+                                      },
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              });
                           Get.snackbar("Invalid Credentials", '');
                         }
                       }

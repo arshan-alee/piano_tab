@@ -86,7 +86,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
       final password = passwordController.text;
 
       var signupResponse = await HomeController.to.signup(email, password);
-      Get.snackbar(signupResponse['message'], '');
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text(signupResponse['message']),
+              content: Text(''), // Add any additional content here if needed
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          });
+      // Get.snackbar(signupResponse['message'], '');
       var _ = await HomeController.to.login(email, password);
       var _data = await HomeController.to
           .getuserData(LoginBox.userBox!.values.first.authToken);

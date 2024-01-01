@@ -214,63 +214,60 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     )),
               ),
-              ValueListenableBuilder(
-                  valueListenable: HomeController.to.totalCartItemCount,
-                  builder: (context, val, c) {
-                    return Visibility(
-                        visible: val > 0,
-                        child: Positioned(
-                          bottom: 90,
-                          right: 15,
-                          child: Stack(
-                            children: [
-                              Material(
-                                elevation: 6,
-                                shape: CircleBorder(),
-                                child: FloatingActionButton(
-                                  onPressed: () {
-                                    showModalBottomSheet(
-                                      context: context,
-                                      isScrollControlled: true,
-                                      useSafeArea: true,
-                                      builder: (BuildContext bc) {
-                                        return CartScreen();
-                                      },
-                                    );
-                                  },
-                                  backgroundColor: MyColors.primaryColor,
-                                  child: Icon(
-                                    Icons.shopping_cart,
-                                    color: MyColors.whiteColor,
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                top: 0,
-                                right: 0,
-                                child: Container(
-                                  width: 20,
-                                  height: 20,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: MyColors.primaryColor,
-                                      width: 2.0,
-                                    ),
-                                    color: MyColors.whiteColor,
-                                  ),
-                                  child: Center(
-                                    child: TextWidget(
-                                      text: val.toString(),
-                                      color: MyColors.primaryColor,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
+              Obx(() => Visibility(
+                  visible: HomeController.to.totalCartItemCount.value > 0,
+                  child: Positioned(
+                    bottom: 90,
+                    right: 15,
+                    child: Stack(
+                      children: [
+                        Material(
+                          elevation: 6,
+                          shape: CircleBorder(),
+                          child: FloatingActionButton(
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                useSafeArea: true,
+                                builder: (BuildContext bc) {
+                                  return CartScreen();
+                                },
+                              );
+                            },
+                            backgroundColor: MyColors.primaryColor,
+                            child: Icon(
+                              Icons.shopping_cart,
+                              color: MyColors.whiteColor,
+                            ),
                           ),
-                        ));
-                  })
+                        ),
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: Container(
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: MyColors.primaryColor,
+                                width: 2.0,
+                              ),
+                              color: MyColors.whiteColor,
+                            ),
+                            child: Center(
+                              child: TextWidget(
+                                text: HomeController.to.totalCartItemCount.value
+                                    .toString(),
+                                color: MyColors.primaryColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )))
             ],
           ),
         ),

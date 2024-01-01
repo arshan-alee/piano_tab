@@ -31,16 +31,12 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void updateQuery(String newQuery) {
-    Future.delayed(Duration.zero, () {
-      setState(() {
-        searchitem = searchItems(HomeController.to.songs!, newQuery);
-        searchResults = HomeController.to.itemModellList(songs: searchitem);
-      });
+    setState(() {
+      query = newQuery;
+      searchitem = searchItems(HomeController.to.songs!, newQuery);
+      searchResults = HomeController.to.itemModellList(songs: searchitem);
     });
     print('query in searchpage $newQuery');
-    // setState(() {
-    //   query = newQuery;
-    // });
   }
 
   Future<void> showDetailScreen(BuildContext context, dynamic item) async {
@@ -65,6 +61,7 @@ class _SearchPageState extends State<SearchPage> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: MyColors.whiteColor,
+      resizeToAvoidBottomInset: false,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
@@ -73,34 +70,37 @@ class _SearchPageState extends State<SearchPage> {
               height: size.height * 0.01,
             ),
             CustomContainer(
-                onpressed: () {
-                  showSearch(
-                    context: context,
-                    delegate: CustomSearchDelegate(
-                        updateQuery), // Pass the callback function
-                  );
-                },
-                height: size.height * 0.07,
-                width: size.width,
-                color: MyColors.grey,
-                borderRadius: 10,
-                borderColor: MyColors.transparent,
-                borderWidth: 0,
-                widget: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Icon(
-                        CupertinoIcons.search,
-                        size: 28,
-                      )
-                    ],
-                  ),
-                )),
+              height: size.height * 0.07,
+              width: size.width,
+              color: MyColors.grey,
+              borderRadius: 10,
+              borderColor: MyColors.transparent,
+              borderWidth: 0,
+              widget: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Icon(
+                      CupertinoIcons.search,
+                      size: 28,
+                    ),
+                    Expanded(
+                      child: TextField(
+                        onSubmitted: updateQuery,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              onpressed: () {},
+            ),
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(6),
                   child: searchResults.isEmpty
                       ? Center(
                           child: TextWidget(
@@ -113,22 +113,25 @@ class _SearchPageState extends State<SearchPage> {
                           physics: const NeverScrollableScrollPhysics(),
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  mainAxisSpacing: 20,
-                                  crossAxisSpacing: 20,
-                                  mainAxisExtent: 250.h,
-                                  childAspectRatio: 1.h),
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 15,
+                            crossAxisSpacing: 15,
+                            mainAxisExtent: 250.h,
+                            childAspectRatio: 1.h,
+                          ),
                           itemCount: searchResults.length,
                           itemBuilder: (context, index) => InkWell(
-                              onTap: () {
-                                setState(() {
-                                  selectedSongIndex = index;
-                                });
-                                showDetailScreen(
-                                    context, searchResults[selectedSongIndex]);
-                              },
-                              child: RecentReleasedWidget(
-                                  list: searchResults[index])),
+                            onTap: () {
+                              setState(() {
+                                selectedSongIndex = index;
+                              });
+                              showDetailScreen(
+                                  context, searchResults[selectedSongIndex]);
+                            },
+                            child: RecentReleasedWidget(
+                              list: searchResults[index],
+                            ),
+                          ),
                         ),
                 ),
               ),
