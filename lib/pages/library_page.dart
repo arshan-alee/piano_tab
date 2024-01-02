@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:paino_tab/controllers/home_controller.dart';
 import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/models/songs_model.dart';
@@ -21,8 +22,8 @@ class _LibraryPageState extends State<LibraryPage> {
       OfflineLibraryBox.userBox!.values.first.offlineLibrary;
   final List<String> favrites =
       OfflineLibraryBox.userBox!.values.first.favourites;
-  List<ListItemModel> owned = [];
-  List<ListItemModel> favourites = [];
+  RxList<ListItemModel> owned = <ListItemModel>[].obs;
+  RxList<ListItemModel> favourites = <ListItemModel>[].obs;
   int selectedSongIndex = -1;
   bool favouriteItem = false;
   bool ownedItem = false;
@@ -39,8 +40,8 @@ class _LibraryPageState extends State<LibraryPage> {
     final fav = HomeController.to.getLibraryData(favrites);
 
     setState(() {
-      owned = HomeController.to.itemModellList(songs: userLibrary);
-      favourites = HomeController.to.itemModellList(songs: fav);
+      owned.value = HomeController.to.itemModellList(songs: userLibrary);
+      favourites.value = HomeController.to.itemModellList(songs: fav);
     });
   }
 
@@ -78,119 +79,121 @@ class _LibraryPageState extends State<LibraryPage> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: size.height * 0.015,
-          ),
-          Container(
-            height: size.height * 0.45,
-            width: size.width,
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-              gradient: MyColors.gradient,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const TextWidget(
-                  text: 'Wish List',
+    return Obx(() => SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: size.height * 0.015,
+              ),
+              Container(
+                height: size.height * 0.45,
+                width: size.width,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  gradient: MyColors.gradient,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const TextWidget(
+                      text: 'Wish List',
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    Divider(
+                      height: 12,
+                      color: MyColors.blackColor.withOpacity(0.4),
+                      thickness: 0.5,
+                    ),
+                    Container(
+                      height: size.height * 0.35,
+                      child: favourites.isEmpty
+                          ? Center(
+                              child: TextWidget(
+                                text: 'Wish List is empty',
+                                fontSize: 18,
+                              ),
+                            )
+                          : GestureDetector(
+                              onTap: () {},
+                              child: ListView.separated(
+                                shrinkWrap: true,
+                                separatorBuilder: (context, index) => SizedBox(
+                                  width: size.width * 0.035,
+                                ),
+                                scrollDirection: Axis.horizontal,
+                                itemCount: favourites.length,
+                                itemBuilder: (context, index) => InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedSongIndex = index;
+                                        favouriteItem =
+                                            true; // Store selected index
+                                      });
+                                      showDetailScreen(
+                                          context, selectedSongIndex);
+                                    },
+                                    child: RecentReleasedWidget(
+                                        list: favourites[index])),
+                              ),
+                            ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: size.height * 0.015,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: TextWidget(
+                  text: 'Owned',
                   fontSize: 24,
+                  color: MyColors.blackColor,
                   fontWeight: FontWeight.w600,
                 ),
-                Divider(
-                  height: 12,
-                  color: MyColors.blackColor.withOpacity(0.4),
-                  thickness: 0.5,
-                ),
-                Container(
-                  height: size.height * 0.35,
-                  child: favourites.isEmpty
-                      ? Center(
-                          child: TextWidget(
-                            text: 'Wish List is empty',
-                            fontSize: 18,
-                          ),
-                        )
-                      : GestureDetector(
-                          onTap: () {},
-                          child: ListView.separated(
-                            shrinkWrap: true,
-                            separatorBuilder: (context, index) => SizedBox(
-                              width: size.width * 0.035,
-                            ),
-                            scrollDirection: Axis.horizontal,
-                            itemCount: favourites.length,
-                            itemBuilder: (context, index) => InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    selectedSongIndex = index;
-                                    favouriteItem =
-                                        true; // Store selected index
-                                  });
-                                  showDetailScreen(context, selectedSongIndex);
-                                },
-                                child: RecentReleasedWidget(
-                                    list: favourites[index])),
-                          ),
+              ),
+              SizedBox(
+                height: size.height * 0.015,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: owned.isEmpty
+                    ? Center(
+                        child: TextWidget(
+                          text: "You don't own anything right now",
+                          fontSize: 18,
                         ),
-                ),
-              ],
-            ),
+                      )
+                    : GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 20,
+                            crossAxisSpacing: 20,
+                            mainAxisExtent: size.height * 0.35,
+                            childAspectRatio: 1.h),
+                        itemCount: owned.length,
+                        itemBuilder: (context, index) => InkWell(
+                            onTap: () {
+                              setState(() {
+                                selectedSongIndex = index;
+                                ownedItem = true;
+                              });
+                              showDetailScreen(context, selectedSongIndex);
+                            },
+                            child: RecentReleasedWidget(list: owned[index])),
+                      ),
+              ),
+              SizedBox(
+                height: size.height * 0.12,
+              ),
+            ],
           ),
-          SizedBox(
-            height: size.height * 0.015,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: TextWidget(
-              text: 'Owned',
-              fontSize: 24,
-              color: MyColors.blackColor,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          SizedBox(
-            height: size.height * 0.015,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: owned.isEmpty
-                ? Center(
-                    child: TextWidget(
-                      text: "You don't own anything right now",
-                      fontSize: 18,
-                    ),
-                  )
-                : GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 20,
-                        crossAxisSpacing: 20,
-                        mainAxisExtent: size.height * 0.35,
-                        childAspectRatio: 1.h),
-                    itemCount: owned.length,
-                    itemBuilder: (context, index) => InkWell(
-                        onTap: () {
-                          setState(() {
-                            selectedSongIndex = index;
-                            ownedItem = true;
-                          });
-                          showDetailScreen(context, selectedSongIndex);
-                        },
-                        child: RecentReleasedWidget(list: owned[index])),
-                  ),
-          ),
-          SizedBox(
-            height: size.height * 0.12,
-          ),
-        ],
-      ),
-    );
+        ));
   }
 }

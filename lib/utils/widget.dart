@@ -3425,22 +3425,22 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                 title: TextWidget(text: widget.title),
                 centerTitle: true,
                 actions: [
-                  IconButton(
-                    icon: const Icon(Icons.file_download),
-                    onPressed: () async {
-                      String? selectedPath = await _pickDirectory();
-                      if (selectedPath != null) {
-                        showDialog(
-                          context: context,
-                          builder: (context) => DownloadingDialog(
-                            pdfPath: widget.pdfPath,
-                            title: widget.title,
-                            selectedPath: selectedPath,
-                          ),
-                        );
-                      }
-                    },
-                  ),
+                  // IconButton(
+                  //   icon: const Icon(Icons.file_download),
+                  //   onPressed: () async {
+                  //     String? selectedPath = await _pickDirectory();
+                  //     if (selectedPath != null) {
+                  //       showDialog(
+                  //         context: context,
+                  //         builder: (context) => DownloadingDialog(
+                  //           pdfPath: widget.pdfPath,
+                  //           title: widget.title,
+                  //           selectedPath: selectedPath,
+                  //         ),
+                  //       );
+                  //     }
+                  //   },
+                  // ),
                   IconButton(
                     icon: const Icon(Icons.print),
                     onPressed: () async {
@@ -5620,6 +5620,7 @@ class _CartScreenState extends State<CartScreen> {
                     note: "Contact us for any questions on your order.",
                     onSuccess: (Map params) async {
                       if (mounted) {
+                        Navigator.pop(context);
                         print("onSuccess: $params");
                         for (var cartItem in HomeController.to.cartItems) {
                           await OfflineLibraryBox.updateLibrary(
@@ -5653,15 +5654,21 @@ class _CartScreenState extends State<CartScreen> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: Text(
-                                    'You\'ve been awarded ${HomeController.to.totalTokensAwarded} tokens'),
+                                title: Text('Payment Completed'),
                                 content: Text(
-                                    ''), // Add any additional content here if needed
+                                    'You\'ve been awarded ${HomeController.to.totalTokensAwarded} tokens'), // Add any additional content here if needed
                                 actions: [
                                   TextButton(
                                     onPressed: () {
+                                      Navigator.of(context).pop();
                                       Navigator.of(context)
                                           .pop(); // Close the dialog
+
+                                      bool isLoggedIn = OfflineLibraryBox
+                                          .userBox!.values.first.isLoggedIn;
+                                      Get.to(HomeScreen(
+                                          isLoggedIn: isLoggedIn,
+                                          initialIndex: 3));
                                     },
                                     child: Text('OK'),
                                   ),
