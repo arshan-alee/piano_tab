@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     Get.put(HomeController());
     Future.delayed(
-      const Duration(seconds: 12),
+      const Duration(seconds: 9),
       () {
         HomeController.to.getSongs().then(
           (value) async {
