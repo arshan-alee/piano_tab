@@ -290,7 +290,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       child: GestureDetector(
                         onTap: () {
                           int adsWatched = HomeController.to.getAdsWatched();
-                          print(adsWatched);
+                          print('Ads watched $adsWatched');
                           print(HomeController.to.getTimestamp());
                         },
                         child: Container(
@@ -828,14 +828,16 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                             DateTime.now()
                                                                 .toIso8601String();
 
-                                                        String
-                                                            retrievedTimeStamp =
-                                                            HomeController.to
-                                                                .getTimestamp();
+                                                        // String
+                                                        //     retrievedTimeStamp =
+                                                        //     HomeController.to
+                                                        //         .getTimestamp();
 
-                                                        if (currentTimestamp
-                                                                .compareTo(
-                                                                    retrievedTimeStamp) <
+                                                        if (currentTimestamp.compareTo(
+                                                                HomeController
+                                                                    .to
+                                                                    .getTimestamp()
+                                                                    .value!) <
                                                             0) {
                                                           if (adsWatched < 10) {
                                                             showRewardedAd();

@@ -264,14 +264,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(
                   height: size.height * 0.04,
                 ),
-                TextWidget(
-                  text: 'or connect using',
-                  color: MyColors.greyColor,
-                ),
-                SizedBox(
-                  height: size.height * 0.04,
-                ),
-                const OtherSignIn(),
+                // TextWidget(
+                //   text: 'or connect using',
+                //   color: MyColors.greyColor,
+                // ),
+                // SizedBox(
+                //   height: size.height * 0.04,
+                // ),
+                // const OtherSignIn(),
                 const Spacer(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

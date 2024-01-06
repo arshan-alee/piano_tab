@@ -334,10 +334,16 @@ class _CustomAppBarState extends State<CustomAppBar> {
     );
   }
 
-  Future<dynamic> showAlertDialog(BuildContext context, Size size) {
-    int adsWatched = HomeController.to.getAdsWatched();
-    String retrievedTimeStamp = HomeController.to.getTimestamp();
-
+  Future<dynamic> showAlertDialog(BuildContext context, Size size) async {
+    // int adsWatched = HomeController.to.getAdsWatched();
+    HomeController.to.adsWatched.value = HomeController.to.getAdsWatched();
+    String currentTimestamp = DateTime.now().toIso8601String();
+    // String retrievedTimeStamp = HomeController.to.getTimestamp().value;
+    // if ((currentTimestamp.compareTo(HomeController.to.getTimestamp().value!) >
+    //     0)) {
+    //   await HomeController.to.setTimestamp('');
+    //   await HomeController.to.setAdsWatched(0);
+    // }
     void _openAppReview() async {
       final InAppReview inAppReview = InAppReview.instance;
       if (await inAppReview.isAvailable()) {
@@ -402,77 +408,97 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 SizedBox(
                   height: size.height * 0.01,
                 ),
-                CustomContainer(
-                    onpressed: () async {
-                      int adsWatched = HomeController.to.getAdsWatched();
-                      String currentTimestamp =
-                          DateTime.now().toIso8601String();
-
-                      String retrievedTimeStamp =
-                          HomeController.to.getTimestamp();
-                      if (currentTimestamp.compareTo(retrievedTimeStamp) < 0) {
-                        if (adsWatched < 10) {
-                          showRewardedAd();
-                        } else {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text(
-                                      'You have reached the total Ads limit for today'),
-                                  content: Text(
-                                      ''), // Add any additional content here if needed
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context)
-                                            .pop(); // Close the dialog
-                                      },
-                                      child: Text('OK'),
-                                    ),
-                                  ],
-                                );
-                              });
-                          // Get.snackbar(
-                          //     'You have reached the total Ads limit for today',
-                          //     "");
-                        }
-                      } else {
-                        await HomeController.to.setAdsWatched(0);
-
+                Obx(() => CustomContainer(
+                      onpressed: () async {
                         HomeController.to.adsWatched.value =
                             HomeController.to.getAdsWatched();
-                        showRewardedAd();
-                      }
-                      // int newpoints = userPoints + 1;
-                    },
-                    height: size.height * 0.038,
-                    width: size.width * 0.28,
-                    color: adsWatched < 10
-                        ? MyColors.primaryColor
-                        : MyColors.darkGrey,
-                    borderRadius: 20,
-                    borderColor: MyColors.transparent,
-                    borderWidth: 0,
-                    widget: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Center(
-                        child: adsWatched < 10
-                            ? Obx(() => TextWidget(
-                                  text:
-                                      'Earn more (${HomeController.to.adsWatched}/10)',
-                                  fontSize: 12,
-                                ))
-                            : CountdownTimer(
-                                endTime: DateTime.parse(retrievedTimeStamp)
-                                    .millisecondsSinceEpoch,
-                                textStyle: TextStyle(
-                                  fontSize: 12,
-                                  color: MyColors
-                                      .whiteColor, // Set your desired color
-                                ),
-                              ),
-                      ),
+                        // int adsWatched = HomeController.to.getAdsWatched();
+                        String currentTimestamp =
+                            DateTime.now().toIso8601String();
+
+                        // String retrievedTimeStamp =
+                        //     HomeController.to.getTimestamp();
+                        if (currentTimestamp.compareTo(
+                                HomeController.to.getTimestamp().value!) <
+                            0) {
+                          if (HomeController.to.adsWatched.value < 10) {
+                            showRewardedAd();
+                          } else {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text(
+                                        'You have reached the total Ads limit for today'),
+                                    content: Text(
+                                        ''), // Add any additional content here if needed
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context)
+                                              .pop(); // Close the dialog
+                                        },
+                                        child: Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                });
+                            // Get.snackbar(
+                            //     'You have reached the total Ads limit for today',
+                            //     "");
+                          }
+                        } else {
+                          await HomeController.to.setAdsWatched(0);
+
+                          HomeController.to.adsWatched.value =
+                              HomeController.to.getAdsWatched();
+                          showRewardedAd();
+                        }
+                        // int newpoints = userPoints + 1;
+                      },
+                      height: size.height * 0.038,
+                      width: size.width * 0.28,
+                      color: HomeController.to.adsWatched.value < 10
+                          ? MyColors.primaryColor
+                          : MyColors.darkGrey,
+                      borderRadius: 20,
+                      borderColor: MyColors.transparent,
+                      borderWidth: 0,
+                      widget: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Center(
+                            child: (HomeController.to.adsWatched.value < 10 &&
+                                        (currentTimestamp.compareTo(
+                                                HomeController.to
+                                                    .getTimestamp()
+                                                    .value!) <
+                                            0)) ||
+                                    (currentTimestamp.compareTo(HomeController
+                                            .to
+                                            .getTimestamp()
+                                            .value!) >
+                                        0)
+                                ? TextWidget(
+                                    text:
+                                        'Earn more (${HomeController.to.adsWatched.value}/10)',
+                                    fontSize: 12,
+                                  )
+                                : CountdownTimer(
+                                    endTime: DateTime.parse(HomeController.to
+                                            .getTimestamp()
+                                            .value!)
+                                        .millisecondsSinceEpoch,
+                                    onEnd: () async {
+                                      await HomeController.to.setAdsWatched(0);
+                                      HomeController.to.adsWatched.value = 0;
+                                    },
+                                    textStyle: TextStyle(
+                                      fontSize: 12,
+                                      color: MyColors
+                                          .whiteColor, // Set your desired color
+                                    ),
+                                  ),
+                          )),
                     )),
                 SizedBox(
                   height: size.height * 0.01,
@@ -2139,7 +2165,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         int adsWatched = HomeController.to.getAdsWatched();
         if (adsWatched == 0) {
           DateTime currentTime = DateTime.now();
-          DateTime timestampAfter24Hours = currentTime.add(Duration(hours: 24));
+          DateTime timestampAfter24Hours =
+              currentTime.add(Duration(hours: 24));
           String newTimestamp = timestampAfter24Hours.toIso8601String();
           await HomeController.to.setTimestamp(newTimestamp);
         }
@@ -2319,9 +2346,11 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         int adsWatched = HomeController.to.getAdsWatched();
         String currentTimestamp = DateTime.now().toIso8601String();
 
-        String retrievedTimeStamp = HomeController.to.getTimestamp();
+        // String retrievedTimeStamp = HomeController.to.getTimestamp();
 
-        if (currentTimestamp.compareTo(retrievedTimeStamp) < 0) {
+        if (currentTimestamp
+                .compareTo(HomeController.to.getTimestamp().value!) <
+            0) {
           if (adsWatched < 10) {
             showRewardedAd();
           } else {
@@ -3123,7 +3152,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                   String text = '';
 
                                   text =
-                                      'Checkout ${widget.book.title} in the PianoTab app at  https://pianotab.com';
+                                      'Check out ${widget.book.title} in the PianoTab app at  https://pianotab.com';
 
                                   await Share.shareXFiles([xfile], text: text);
                                 },
@@ -3916,7 +3945,8 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         int adsWatched = HomeController.to.getAdsWatched();
         if (adsWatched == 0) {
           DateTime currentTime = DateTime.now();
-          DateTime timestampAfter24Hours = currentTime.add(Duration(hours: 24));
+          DateTime timestampAfter24Hours =
+              currentTime.add(Duration(hours: 24));
           String newTimestamp = timestampAfter24Hours.toIso8601String();
           await HomeController.to.setTimestamp(newTimestamp);
         }
@@ -4137,9 +4167,11 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         int adsWatched = HomeController.to.getAdsWatched();
         String currentTimestamp = DateTime.now().toIso8601String();
 
-        String retrievedTimeStamp = HomeController.to.getTimestamp();
+        // String retrievedTimeStamp = HomeController.to.getTimestamp();
 
-        if (currentTimestamp.compareTo(retrievedTimeStamp) < 0) {
+        if (currentTimestamp
+                .compareTo(HomeController.to.getTimestamp().value!) <
+            0) {
           if (adsWatched < 10) {
             showRewardedAd();
           } else {
@@ -4247,9 +4279,11 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         int adsWatched = HomeController.to.getAdsWatched();
         String currentTimestamp = DateTime.now().toIso8601String();
 
-        String retrievedTimeStamp = HomeController.to.getTimestamp();
+        // String retrievedTimeStamp = HomeController.to.getTimestamp();
 
-        if (currentTimestamp.compareTo(retrievedTimeStamp) < 0) {
+        if (currentTimestamp
+                .compareTo(HomeController.to.getTimestamp().value!) <
+            0) {
           if (adsWatched < 10) {
             showRewardedAd();
           } else {
@@ -4447,14 +4481,16 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                             DateTime.now()
                                                                 .toIso8601String();
 
-                                                        String
-                                                            retrievedTimeStamp =
-                                                            HomeController.to
-                                                                .getTimestamp();
+                                                        // String
+                                                        //     retrievedTimeStamp =
+                                                        //     HomeController.to
+                                                        //         .getTimestamp();
 
-                                                        if (currentTimestamp
-                                                                .compareTo(
-                                                                    retrievedTimeStamp) <
+                                                        if (currentTimestamp.compareTo(
+                                                                HomeController
+                                                                    .to
+                                                                    .getTimestamp()
+                                                                    .value!) <
                                                             0) {
                                                           if (adsWatched < 10) {
                                                             showRewardedAd();
@@ -5213,7 +5249,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                 String text = '';
 
                                 text =
-                                    'Checkout ${widget.song.title} in the PianoTab app at  https://pianotab.com';
+                                    'Check out ${widget.song.title} in the PianoTab app at  https://pianotab.com';
 
                                 await Share.share(text);
                               },

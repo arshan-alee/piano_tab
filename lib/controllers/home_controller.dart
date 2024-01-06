@@ -68,8 +68,8 @@ class HomeController extends GetxController {
     await _prefs.setString('timestamp', timestamp);
   }
 
-  String getTimestamp() {
-    return _prefs.getString('timestamp') ?? '';
+  Rx<String?> getTimestamp() {
+    return _prefs.getString('timestamp').obs ?? ''.obs;
   }
 
   Future<void> setAdsWatched(int adswatched) async {
