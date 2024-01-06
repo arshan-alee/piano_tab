@@ -38,6 +38,8 @@ class _SplashScreenState extends State<SplashScreen> {
                 await LoginBox.setDefault();
                 await UserDataBox.setDefault();
                 await OfflineLibraryBox.setDefault();
+                await HomeController.to.setAdsWatched(0);
+                await HomeController.to.setTimestamp('');
                 // HomeController.to.setEmail('');
                 // HomeController.to.setUserName('');
                 HomeController.to.index = 0;
