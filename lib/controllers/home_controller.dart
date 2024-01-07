@@ -307,7 +307,8 @@ class HomeController extends GetxController {
             e.description == null ? '' : e.description!,
             e.image == null
                 ? "https://media.istockphoto.com/id/106533163/photo/plan.jpg?s=612x612&w=0&k=20&c=-XArhVuWKh1hqkBc7YWO-oCy785cuQuS3o2-oOpNBCQ="
-                : "https://www.ktswebhub.com/ppbl/resources/images2/${e.songSku}b.jpg",
+                : e.image!,
+            // "https://www.ktswebhub.com/ppbl/resources/images2/${e.songSku}b.jpg",
           );
           lst.add(bookModel);
           addedSongSkus.add(e.songSku!);
