@@ -128,7 +128,8 @@ class _SplashScreenState extends State<SplashScreen> {
                         color: Colors.transparent.withOpacity(0.7),
                         child: AlertDialog(
                           elevation: 0,
-                          content: const Text('No internet connection'),
+                          content: const Text('No internet connection',
+                              textAlign: TextAlign.center),
                           actions: [
                             TextButton(
                               onPressed: () {

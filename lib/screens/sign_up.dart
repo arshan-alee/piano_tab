@@ -90,7 +90,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text(signupResponse['message']),
+              title:
+                  Text(signupResponse['message'], textAlign: TextAlign.center),
               content: Text(''), // Add any additional content here if needed
               actions: [
                 TextButton(

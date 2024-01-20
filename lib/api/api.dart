@@ -124,4 +124,48 @@ class ApiService {
       return false;
     }
   }
+
+  static Future<Map<String, dynamic>> forgotPassword(String email) async {
+    var request =
+        http.Request('POST', Uri.parse('${baseUrl}?forgot_password=${email}'));
+
+    // var headers = {'Content-Type': 'application/json'};
+    http.Response response =
+        await http.Response.fromStream(await request.send());
+
+    var data = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      print('Status: ${data["status"]}, Message: ${data["message"]}');
+      return data;
+    } else {
+      print('Error: ${response.statusCode}');
+      return data;
+    }
+  }
+
+  Future<void> resetPassword(
+      String email, String resetCode, String newPassword) async {
+    var url = '${baseUrl}?reset_password';
+
+    var headers = {'Content-Type': 'application/json'};
+    var body = jsonEncode({
+      'email': email,
+      'reset_code': resetCode,
+      'new_password': newPassword,
+    });
+
+    try {
+      var response =
+          await http.post(Uri.parse(url), headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        print('Status: ${data["status"]}, Message: ${data["message"]}');
+      } else {
+        print('Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Exception during resetPassword: $e');
+    }
+  }
 }

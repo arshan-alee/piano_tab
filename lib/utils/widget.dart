@@ -130,9 +130,12 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('You have recieved a token'),
+                    title: Text('You have recieved a token',
+                        textAlign: TextAlign.center),
                     content: Text(
-                        "Seems like the Ad failed to load but here's a token on us"), // Add any additional content here if needed
+                        "Seems like the Ad failed to load but here's a token on us",
+                        textAlign: TextAlign
+                            .center), // Add any additional content here if needed
                     actions: [
                       TextButton(
                         onPressed: () {
@@ -151,8 +154,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title:
-                        Text("You have reached the total Ads limit for today!"),
+                    title: Text(
+                        "You have reached the total Ads limit for today!",
+                        textAlign: TextAlign.center),
                     content:
                         Text(''), // Add any additional content here if needed
                     actions: [
@@ -230,7 +234,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text("You have recieved a token!"),
+                  title: Text("You have recieved a token!",
+                      textAlign: TextAlign.center),
                   content:
                       Text(''), // Add any additional content here if needed
                   actions: [
@@ -429,7 +434,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
                                 builder: (BuildContext context) {
                                   return AlertDialog(
                                     title: Text(
-                                        'You have reached the total Ads limit for today'),
+                                        'You have reached the total Ads limit for today',
+                                        textAlign: TextAlign.center),
                                     content: Text(
                                         ''), // Add any additional content here if needed
                                     actions: [
@@ -650,7 +656,7 @@ class _RatingBarDialogState extends State<RatingBarDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Rate This App"),
+      title: const Text("Rate This App", textAlign: TextAlign.center),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -2108,9 +2114,12 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('You have recieved a token'),
+                    title: Text('You have recieved a token',
+                        textAlign: TextAlign.center),
                     content: Text(
-                        'Seems like the Ad failed to load but here\'s a token on us'), // Add any additional content here if needed
+                        'Seems like the Ad failed to load but here\'s a token on us',
+                        textAlign: TextAlign
+                            .center), // Add any additional content here if needed
                     actions: [
                       TextButton(
                         onPressed: () {
@@ -2129,8 +2138,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title:
-                        Text('You have reached the total Ads limit for today!'),
+                    title: Text(
+                        'You have reached the total Ads limit for today!',
+                        textAlign: TextAlign.center),
                     content:
                         Text(''), // Add any additional content here if needed
                     actions: [
@@ -2165,8 +2175,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         int adsWatched = HomeController.to.getAdsWatched();
         if (adsWatched == 0) {
           DateTime currentTime = DateTime.now();
-          DateTime timestampAfter24Hours =
-              currentTime.add(Duration(hours: 24));
+          DateTime timestampAfter24Hours = currentTime.add(Duration(hours: 24));
           String newTimestamp = timestampAfter24Hours.toIso8601String();
           await HomeController.to.setTimestamp(newTimestamp);
         }
@@ -2208,7 +2217,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text('You have recieved a token'),
+                  title: Text('You have recieved a token',
+                      textAlign: TextAlign.center),
                   content:
                       Text(''), // Add any additional content here if needed
                   actions: [
@@ -2281,7 +2291,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('${widget.book.title} is added to library'),
+                title: Text('${widget.book.title} is added to library',
+                    textAlign: TextAlign.center),
                 content: Text(''), // Add any additional content here if needed
                 actions: [
                   TextButton(
@@ -2299,7 +2310,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('Failed to update library'),
+                title: Text('Failed to update library',
+                    textAlign: TextAlign.center),
                 content: Text(''), // Add any additional content here if needed
                 actions: [
                   TextButton(
@@ -2318,8 +2330,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         context: context,
         builder: (BuildContext dialogContext) {
           return AlertDialog(
-            title: const Text('Not Enough Tokens'),
-            content: const Text('Watch a video to earn a token?'),
+            title: const Text('Not Enough Tokens', textAlign: TextAlign.center),
+            content: const Text('Watch a video to earn a token?',
+                textAlign: TextAlign.center),
             actions: <Widget>[
               TextButton(
                 child: const Text('No'),
@@ -2358,8 +2371,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title:
-                        Text('You have reached the total Ads limit for today!'),
+                    title: Text(
+                        'You have reached the total Ads limit for today!',
+                        textAlign: TextAlign.center),
                     content:
                         Text(''), // Add any additional content here if needed
                     actions: [
@@ -2659,7 +2673,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                                     context) {
                                                               return AlertDialog(
                                                                 title: Text(
-                                                                    'Added to Cart'),
+                                                                    'Added to Cart',
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .center),
                                                                 content: Text(
                                                                     ''), // Add any additional content here if needed
                                                                 actions: [
@@ -2687,7 +2704,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                                     context) {
                                                               return AlertDialog(
                                                                 title: Text(
-                                                                    'Already in Cart'),
+                                                                    'Already in Cart',
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .center),
                                                                 content: Text(
                                                                     ''), // Add any additional content here if needed
                                                                 actions: [
@@ -2715,7 +2735,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                               context) {
                                                             return AlertDialog(
                                                               title: Text(
-                                                                  'You need to Sign In to Add item to cart'),
+                                                                  'You need to Sign In to Add item to cart',
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center),
                                                               content: Text(
                                                                   ''), // Add any additional content here if needed
                                                               actions: [
@@ -2783,7 +2806,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                                       context) {
                                                                 return AlertDialog(
                                                                   title: Text(
-                                                                      'Removed from Wish List'),
+                                                                      'Removed from Wish List',
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center),
                                                                   content: Text(
                                                                       ''), // Add any additional content here if needed
                                                                   actions: [
@@ -2821,7 +2847,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                                       context) {
                                                                 return AlertDialog(
                                                                   title: Text(
-                                                                      'Added to Wish List'),
+                                                                      'Added to Wish List',
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center),
                                                                   content: Text(
                                                                       ''), // Add any additional content here if needed
                                                                   actions: [
@@ -3605,7 +3634,8 @@ class _DownloadingDialogState extends State<DownloadingDialog> {
               builder: (BuildContext context) {
                 return AlertDialog(
                   title: Text(
-                      '${widget.title} has been downloaded in PianoTab folder in internal storage'),
+                      '${widget.title} has been downloaded in PianoTab folder in internal storage',
+                      textAlign: TextAlign.center),
                   content:
                       Text(''), // Add any additional content here if needed
                   actions: [
@@ -3685,7 +3715,8 @@ class _DownloadingDialogState extends State<DownloadingDialog> {
               builder: (BuildContext context) {
                 return AlertDialog(
                   title: Text(
-                      '${widget.title} has been downloaded in PianoTab folder in internal storage'),
+                      '${widget.title} has been downloaded in PianoTab folder in internal storage',
+                      textAlign: TextAlign.center),
                   content:
                       Text(''), // Add any additional content here if needed
                   actions: [
@@ -3885,9 +3916,12 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('You have recieved a token'),
+                    title: Text('You have recieved a token',
+                        textAlign: TextAlign.center),
                     content: Text(
-                        'Seems like the Ad failed to load but here\'s a token on us'), // Add any additional content here if needed
+                        'Seems like the Ad failed to load but here\'s a token on us',
+                        textAlign: TextAlign
+                            .center), // Add any additional content here if needed
                     actions: [
                       TextButton(
                         onPressed: () {
@@ -3906,8 +3940,9 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title:
-                        Text('You have reached the total Ads limit for today!'),
+                    title: Text(
+                        'You have reached the total Ads limit for today!',
+                        textAlign: TextAlign.center),
                     content:
                         Text(''), // Add any additional content here if needed
                     actions: [
@@ -3945,8 +3980,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         int adsWatched = HomeController.to.getAdsWatched();
         if (adsWatched == 0) {
           DateTime currentTime = DateTime.now();
-          DateTime timestampAfter24Hours =
-              currentTime.add(Duration(hours: 24));
+          DateTime timestampAfter24Hours = currentTime.add(Duration(hours: 24));
           String newTimestamp = timestampAfter24Hours.toIso8601String();
           await HomeController.to.setTimestamp(newTimestamp);
         }
@@ -4005,7 +4039,8 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                     builder: (BuildContext context) {
                       return AlertDialog(
                         title: Text(
-                            "${widget.song.title} is added to the library"),
+                            "${widget.song.title} is added to the library",
+                            textAlign: TextAlign.center),
                         content: Text(
                             ''), // Add any additional content here if needed
                         actions: [
@@ -4033,8 +4068,9 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      title:
-                          Text("${widget.song.title} is Redeemed for 24 hours"),
+                      title: Text(
+                          "${widget.song.title} is Redeemed for 24 hours",
+                          textAlign: TextAlign.center),
                       content:
                           Text(''), // Add any additional content here if needed
                       actions: [
@@ -4062,7 +4098,8 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('You have recieved a token'),
+                    title: Text('You have recieved a token',
+                        textAlign: TextAlign.center),
                     content:
                         Text(''), // Add any additional content here if needed
                     actions: [
@@ -4119,7 +4156,8 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text("Already in the library"),
+                title:
+                    Text("Already in the library", textAlign: TextAlign.center),
                 content: Text(''), // Add any additional content here if needed
                 actions: [
                   TextButton(
@@ -4138,8 +4176,9 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         context: context,
         builder: (BuildContext dialogContext) {
           return AlertDialog(
-            title: const Text('Not Enough Tokens'),
-            content: const Text('Watch a video to earn a token?'),
+            title: const Text('Not Enough Tokens', textAlign: TextAlign.center),
+            content: const Text('Watch a video to earn a token?',
+                textAlign: TextAlign.center),
             actions: <Widget>[
               TextButton(
                 child: const Text('No'),
@@ -4179,8 +4218,9 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title:
-                        Text('You have reached the total Ads limit for today!'),
+                    title: Text(
+                        'You have reached the total Ads limit for today!',
+                        textAlign: TextAlign.center),
                     content:
                         Text(''), // Add any additional content here if needed
                     actions: [
@@ -4212,7 +4252,8 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('${widget.song.title} is added to the library'),
+                title: Text('${widget.song.title} is added to the library',
+                    textAlign: TextAlign.center),
                 content: Text(''), // Add any additional content here if needed
                 actions: [
                   TextButton(
@@ -4231,7 +4272,8 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text("Create an account to add items to the library"),
+                title: Text("Create an account to add items to the library",
+                    textAlign: TextAlign.center),
                 content: Text(''), // Add any additional content here if needed
                 actions: [
                   TextButton(
@@ -4250,8 +4292,9 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         context: context,
         builder: (BuildContext dialogContext) {
           return AlertDialog(
-            title: const Text('Not Enough Tokens'),
-            content: const Text('Watch a video to earn a token?'),
+            title: const Text('Not Enough Tokens', textAlign: TextAlign.center),
+            content: const Text('Watch a video to earn a token?',
+                textAlign: TextAlign.center),
             actions: <Widget>[
               TextButton(
                 child: const Text('No'),
@@ -4291,7 +4334,8 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('${widget.song.title} is added to the library'),
+                    title: Text('${widget.song.title} is added to the library',
+                        textAlign: TextAlign.center),
                     content:
                         Text(''), // Add any additional content here if needed
                     actions: [
@@ -4308,8 +4352,9 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title:
-                        Text('You have reached the total Ads limit for today!'),
+                    title: Text(
+                        'You have reached the total Ads limit for today!',
+                        textAlign: TextAlign.center),
                     content:
                         Text(''), // Add any additional content here if needed
                     actions: [
@@ -4456,9 +4501,13 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                   (BuildContext dialogContext) {
                                                 return AlertDialog(
                                                   title: const Text(
-                                                      'Watch a Video'),
+                                                    'Watch a Video',
+                                                    textAlign: TextAlign.center,
+                                                  ),
                                                   content: const Text(
-                                                      'Watch a video to earn a token?'),
+                                                      'Watch a video to earn a token?',
+                                                      textAlign:
+                                                          TextAlign.center),
                                                   actions: <Widget>[
                                                     TextButton(
                                                       child: const Text('No'),
@@ -4503,7 +4552,9 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                                         context) {
                                                                   return AlertDialog(
                                                                     title: Text(
-                                                                        'You have reached the total Ads limit for today!'),
+                                                                        'You have reached the total Ads limit for today!',
+                                                                        textAlign:
+                                                                            TextAlign.center),
                                                                     content: Text(
                                                                         ''), // Add any additional content here if needed
                                                                     actions: [
@@ -4718,7 +4769,10 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                                     context) {
                                                               return AlertDialog(
                                                                 title: Text(
-                                                                    'Added to Cart'),
+                                                                    'Added to Cart',
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .center),
                                                                 content: Text(
                                                                     ''), // Add any additional content here if needed
                                                                 actions: [
@@ -4774,7 +4828,10 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                               context) {
                                                             return AlertDialog(
                                                               title: Text(
-                                                                  'You need to Sign In to Add item to cart'),
+                                                                  'You need to Sign In to Add item to cart',
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center),
                                                               content: Text(
                                                                   ''), // Add any additional content here if needed
                                                               actions: [
@@ -4844,7 +4901,10 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                                       context) {
                                                                 return AlertDialog(
                                                                   title: Text(
-                                                                      'Removed from Wish List'),
+                                                                      'Removed from Wish List',
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center),
                                                                   content: Text(
                                                                       ''), // Add any additional content here if needed
                                                                   actions: [
@@ -4882,7 +4942,10 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                                       context) {
                                                                 return AlertDialog(
                                                                   title: Text(
-                                                                      'Added to Wish List'),
+                                                                      'Added to Wish List',
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center),
                                                                   content: Text(
                                                                       ''), // Add any additional content here if needed
                                                                   actions: [
@@ -4911,7 +4974,10 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                             context) {
                                                           return AlertDialog(
                                                             title: Text(
-                                                                'Already in the Library'),
+                                                                'Already in the Library',
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center),
                                                             content: Text(
                                                                 ''), // Add any additional content here if needed
                                                             actions: [
@@ -5549,7 +5615,8 @@ class _CartScreenState extends State<CartScreen> {
                                         builder: (BuildContext context) {
                                           return AlertDialog(
                                             title: Text(
-                                                'Item removed from the cart'),
+                                                'Item removed from the cart',
+                                                textAlign: TextAlign.center),
                                             content: Text(
                                                 ''), // Add any additional content here if needed
                                             actions: [
@@ -5690,9 +5757,12 @@ class _CartScreenState extends State<CartScreen> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: Text('Payment Completed'),
+                                title: Text('Payment Completed',
+                                    textAlign: TextAlign.center),
                                 content: Text(
-                                    'You\'ve been awarded ${HomeController.to.totalTokensAwarded} tokens'), // Add any additional content here if needed
+                                    'You\'ve been awarded ${HomeController.to.totalTokensAwarded} tokens',
+                                    textAlign: TextAlign
+                                        .center), // Add any additional content here if needed
                                 actions: [
                                   TextButton(
                                     onPressed: () {
@@ -5726,7 +5796,8 @@ class _CartScreenState extends State<CartScreen> {
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 title: Text(
-                                    'Problem occured in making the payment'),
+                                    'Problem occured in making the payment',
+                                    textAlign: TextAlign.center),
                                 content: Text(
                                     ''), // Add any additional content here if needed
                                 actions: [

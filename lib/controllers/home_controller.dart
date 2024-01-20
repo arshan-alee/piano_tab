@@ -390,6 +390,11 @@ class HomeController extends GetxController {
     return _;
   }
 
+  Future<Map<String, dynamic>> forgotpassword(String email) async {
+    var _ = await ApiService.forgotPassword(email);
+    return _;
+  }
+
   Future<bool> getuserData(String auth) async {
     var _ = await ApiService.getUserData(auth);
     return _;

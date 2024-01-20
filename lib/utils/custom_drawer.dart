@@ -939,7 +939,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                   color: MyColors.blueColor,
                                 ),
                               ),
-                              const SizedBox(width: 10),
+                              const SizedBox(width: 20),
                               GestureDetector(
                                 onTap: () async {
                                   if (await canLaunchUrl(Uri.parse(
@@ -961,7 +961,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                   color: MyColors.blueColor,
                                 ),
                               ),
-                              const SizedBox(width: 10),
+                              const SizedBox(width: 20),
                               GestureDetector(
                                 onTap: () async {
                                   if (await canLaunchUrl(Uri.parse(

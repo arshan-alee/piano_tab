@@ -6,6 +6,7 @@ import 'package:paino_tab/controllers/home_controller.dart';
 import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
 import 'package:paino_tab/models/localdbmodels/OfflineLibraryBox.dart';
 import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
+import 'package:paino_tab/screens/forgot_password.dart';
 import 'package:paino_tab/screens/onboarding_screen.dart';
 import 'package:paino_tab/screens/sign_up.dart';
 import 'package:paino_tab/services/ad_mob_service.dart';
@@ -153,14 +154,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextWidget(
-                      text: 'Forgot Password?',
-                      color: MyColors.primaryColor,
-                    )
-                  ],
+                InkWell(
+                  onTap: () {
+                    Get.to(() => const ForgotPassword());
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextWidget(
+                        text: 'Forgot Password?',
+                        color: MyColors.primaryColor,
+                      )
+                    ],
+                  ),
                 ),
                 SizedBox(
                   height: size.height * 0.02,
@@ -184,7 +190,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  title: Text(message),
+                                  title: Text(message,
+                                      textAlign: TextAlign.center),
                                   content: Text(
                                       ''), // Add any additional content here if needed
                                   actions: [
@@ -226,7 +233,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  title: Text("Invalid Credentials"),
+                                  title: Text("Invalid Credentials",
+                                      textAlign: TextAlign.center),
                                   content: Text(
                                       ''), // Add any additional content here if needed
                                   actions: [

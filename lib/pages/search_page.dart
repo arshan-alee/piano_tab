@@ -79,6 +79,8 @@ class _SearchPageState extends State<SearchPage> {
               widget: Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Icon(
                       CupertinoIcons.search,
