@@ -885,6 +885,25 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                         }
                                                       },
                                                     ),
+                                                    TextWidget(
+                                                      text: 'Privacy Policy',
+                                                      fontSize: 14,
+                                                      color:
+                                                          MyColors.blackColor,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      onTap: () {},
+                                                    ),
+                                                    TextWidget(
+                                                      text:
+                                                          'Terms & Conditions',
+                                                      fontSize: 14,
+                                                      color:
+                                                          MyColors.blackColor,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      onTap: () {},
+                                                    ),
                                                   ],
                                                 ),
                                               ),
