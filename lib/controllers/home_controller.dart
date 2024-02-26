@@ -82,8 +82,8 @@ class HomeController extends GetxController {
 
   Future<int> getSongs() async {
     try {
-      var response = await http
-          .get(Uri.parse('https://ktswebhub.com/ppbl/api.php?catalog'));
+      var response =
+          await http.get(Uri.parse('https://api.pianotab.com/catalog'));
       if (response.statusCode == 200) {
         songs = songsFromJson(response.body);
         status.value = 0;
@@ -390,8 +390,18 @@ class HomeController extends GetxController {
     return _;
   }
 
-  Future<Map<String, dynamic>> forgotpassword(String email) async {
+  Future<dynamic> forgotpassword(String email) async {
     var _ = await ApiService.forgotPassword(email);
+    return _;
+  }
+
+  Future<dynamic> resetpassword(String resettoken, String newP) async {
+    var _ = await ApiService.resetPassword(resettoken, newP);
+    return _;
+  }
+
+  Future<dynamic> changepassword(String auth, String oldp, String newP) async {
+    var _ = await ApiService.changePassword(auth, oldp, newP);
     return _;
   }
 

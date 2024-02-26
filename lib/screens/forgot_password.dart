@@ -123,7 +123,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           var status = response["status"];
                           if (_emailFormKey.currentState != null &&
                               _emailFormKey.currentState!.validate() &&
-                              status != "error" &&
+                              status == "success" &&
                               !isCountdownActive) {
                             setState(() {
                               showOtpInput = true;
@@ -324,10 +324,53 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       Visibility(
                         visible: showOtpInput,
                         child: CustomContainer(
-                          onpressed: () {
+                          onpressed: () async {
                             if (_otpFormKey.currentState != null &&
                                 _otpFormKey.currentState!.validate()) {
-                              // Call your API for verification here
+                              String otp = otpController.text;
+                              String newPassword = newPasswordController.text;
+                              String confirmPassword =
+                                  confirmPasswordController.text;
+
+                              // Check if passwords match
+                              if (newPassword != confirmPassword) {
+                                // Passwords don't match
+                                Get.snackbar("Passwords don't match", '');
+                                return;
+                              }
+
+                              // Call your API for password reset
+                              Map<String, dynamic> response =
+                                  await HomeController.to
+                                      .resetpassword(otp, newPassword);
+
+                              if (response['status'] == 'success') {
+                                // Password reset successful
+                                Get.snackbar(response["message"], '');
+
+                                // Navigate back to login screen
+                                Navigator.of(context).pop();
+                              } else {
+                                // Password reset failed
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Error'),
+                                      content: Text(response['message']),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context)
+                                                .pop(); // Close the dialog
+                                          },
+                                          child: Text('OK'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              }
                             }
                           },
                           height: size.height * 0.07,

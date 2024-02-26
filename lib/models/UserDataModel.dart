@@ -30,7 +30,7 @@ class UserData extends HiveObject {
 
   // Create a UserData object from a JSON map
   factory UserData.fromJson(Map<String, dynamic> json) {
-    var libraryData = json['data']['library'];
+    var libraryData = json['data']['UserLibrary'];
 
     List<String> library;
 
@@ -52,7 +52,7 @@ class UserData extends HiveObject {
     }
 
     return UserData(
-      points: json['data']['points'],
+      points: json['data']['Points'].toString(),
       userDataLibrary: library,
     );
   }

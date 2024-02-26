@@ -96,7 +96,7 @@ class Songs {
         sectionOfSong: json["Section Of Song"],
         genre: json["Genre"],
         difficulty: json["Difficulty"],
-        pages: json["Pages"],
+        pages: json["Pages"].toString(),
         price: json["Price"],
         description: json["Description"],
         image: json["Image"],

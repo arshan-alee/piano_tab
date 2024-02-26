@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:paino_tab/controllers/home_controller.dart';
+import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
 import 'package:paino_tab/utils/widget.dart';
 
 import '../utils/colors.dart';
@@ -208,9 +210,56 @@ class _ResetPasswordState extends State<ResetPassword> {
                           height: size.height * 0.04,
                         ),
                         CustomContainer(
-                            onpressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                Get.back();
+                            onpressed: () async {
+                              if (_formKey.currentState != null &&
+                                  _formKey.currentState!.validate()) {
+                                String currentPassword =
+                                    currentPasswordController.text;
+                                String newPassword = passwordController.text;
+
+                                // Check if new password and confirm password match
+                                if (newPassword !=
+                                    confirmPasswordController.text) {
+                                  // Passwords don't match
+                                  Get.snackbar("Passwords donot match", '');
+                                  return;
+                                }
+
+                                // Call your API for password change
+                                var response = await HomeController.to
+                                    .changepassword(
+                                        LoginBox
+                                            .userBox!.values.first.authToken,
+                                        currentPassword,
+                                        newPassword);
+
+                                if (response['status'] == 'success') {
+                                  // Password change successful
+                                  Get.snackbar(response["message"], '');
+
+                                  // Navigate back to login screen
+                                  Navigator.of(context).pop();
+                                } else {
+                                  // Password change failed
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('Error'),
+                                        content: Text(response['message']),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context)
+                                                  .pop(); // Close the dialog
+                                            },
+                                            child: Text('OK'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                }
                               }
                             },
                             height: size.height * 0.07,

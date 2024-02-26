@@ -6,11 +6,12 @@ import 'package:paino_tab/models/localdbmodels/LoginBox.dart';
 import 'package:paino_tab/models/localdbmodels/UserDataBox.dart';
 
 class ApiService {
-  static const String baseUrl = 'https://www.ktswebhub.com/ppbl/api.php';
+  static const String baseUrl = 'https://api.pianotab.com';
 
   static Future<Map<String, dynamic>> signUp(
       String email, String password) async {
-    var request = http.Request('POST', Uri.parse('${baseUrl}?signup'));
+    var request = http.Request('POST', Uri.parse("$baseUrl/signup"));
+    request.headers['Content-Type'] = 'application/json';
     request.body = json.encode({"email": email, "password": password});
     http.Response response =
         await http.Response.fromStream(await request.send());
@@ -22,10 +23,11 @@ class ApiService {
   //login_method can be google/apple/facebook
   static Future<bool> login(String email, String password) async {
     try {
-      var headers = {'Content-Type': 'application/json'};
-      var request = http.Request('POST', Uri.parse('${baseUrl}?login'));
+      // var headers = {'Content-Type': 'application/json'};
+      var request = http.Request('POST', Uri.parse('$baseUrl/login'));
+      request.headers['Content-Type'] = 'application/json';
       request.body = json.encode({"email": email, "password": password});
-      request.headers.addAll(headers);
+      // request.headers.addAll(headers);
 
       http.Response response =
           await http.Response.fromStream(await request.send());
@@ -53,7 +55,7 @@ class ApiService {
   }
 
   static Future<Map<String, dynamic>> getCatalog() async {
-    final url = Uri.parse('$baseUrl?catalog');
+    final url = Uri.parse('$baseUrl/catalog');
     final response = await http.get(url);
     return jsonDecode(response.body);
   }
@@ -68,9 +70,9 @@ class ApiService {
     }
 
     try {
-      print("$baseUrl?batch&library&points");
-      var request =
-          http.Request('POST', Uri.parse('$baseUrl?batch&library&points'));
+      print("$baseUrl/auth");
+      var request = http.Request('POST', Uri.parse('$baseUrl/user'));
+      request.headers['Content-Type'] = 'application/json';
       request.body = jsonEncode({"auth": auth});
 
       http.Response response =
@@ -94,8 +96,9 @@ class ApiService {
   }
 
   static Future<bool> updatePoints(String auth, int newPoints) async {
-    var request = http.Request('POST', Uri.parse('${baseUrl}?update_points'));
-    request.body = json.encode({'auth': auth, 'new_points': newPoints});
+    var request = http.Request('POST', Uri.parse('$baseUrl/update-points'));
+
+    request.headers['Content-Type'] = 'application/json';
 
     http.Response response =
         await http.Response.fromStream(await request.send());
@@ -110,8 +113,8 @@ class ApiService {
   }
 
   static Future<bool> updateLibrary(String auth, String newLibrary) async {
-    var request = http.Request('POST', Uri.parse('${baseUrl}?update_library'));
-    request.body = json.encode({'auth': auth, 'new_library': newLibrary});
+    var request = http.Request('POST', Uri.parse('$baseUrl/update-library'));
+    request.body = json.encode({'auth': auth, 'newLibrary': newLibrary});
 
     http.Response response =
         await http.Response.fromStream(await request.send());
@@ -126,9 +129,11 @@ class ApiService {
   }
 
   static Future<Map<String, dynamic>> forgotPassword(String email) async {
-    var request =
-        http.Request('POST', Uri.parse('${baseUrl}?forgot_password=${email}'));
+    var request = http.Request('POST', Uri.parse('$baseUrl/forgot-password'));
 
+    request.headers['Content-Type'] = 'application/json';
+
+    request.body = json.encode({'email': email});
     // var headers = {'Content-Type': 'application/json'};
     http.Response response =
         await http.Response.fromStream(await request.send());
@@ -143,29 +148,51 @@ class ApiService {
     }
   }
 
-  Future<void> resetPassword(
-      String email, String resetCode, String newPassword) async {
-    var url = '${baseUrl}?reset_password';
+  static Future<Map<String, dynamic>> changePassword(
+      String auth, String oldPassword, String newPassword) async {
+    var request = http.Request('POST', Uri.parse('$baseUrl/change-password'));
 
-    var headers = {'Content-Type': 'application/json'};
-    var body = jsonEncode({
-      'email': email,
-      'reset_code': resetCode,
-      'new_password': newPassword,
+    request.headers['Content-Type'] = 'application/json';
+
+    request.body = json.encode({
+      'auth_token': auth,
+      'old_password ': oldPassword,
+      'new_password': newPassword
     });
+    // var headers = {'Content-Type': 'application/json'};
+    http.Response response =
+        await http.Response.fromStream(await request.send());
 
-    try {
-      var response =
-          await http.post(Uri.parse(url), headers: headers, body: body);
+    var data = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      print('Status: ${data["status"]}, Message: ${data["message"]}');
+      return data;
+    } else {
+      print('Error: ${response.statusCode}');
+      return data;
+    }
+  }
 
-      if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
-        print('Status: ${data["status"]}, Message: ${data["message"]}');
-      } else {
-        print('Error: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Exception during resetPassword: $e');
+  static Future<Map<String, dynamic>> resetPassword(
+      String resetCode, String newPassword) async {
+    var request = http.Request('POST', Uri.parse('$baseUrl/reset-password'));
+
+    request.headers['Content-Type'] = 'application/json';
+
+    request.body =
+        json.encode({'resetToken': resetCode, 'new_password': newPassword});
+    // var headers = {'Content-Type': 'application/json'};
+    http.Response response =
+        await http.Response.fromStream(await request.send());
+
+    var data = jsonDecode(response.body);
+    print(data);
+    if (response.statusCode == 200) {
+      print('Status: ${data["status"]}, Message: ${data["message"]}');
+      return data;
+    } else {
+      print('Error: ${response.statusCode}');
+      return data;
     }
   }
 }

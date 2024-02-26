@@ -41,7 +41,7 @@ class LoginModel extends HiveObject {
         message: json["message"],
         email: json["email"],
         authToken: json["auth_token"],
-        expirationDate: DateTime.parse(json["expiration_date"]),
+        expirationDate: DateTime.parse(json["expirationDate"]),
       );
 
   Map<String, dynamic> toJson() => {

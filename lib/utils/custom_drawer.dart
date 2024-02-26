@@ -12,6 +12,7 @@ import 'package:paino_tab/utils/widget.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:flutter/services.dart' show rootBundle;
 import '../controllers/home_controller.dart';
 import '../models/songs_model.dart';
 import '../screens/setting_screen.dart';
@@ -340,7 +341,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                     initialIndex: 0));
                                               },
                                               child: Container(
-                                                height: size.height * 0.063,
+                                                height: size.height * 0.06,
                                                 width: size.width * 0.5,
                                                 decoration: BoxDecoration(
                                                   color: MyColors.whiteColor,
@@ -399,7 +400,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                     initialIndex: 1));
                                               },
                                               child: Container(
-                                                height: size.height * 0.063,
+                                                height: size.height * 0.06,
                                                 width: size.width * 0.5,
                                                 decoration: BoxDecoration(
                                                   color: MyColors.whiteColor,
@@ -462,7 +463,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                     initialIndex: 4));
                                               },
                                               child: Container(
-                                                height: size.height * 0.063,
+                                                height: size.height * 0.06,
                                                 width: size.width * 0.5,
                                                 decoration: BoxDecoration(
                                                   color: MyColors.whiteColor,
@@ -522,7 +523,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                     initialIndex: 3));
                                               },
                                               child: Container(
-                                                height: size.height * 0.063,
+                                                height: size.height * 0.06,
                                                 width: size.width * 0.5,
                                                 decoration: BoxDecoration(
                                                   color: MyColors.whiteColor,
@@ -605,7 +606,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                 }
                                               },
                                               child: Container(
-                                                height: size.height * 0.063,
+                                                height: size.height * 0.06,
                                                 width: size.width * 0.5,
                                                 decoration: BoxDecoration(
                                                   color: MyColors.whiteColor,
@@ -653,7 +654,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                 });
                                               },
                                               child: Container(
-                                                height: size.height * 0.063,
+                                                height: size.height * 0.06,
                                                 width: size.width * 0.5,
                                                 decoration: BoxDecoration(
                                                   color: MyColors.whiteColor,
@@ -721,68 +722,77 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                       children: [
                                         Column(
                                           children: [
-                                            InkWell(
-                                              onTap: () {
-                                                setState(() {
-                                                  index = 6;
-                                                });
-                                                Get.to(() => OnBoarding(
-                                                      isLoggedIn:
-                                                          OfflineLibraryBox
-                                                              .userBox!
-                                                              .values
-                                                              .first
-                                                              .isLoggedIn,
-                                                    ));
-                                              },
-                                              child: Container(
-                                                height: size.height * 0.063,
-                                                width: size.width * 0.5,
-                                                decoration: BoxDecoration(
-                                                  color: MyColors.whiteColor,
-                                                  border: Border.all(
-                                                      color: MyColors.greyColor,
-                                                      width: 1),
-                                                ),
-                                                child: Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 10),
-                                                  child: Row(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    children: [
-                                                      Transform.flip(
-                                                        flipX: true,
-                                                        child: Image.asset(
-                                                          'assets/images/student.png',
-                                                          color: index == 6
-                                                              ? MyColors
-                                                                  .blueColor
-                                                              : color,
-                                                          height: 35,
-                                                        ),
+                                            Stack(
+                                              alignment: Alignment.centerRight,
+                                              children: [
+                                                InkWell(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      index = 6;
+                                                    });
+                                                    Get.to(() => OnBoarding(
+                                                          isLoggedIn:
+                                                              OfflineLibraryBox
+                                                                  .userBox!
+                                                                  .values
+                                                                  .first
+                                                                  .isLoggedIn,
+                                                        ));
+                                                  },
+                                                  child: Container(
+                                                    height: size.height * 0.06,
+                                                    width: size.width * 0.5,
+                                                    decoration: BoxDecoration(
+                                                      color:
+                                                          MyColors.whiteColor,
+                                                      border: Border.all(
+                                                          color: MyColors
+                                                              .greyColor,
+                                                          width: 1),
+                                                    ),
+                                                    child: Padding(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 10),
+                                                      child: Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Transform.flip(
+                                                            flipX: true,
+                                                            child: Image.asset(
+                                                              'assets/images/student.png',
+                                                              color: index == 6
+                                                                  ? MyColors
+                                                                      .blueColor
+                                                                  : color,
+                                                              height: 35,
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                            width: 10,
+                                                          ),
+                                                          TextWidget(
+                                                            text: 'Intro',
+                                                            color: index == 6
+                                                                ? MyColors
+                                                                    .blueColor
+                                                                : color,
+                                                            fontSize: 18,
+                                                          ),
+                                                        ],
                                                       ),
-                                                      const SizedBox(
-                                                        width: 10,
-                                                      ),
-                                                      TextWidget(
-                                                        text: 'Intro',
-                                                        color: index == 6
-                                                            ? MyColors.blueColor
-                                                            : color,
-                                                        fontSize: 18,
-                                                      ),
-                                                    ],
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
+                                              ],
                                             ),
                                             Container(
-                                              height: size.height * 0.063,
+                                              height: size.height * 0.06,
                                               width: size.width * 0.5,
                                               decoration: BoxDecoration(
                                                   color: MyColors.whiteColor,
@@ -885,25 +895,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                                         }
                                                       },
                                                     ),
-                                                    TextWidget(
-                                                      text: 'Privacy Policy',
-                                                      fontSize: 14,
-                                                      color:
-                                                          MyColors.blackColor,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      onTap: () {},
-                                                    ),
-                                                    TextWidget(
-                                                      text:
-                                                          'Terms & Conditions',
-                                                      fontSize: 14,
-                                                      color:
-                                                          MyColors.blackColor,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      onTap: () {},
-                                                    ),
                                                   ],
                                                 ),
                                               ),
@@ -918,6 +909,78 @@ class _CustomDrawerState extends State<CustomDrawer> {
                               ],
                             ),
                           ],
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        Container(
+                          height: size.height * 0.045,
+                          width: size.width * 0.6,
+                          decoration: BoxDecoration(
+                              color: MyColors.whiteColor,
+                              borderRadius: const BorderRadius.only(
+                                  topRight: Radius.circular(10),
+                                  bottomRight: Radius.circular(10))),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              TextWidget(
+                                text: 'Privacy Policy',
+                                fontSize: 14,
+                                color: MyColors.blackColor,
+                                fontWeight: FontWeight.bold,
+                                onTap: () async {
+                                  print('clicked');
+                                  String fileText = await rootBundle.loadString(
+                                      'assets/Privacy Policy for PianoTab.txt');
+                                  showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      builder: (BuildContext bc) {
+                                        return TextViewerScreen(
+                                          fileText: fileText,
+                                          title: "Guide",
+                                        );
+                                      });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          height: size.height * 0.045,
+                          width: size.width * 0.6,
+                          decoration: BoxDecoration(
+                              color: MyColors.whiteColor,
+                              borderRadius: const BorderRadius.only(
+                                  topRight: Radius.circular(10),
+                                  bottomRight: Radius.circular(10))),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              TextWidget(
+                                text: 'Terms & Conditions',
+                                fontSize: 14,
+                                color: MyColors.blackColor,
+                                fontWeight: FontWeight.bold,
+                                onTap: () {
+                                  showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      builder: (BuildContext bc) {
+                                        return PdfViewerScreen(
+                                            pdfPath:
+                                                'assets/Guide to Read Piano Tab.pdf',
+                                            title: "Guide",
+                                            type: 'asset');
+                                      });
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),

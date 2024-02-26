@@ -14,6 +14,8 @@ import 'package:flutter_paypal/flutter_paypal.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:http/http.dart' as http;
+
+import 'package:webview_flutter/webview_flutter.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -3410,6 +3412,47 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   //     },
   //   );
   // }
+}
+
+class TextViewerScreen extends StatefulWidget {
+  final String fileText;
+  final String title;
+
+  TextViewerScreen({required this.fileText, required this.title});
+
+  @override
+  State<TextViewerScreen> createState() => _TextViewerScreenState();
+}
+
+class _TextViewerScreenState extends State<TextViewerScreen> {
+  String textFromFile = ' Empty ';
+
+  @override
+  void initState() {
+    setState(() {
+      textFromFile = widget.fileText;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: FractionallySizedBox(
+        heightFactor: 0.95,
+        child: Container(
+          child: Column(
+            children: [
+              AppBar(
+                title: TextWidget(text: widget.title),
+                centerTitle: true,
+              ),
+              Expanded(child: Text(widget.fileText))
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class PdfViewerScreen extends StatefulWidget {
