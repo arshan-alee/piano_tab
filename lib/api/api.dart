@@ -114,6 +114,8 @@ class ApiService {
 
   static Future<bool> updateLibrary(String auth, String newLibrary) async {
     var request = http.Request('POST', Uri.parse('$baseUrl/update-library'));
+
+    request.headers['Content-Type'] = 'application/json';
     request.body = json.encode({'auth': auth, 'newLibrary': newLibrary});
 
     http.Response response =

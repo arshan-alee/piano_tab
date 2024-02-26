@@ -45,6 +45,7 @@ class OfflineLibrary {
   }
 
   static String encodeOfflineLibrary(List<String> offlineLibrary) {
+    print("Encoding Offline Library" + json.encode(offlineLibrary));
     return json.encode(offlineLibrary);
   }
 }
