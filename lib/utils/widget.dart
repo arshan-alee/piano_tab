@@ -2407,12 +2407,15 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
       int userPoints =
           int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
       int newPoints = userPoints - requiredTokens;
-      var submitted = HomeController.to
-          .updateLibrary(LoginBox.userBox!.values.first.authToken, a);
-      var pointsUpdated = HomeController.to
-          .updatePoints(LoginBox.userBox!.values.first.authToken, newPoints);
-      var userdata = await HomeController.to
-          .getuserData(LoginBox.userBox!.values.first.authToken);
+      var submitted = HomeController.to.updateLibrary(
+          LoginBox.userBox!.values.first.authToken, a, newPoints);
+      if (await submitted) {
+        // var pointsUpdated = HomeController.to
+        //     .updatePoints(LoginBox.userBox!.values.first.authToken, newPoints);
+        var userdata = await HomeController.to
+            .getuserData(LoginBox.userBox!.values.first.authToken);
+      }
+
       setState(() {
         HomeController.to.totalPoints.value =
             UserDataBox.userBox!.values.first.points;
@@ -4429,13 +4432,16 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
       int userPoints =
           int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
       int newPoints = userPoints - requiredTokens;
-      var submitted = HomeController.to
-          .updateLibrary(LoginBox.userBox!.values.first.authToken, a);
+      var submitted = HomeController.to.updateLibrary(
+          LoginBox.userBox!.values.first.authToken, a, newPoints);
 
-      var pointsUpdated = HomeController.to
-          .updatePoints(LoginBox.userBox!.values.first.authToken, newPoints);
-      var userdata = await HomeController.to
-          .getuserData(LoginBox.userBox!.values.first.authToken);
+      if (await submitted) {
+        // var pointsUpdated = HomeController.to
+        //     .updatePoints(LoginBox.userBox!.values.first.authToken, newPoints);
+        var userdata = await HomeController.to
+            .getuserData(LoginBox.userBox!.values.first.authToken);
+      }
+
       setState(() {
         HomeController.to.totalPoints.value =
             UserDataBox.userBox!.values.first.points;
@@ -5783,13 +5789,18 @@ class _CartScreenState extends State<CartScreen> {
                         int newPoints = userPoints +
                             HomeController.to.totalTokensAwarded.value;
                         var submitted = await HomeController.to.updateLibrary(
-                            LoginBox.userBox!.values.first.authToken, a);
-                        var pointsUpdated = await HomeController.to
-                            .updatePoints(
-                                LoginBox.userBox!.values.first.authToken,
-                                newPoints);
-                        var userdata = await HomeController.to.getuserData(
-                            LoginBox.userBox!.values.first.authToken);
+                            LoginBox.userBox!.values.first.authToken,
+                            a,
+                            newPoints);
+                        if (await submitted) {
+                          // var pointsUpdated = await HomeController.to
+                          //     .updatePoints(
+                          //         LoginBox.userBox!.values.first.authToken,
+                          //         newPoints);
+                          var userdata = await HomeController.to.getuserData(
+                              LoginBox.userBox!.values.first.authToken);
+                        }
+
                         setState(() {
                           HomeController.to.totalPoints.value =
                               UserDataBox.userBox!.values.first.points;

@@ -410,8 +410,8 @@ class HomeController extends GetxController {
     return _;
   }
 
-  Future<bool> updateLibrary(String auth, String Sku) async {
-    var _ = await ApiService.updateLibrary(auth, Sku);
+  Future<bool> updateLibrary(String auth, String Sku, int newPoints) async {
+    var _ = await ApiService.updateLibrary(auth, Sku, newPoints);
     return _;
   }
 

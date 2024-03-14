@@ -70,7 +70,6 @@ class ApiService {
     }
 
     try {
-      print("$baseUrl/auth");
       var request = http.Request('POST', Uri.parse('$baseUrl/user'));
       request.headers['Content-Type'] = 'application/json';
       request.body = jsonEncode({"auth": auth});
@@ -99,7 +98,7 @@ class ApiService {
     var request = http.Request('POST', Uri.parse('$baseUrl/update-points'));
 
     request.headers['Content-Type'] = 'application/json';
-
+    request.body = json.encode({'auth': auth, 'points': newPoints});
     http.Response response =
         await http.Response.fromStream(await request.send());
     Map<String, dynamic> jsonResponse = jsonDecode(response.body);
@@ -112,11 +111,13 @@ class ApiService {
     }
   }
 
-  static Future<bool> updateLibrary(String auth, String newLibrary) async {
+  static Future<bool> updateLibrary(
+      String auth, String newLibrary, int newPoints) async {
     var request = http.Request('POST', Uri.parse('$baseUrl/update-library'));
 
     request.headers['Content-Type'] = 'application/json';
-    request.body = json.encode({'auth': auth, 'newLibrary': newLibrary});
+    request.body = json
+        .encode({'auth': auth, 'newLibrary': newLibrary, 'points': newPoints});
 
     http.Response response =
         await http.Response.fromStream(await request.send());
