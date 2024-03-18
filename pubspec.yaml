@@ -98,8 +98,8 @@ flutter:
   assets:
     - assets/images/
     - assets/Guide to Read Piano Tab.pdf
-    - assets/Privacy Policy for PianoTab.txt
-    - assets/Terms and Conditions for PianoTab.txt
+    - assets/Privacy Policy for PianoTab.pdf
+    - assets/Terms and Conditions for PianoTab.pdf
     - assets/data/
 
   # An image asset can refer to one or more resolution-specific "variants", see

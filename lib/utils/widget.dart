@@ -4161,6 +4161,31 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
             // Get.snackbar('You have recieved a token', "");
           }
         }
+        var a = OfflineLibrary.encodeOfflineLibrary(
+            OfflineLibraryBox.userBox!.values.first.offlineLibrary);
+        print(a);
+        final int requiredTokens = int.tryParse(
+                _calculateRequiredTokens(int.parse(widget.song.pages))) ??
+            0;
+        if (OfflineLibraryBox.userBox!.values.first.isLoggedIn == true) {
+          int userPoints =
+              int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
+          int newPoints = userPoints - requiredTokens;
+          var submitted = HomeController.to.updateLibrary(
+              LoginBox.userBox!.values.first.authToken, a, newPoints);
+
+          if (await submitted) {
+            // var pointsUpdated = HomeController.to
+            //     .updatePoints(LoginBox.userBox!.values.first.authToken, newPoints);
+            var userdata = await HomeController.to
+                .getuserData(LoginBox.userBox!.values.first.authToken);
+          }
+
+          setState(() {
+            HomeController.to.totalPoints.value =
+                UserDataBox.userBox!.values.first.points;
+          });
+        }
       });
       _rewardedAd = null;
     }
@@ -4222,7 +4247,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         context: context,
         builder: (BuildContext dialogContext) {
           return AlertDialog(
-            title: const Text('Not Enough Tokens', textAlign: TextAlign.center),
+            title: const Text('Watch a Video', textAlign: TextAlign.center),
             content: const Text('Watch a video to earn a token?',
                 textAlign: TextAlign.center),
             actions: <Widget>[
@@ -4425,28 +4450,28 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
       }
     }
 
-    var a = OfflineLibrary.encodeOfflineLibrary(
-        OfflineLibraryBox.userBox!.values.first.offlineLibrary);
-    print(a);
-    if (OfflineLibraryBox.userBox!.values.first.isLoggedIn == true) {
-      int userPoints =
-          int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
-      int newPoints = userPoints - requiredTokens;
-      var submitted = HomeController.to.updateLibrary(
-          LoginBox.userBox!.values.first.authToken, a, newPoints);
+    // var a = OfflineLibrary.encodeOfflineLibrary(
+    //     OfflineLibraryBox.userBox!.values.first.offlineLibrary);
+    // print(a);
+    // if (OfflineLibraryBox.userBox!.values.first.isLoggedIn == true) {
+    //   int userPoints =
+    //       int.tryParse(UserDataBox.userBox!.values.first.points) ?? 0;
+    //   int newPoints = userPoints - requiredTokens;
+    //   var submitted = HomeController.to.updateLibrary(
+    //       LoginBox.userBox!.values.first.authToken, a, newPoints);
 
-      if (await submitted) {
-        // var pointsUpdated = HomeController.to
-        //     .updatePoints(LoginBox.userBox!.values.first.authToken, newPoints);
-        var userdata = await HomeController.to
-            .getuserData(LoginBox.userBox!.values.first.authToken);
-      }
+    //   if (await submitted) {
+    //     // var pointsUpdated = HomeController.to
+    //     //     .updatePoints(LoginBox.userBox!.values.first.authToken, newPoints);
+    //     var userdata = await HomeController.to
+    //         .getuserData(LoginBox.userBox!.values.first.authToken);
+    //   }
 
-      setState(() {
-        HomeController.to.totalPoints.value =
-            UserDataBox.userBox!.values.first.points;
-      });
-    }
+    //   setState(() {
+    //     HomeController.to.totalPoints.value =
+    //         UserDataBox.userBox!.values.first.points;
+    //   });
+    // }
   }
 
   void checkOwnershipStatus() {

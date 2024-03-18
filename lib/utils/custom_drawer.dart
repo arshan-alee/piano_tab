@@ -931,18 +931,16 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                 fontSize: 14,
                                 color: MyColors.blackColor,
                                 fontWeight: FontWeight.bold,
-                                onTap: () async {
-                                  print('clicked');
-                                  String fileText = await rootBundle.loadString(
-                                      'assets/Privacy Policy for PianoTab.txt');
+                                onTap: () {
                                   showModalBottomSheet(
                                       context: context,
                                       isScrollControlled: true,
                                       builder: (BuildContext bc) {
-                                        return TextViewerScreen(
-                                          fileText: fileText,
-                                          title: "Guide",
-                                        );
+                                        return PdfViewerScreen(
+                                            pdfPath:
+                                                'assets/Privacy Policy for PianoTab.pdf',
+                                            title: "Privacy Policy",
+                                            type: 'asset');
                                       });
                                 },
                               ),
@@ -973,8 +971,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                       builder: (BuildContext bc) {
                                         return PdfViewerScreen(
                                             pdfPath:
-                                                'assets/Guide to Read Piano Tab.pdf',
-                                            title: "Guide",
+                                                'assets/Terms and Conditions for PianoTab.pdf',
+                                            title: "Terms and Conditions",
                                             type: 'asset');
                                       });
                                 },
