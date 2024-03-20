@@ -2542,8 +2542,13 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                 builder: (BuildContext bc) {
                                                   return PdfViewerScreen(
                                                     pdfPath: HomeController.to
-                                                        .getOriginalbookPdfSource(
-                                                            widget.book.detail),
+                                                        .getOriginalPdfSource(
+                                                            widget.book.detail,
+                                                            LoginBox
+                                                                .userBox!
+                                                                .values
+                                                                .first
+                                                                .authToken),
                                                     title: widget.book.title,
                                                     type: 'network',
                                                   );
@@ -2558,9 +2563,14 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                                 return PdfViewerScreen(
                                                   pdfPath: isSongInLibrary
                                                       ? HomeController.to
-                                                          .getOriginalbookPdfSource(
+                                                          .getOriginalPdfSource(
                                                               widget
-                                                                  .book.detail)
+                                                                  .book.detail,
+                                                              LoginBox
+                                                                  .userBox!
+                                                                  .values
+                                                                  .first
+                                                                  .authToken)
                                                       : HomeController.to
                                                           .getSamplePdfSource(
                                                               widget
@@ -4061,8 +4071,9 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                   useSafeArea: true,
                   builder: (BuildContext bc) {
                     return PdfViewerScreen(
-                      pdfPath: HomeController.to
-                          .getOriginalbookPdfSource(widget.song.detail),
+                      pdfPath: HomeController.to.getOriginalPdfSource(
+                          widget.song.detail,
+                          LoginBox.userBox!.values.first.authToken),
                       title: widget.song.title,
                       type: 'network',
                     );
@@ -4705,9 +4716,14 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                       return PdfViewerScreen(
                                                         pdfPath: HomeController
                                                             .to
-                                                            .getOriginalsongPdfSource(
+                                                            .getOriginalPdfSource(
                                                                 widget.song
-                                                                    .detail),
+                                                                    .detail,
+                                                                LoginBox
+                                                                    .userBox!
+                                                                    .values
+                                                                    .first
+                                                                    .authToken),
                                                         title:
                                                             widget.song.title,
                                                         type: 'network',
@@ -4723,9 +4739,14 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                                                     return PdfViewerScreen(
                                                       pdfPath: isSongInLibrary
                                                           ? HomeController.to
-                                                              .getOriginalsongPdfSource(
+                                                              .getOriginalPdfSource(
                                                                   widget.song
-                                                                      .detail)
+                                                                      .detail,
+                                                                  LoginBox
+                                                                      .userBox!
+                                                                      .values
+                                                                      .first
+                                                                      .authToken)
                                                           : HomeController.to
                                                               .getSamplePdfSource(
                                                                   widget.song

@@ -110,19 +110,19 @@ class HomeController extends GetxController {
   }
 
   String getSamplePdfSource(String Sku) {
-    return 'https://www.ktswebhub.com/ppbl/resources/samples/$Sku.pdf';
+    return 'https://api.pianotab.com/resources/sample/$Sku.pdf';
   }
 
-  String getOriginalbookPdfSource(String Sku) {
-    return 'https://www.ktswebhub.com/ppbl/resources/tablatures/books/$Sku.pdf';
+  String getOriginalPdfSource(String Sku, String auth) {
+    return 'https://api.pianotab.com/resources/pdf/$Sku.pdf?auth_token=$auth';
   }
 
-  String getOriginalsongPdfSource(String Sku) {
-    return 'https://www.ktswebhub.com/ppbl/resources/tablatures/$Sku.pdf';
-  }
+  // String getOriginalsongPdfSource(String Sku) {
+  //   return 'https://www.ktswebhub.com/ppbl/resources/tablatures/$Sku.pdf';
+  // }
 
   String getMp3Source(String Sku) {
-    return 'https://www.ktswebhub.com/ppbl/resources/mp3s/$Sku.mp3';
+    return 'https://api.pianotab.com/resources/audio/$Sku.mp3';
   }
 
   void createFilters() {
