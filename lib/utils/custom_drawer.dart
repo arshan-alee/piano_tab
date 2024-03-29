@@ -140,7 +140,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text('You have recieved a token'),
+                  title: Text('You have received a token'),
                   content: Text(
                       'Seems like the Ad failed to load but here\'s a token on us'), // Add any additional content here if needed
                   actions: [
@@ -155,7 +155,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
               });
           // Get.snackbar(
           //     "Seems like the Ad failed to load but here's a token on us",
-          //     'You have recieved a token');
+          //     'You have received a token');
         } else {
           showDialog(
               context: context,
@@ -239,7 +239,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text('You have recieved a token'),
+                  title: Text('You have received a token'),
                   content:
                       Text(''), // Add any additional content here if needed
                   actions: [
@@ -252,7 +252,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   ],
                 );
               });
-          // Get.snackbar('You have recieved a token', "");
+          // Get.snackbar('You have received a token', "");
         },
       );
       _rewardedAd = null;

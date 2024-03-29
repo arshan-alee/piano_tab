@@ -87,10 +87,13 @@ class _SearchPageState extends State<SearchPage> {
                       size: 28,
                     ),
                     Expanded(
-                      child: TextField(
-                        onSubmitted: updateQuery,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
+                      child: Padding(
+                        padding: const EdgeInsets.all(6.0),
+                        child: TextField(
+                          onSubmitted: updateQuery,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                          ),
                         ),
                       ),
                     ),

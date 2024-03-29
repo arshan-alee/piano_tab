@@ -132,7 +132,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('You have recieved a token',
+                    title: Text('You have received a token',
                         textAlign: TextAlign.center),
                     content: Text(
                         "Seems like the Ad failed to load but here's a token on us",
@@ -150,7 +150,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 });
             // Get.snackbar(
             //     "Seems like the Ad failed to load but here's a token on us",
-            //     'You have recieved a token');
+            //     'You have received a token');
           } else {
             showDialog(
                 context: context,
@@ -236,7 +236,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text("You have recieved a token!",
+                  title: Text("You have received a token!",
                       textAlign: TextAlign.center),
                   content:
                       Text(''), // Add any additional content here if needed
@@ -250,7 +250,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   ],
                 );
               });
-          // Get.snackbar('You have recieved a token', "");
+          // Get.snackbar('You have received a token', "");
         },
       );
       _rewardedAd = null;
@@ -2116,7 +2116,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('You have recieved a token',
+                    title: Text('You have received a token',
                         textAlign: TextAlign.center),
                     content: Text(
                         'Seems like the Ad failed to load but here\'s a token on us',
@@ -2134,7 +2134,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                 });
             // Get.snackbar(
             //     "Seems like the Ad failed to load but here's a token on us",
-            //     'You have recieved a token');
+            //     'You have received a token');
           } else {
             showDialog(
                 context: context,
@@ -2219,7 +2219,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text('You have recieved a token',
+                  title: Text('You have received a token',
                       textAlign: TextAlign.center),
                   content:
                       Text(''), // Add any additional content here if needed
@@ -2233,7 +2233,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                   ],
                 );
               });
-          // Get.snackbar('You have recieved a token', "");
+          // Get.snackbar('You have received a token', "");
         }
       });
       _rewardedAd = null;
@@ -3972,7 +3972,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('You have recieved a token',
+                    title: Text('You have received a token',
                         textAlign: TextAlign.center),
                     content: Text(
                         'Seems like the Ad failed to load but here\'s a token on us',
@@ -3990,7 +3990,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                 });
             // Get.snackbar(
             //     "Seems like the Ad failed to load but here's a token on us",
-            //     'You have recieved a token');
+            //     'You have received a token');
           } else {
             showDialog(
                 context: context,
@@ -4155,7 +4155,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('You have recieved a token',
+                    title: Text('You have received a token',
                         textAlign: TextAlign.center),
                     content:
                         Text(''), // Add any additional content here if needed
@@ -4169,7 +4169,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                     ],
                   );
                 });
-            // Get.snackbar('You have recieved a token', "");
+            // Get.snackbar('You have received a token', "");
           }
         }
         var a = OfflineLibrary.encodeOfflineLibrary(
