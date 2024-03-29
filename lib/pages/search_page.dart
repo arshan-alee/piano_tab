@@ -70,14 +70,14 @@ class _SearchPageState extends State<SearchPage> {
               height: size.height * 0.01,
             ),
             CustomContainer(
-              height: size.height * 0.07,
+              height: size.height * 0.068,
               width: size.width,
               color: MyColors.grey,
               borderRadius: 10,
               borderColor: MyColors.transparent,
               borderWidth: 0,
               widget: Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(size.height * 0.01),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -88,7 +88,7 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.all(6.0),
+                        padding: EdgeInsets.all(size.height * 0.006),
                         child: TextField(
                           onSubmitted: updateQuery,
                           decoration: InputDecoration(
